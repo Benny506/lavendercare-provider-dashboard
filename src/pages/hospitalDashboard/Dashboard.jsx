@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
+import { Icon } from '@iconify/react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const recentConsultations = [
   {
@@ -32,15 +34,26 @@ const statusColors = {
 };
 
 const Dashboard = () => {
+  const Navigate = useNavigate();
   return (
     <div className="flex flex-col w-full min-h-screen">
       {/* Top Divider */}
       <hr className="bg-[#D2C3EF] h-1 rounded-full w-full border-none mb-6 mt-3" />
 
+      {/* Notification Banner */}
+      <div className="flex justify-between px-6 bg-[#FCE4E2] border-[#E74C3C] border w-full rounded-[2px] mb-4 -mt-2 text-sm items-center">
+        <div className='flex items-start gap-6 '>
+          <Icon icon="mdi:shield-warning-outline" width="14" height="14" style={{ color: "red" }} className='my-0.5' />
+          <p className='-ml-4 text-[13px]'>5 doctors need schedule approval</p>
+        </div>
+
+        <Icon icon="iconoir:cancel" width="24" height="24" style={{ color: "#E74C3C" }} className='cursor-pointer' />
+      </div>
+
       {/* Header Buttons */}
       <div className="flex gap-4 justify-end mb-6">
-        <Button className="rounded-3xl px-6 py-6 bg-white text-black font-extrabold">View Request</Button>
-        <Button className="rounded-3xl px-6 py-6 bg-primary-600 font-extrabold text-white">Add Doctor</Button>
+        <Button className="rounded-3xl px-6 py-6 bg-white text-black font-extrabold cursor-pointer">View Request</Button>
+        <Button className="rounded-3xl px-6 py-6 bg-primary-600 font-extrabold text-white cursor-pointer" onClick={() => Navigate('/hospital/dashboard/add-doctor')} >Add Doctor</Button>
       </div>
 
       {/* Top 3 Summary Cards */}
@@ -49,38 +62,47 @@ const Dashboard = () => {
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">Total Doctors</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className="bg-black h-1.5 w-4 mt-2 border-none" />
+            <p className="text-2xl font-bold">12</p>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <p className="text-lg text-primary-600 font-extrabold mt-3">View all Doctors</p>
+          <div className='flex items-center gap-2 text-primary-600 font-extrabold'>
+            <p className="text-lg mt-3 cursor-pointer">View all Doctors</p>
+            <Icon icon="mdi:arrow-right" className="mt-3.5  text-xl" />
+          </div>
         </div>
 
         {/* Card 2 */}
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">Total Consultations</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className="bg-black h-1.5 w-4 mt-2 border-none" />
-            <div className="flex items-end">
-              <p className="bg-lime-200 rounded-full px-2 text-sm">+5</p>
+            <p className="text-2xl font-bold">24</p>
+            <div className="flex items-end mt-1">
+              <p className="bg-[#D6F0E1] rounded-full px-2 text-sm text-[#007733]">+5</p>
               <p className="ml-2 text-sm">vs last month</p>
             </div>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <p className="text-lg text-primary-600 font-extrabold mt-3">View Active</p>
+          <div className='flex items-center gap-2 text-primary-600 font-extrabold'>
+            <p className="text-lg mt-3 cursor-pointer">View Active</p>
+            <Icon icon="mdi:arrow-right" className="mt-3.5  text-xl" />
+          </div>
         </div>
 
         {/* Card 3 */}
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">Total Caseload</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className="bg-black h-1.5 w-4 mt-2 border-none" />
-            <div className="flex items-end">
-              <p className="bg-red-200 rounded-full px-2 text-sm">+5</p>
+            <p className="text-2xl font-bold">26</p>
+            <div className="flex items-end mt-1">
+              <p className="bg-[#F7B9B5] rounded-full px-2 text-sm text-[#A2140C]">+5</p>
               <p className="ml-2 text-sm">vs last month</p>
             </div>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <p className="text-lg text-primary-600 font-extrabold mt-3">See Inactives</p>
+          <div className='flex items-center gap-2 text-primary-600 font-extrabold'>
+            <p className="text-lg mt-3 cursor-pointer">See Inactives</p>
+            <Icon icon="mdi:arrow-right" className="mt-3.5  text-xl" />
+          </div>
         </div>
       </div>
 
@@ -90,20 +112,26 @@ const Dashboard = () => {
         <div className="flex-1 bg-primary-600 text-white rounded-xl p-6">
           <p className="text-md font-medium">Unassigned Caseload</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className="bg-white h-1.5 w-4 mt-2 border-none" />
+            <p className="font-bold text-3xl">4</p>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <p className="text-lg font-extrabold mt-3">View Cases</p>
+          <div className='flex items-center gap-2'>
+            <p className="text-lg font-extrabold mt-3 cursor-pointer">View Cases</p>
+            <Icon icon="mdi:arrow-right" className="mt-3.5  text-xl" />
+          </div>
         </div>
 
         {/* Card 5 */}
-        <div className="flex-1 bg-primary-500 text-white rounded-xl p-6">
+        <div className="flex-1 bg-primary-600 text-white rounded-xl p-6">
           <p className="text-md font-medium">Caseload Requiring Approval</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className="bg-white h-1.5 w-4 mt-2 border-none" />
+            <p className="font-bold text-3xl">5</p>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <p className="text-lg font-extrabold mt-3">Review Schedule</p>
+          <div className='flex items-center gap-2'>
+            <p className="text-lg font-extrabold mt-3 cursor-pointer">Review Schedules</p>
+            <Icon icon="mdi:arrow-right" className="mt-3.5  text-xl" />
+          </div>
         </div>
       </div>
 
@@ -148,7 +176,7 @@ const Dashboard = () => {
                 </span>
               </div>
               <div className="">
-                <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold">
+                <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
                   View
                 </button>
               </div>
@@ -156,17 +184,9 @@ const Dashboard = () => {
           ))
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-12 h-12 text-primary-600 mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 4h10M5 11h14M5 19h14M5 15h14" />
-            </svg>
-            <p className="font-bold text-lg">No data to display</p>
-            <p className="text-sm">Recent appointments will appear here</p>
+            <Icon icon="uil:calender" className="w-12 h-12 text-primary-600 mb-4" />
+            <p className="font-bold text-lg text-center">No data to display</p>
+            <p className="text-sm text-center">Recent appointments will appear here</p>
           </div>
         )}
       </div>

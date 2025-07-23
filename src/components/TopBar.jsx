@@ -21,7 +21,7 @@ const TopBar = () => {
                 </div>
 
                 {/* Notification Icon with Badge */}
-                <div className="relative">
+                <div className="relative cursor-pointer">
                     <div className="p-2 rounded-sm border border-[#E3E3E3]">
                         <Icon icon="mdi:notifications-none" width="24" height="24" style={{ color: "#000000" }} />
                     </div>
@@ -31,7 +31,7 @@ const TopBar = () => {
                 </div>
 
                 {/* Avatar with Alert */}
-                <div className="relative">
+                <div className="relative cursor-pointer">
                     <Avatar className="w-10 h-10">
                         <AvatarImage src="/assets/Avatar.svg" alt="User" />
                         <AvatarFallback>JD</AvatarFallback>

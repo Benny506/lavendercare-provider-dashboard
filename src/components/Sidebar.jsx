@@ -1,6 +1,8 @@
 import { Icon } from '@iconify/react';
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { use } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const navItems = [
   {
@@ -37,13 +39,13 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const Navigate = useNavigate();
   return (
     <aside className="h-screen max-w-max flex flex-col bg-white border-r border-[#E9E9E9] justify-between">
       <div className=''>
         {/* Logo */}
-        <div className="flex items-center px-8 pt-8 pb-6">
+        <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer" onClick={() => Navigate('/')}>
           <img src="/assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" />
-
         </div>
 
         {/* Navigation */}
@@ -79,10 +81,10 @@ const Sidebar = () => {
       </div>
 
       {/* User Profile */}
-      <div className="px-6 py-5 pb-15 flex items-center gap-4 border-t border-[#E9E9E9] mt-10">
+      <div className="px-6 py-5 pb-15 flex items-center gap-4 border-t border-[#E9E9E9]">
         <Avatar>
-          <AvatarImage src="/assets/Avatar.svg" />
-          <AvatarFallback>CN</AvatarFallback>
+          <AvatarImage src="/assets/Avatar.svg"/>
+          {/* <AvatarFallback>CN</AvatarFallback> */}
         </Avatar>
         <div className="flex-1">
           <div className="font-bold text-md text-[#2D1A4A]">Jane Doe</div>

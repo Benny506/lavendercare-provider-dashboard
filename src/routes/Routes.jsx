@@ -8,24 +8,26 @@ import PasswordRecovered from "@/pages/provider/PasswordRecovered";
 import CreateNewPassword from "@/pages/provider/CreateNewPassword";
 
 import HospitalLayout from "@/layouts/HospitalLayout";
-import SignUp from "@/pages/hospital/SignUp";
-import EmailVerification from "@/pages/hospital/EmailVerification";
-import EmailVerificationSuccess from "@/pages/hospital/EmailVerificationSuccess";
-import HospitalInformation from "@/pages/hospital/HospitalInformation";
-import HospitalServices from "@/pages/hospital/HospitalServices";
-import HospitalDocuments from "@/pages/hospital/HospitalDocuments";
-import AccountCreated from "@/pages/hospital/AccountCreated";
+import SignUp from "@/pages/hospitalProvider/SignUp";
+import EmailVerification from "@/pages/hospitalProvider/EmailVerification";
+import EmailVerificationSuccess from "@/pages/hospitalProvider/EmailVerificationSuccess";
+import HospitalInformation from "@/pages/hospitalProvider/HospitalInformation";
+import HospitalServices from "@/pages/hospitalProvider/HospitalServices";
+import HospitalDocuments from "@/pages/hospitalProvider/HospitalDocuments";
+import AccountCreated from "@/pages/hospitalProvider/AccountCreated";
 
 import IndividualLayout from "@/layouts/IndividualLayout";
-import IndividualSignUp from "@/pages/individual/IndividualSignUp";
-import IndividualEmailVerification from "@/pages/individual/EmailVerification";
-import IndividualEmailVerificationSuccess from "@/pages/individual/EmailVerificationSuccess";
-import ProfileDetails from "@/pages/individual/ProfileDetails";
-import CredentialsExperience from "@/pages/individual/CredentialsExperience";
-import FeesSession from "@/pages/individual/FeesSession";
-import IndividualAccountCreated from "@/pages/individual/AccountCreated";
+import IndividualSignUp from "@/pages/individualProvider/IndividualSignUp";
+import IndividualEmailVerification from "@/pages/individualProvider/EmailVerification";
+import IndividualEmailVerificationSuccess from "@/pages/individualProvider/EmailVerificationSuccess";
+import ProfileDetails from "@/pages/individualProvider/ProfileDetails";
+import CredentialsExperience from "@/pages/individualProvider/CredentialsExperience";
+import FeesSession from "@/pages/individualProvider/FeesSession";
+import IndividualAccountCreated from "@/pages/individualProvider/AccountCreated";
 import Dashboard from "@/pages/hospitalDashboard/Dashboard";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import AddDoctor from "@/pages/hospitalDashboard/AddDoctor";
+import DoctorCredentials from "@/pages/hospitalDashboard/DoctorCredentials";
 
 const AppRoutes = () => (
   <Routes>
@@ -39,8 +41,8 @@ const AppRoutes = () => (
       <Route path="/recovered-password" element={<PasswordRecovered />} />
     </Route>
 
-    {/* Hospital layout */}
-    <Route path="/hospital" element={<HospitalLayout />}>
+    {/* HospitalProvider layout */}
+    <Route path="/hospital-provider" element={<HospitalLayout />}>
       <Route index element={<SignUp />} />
       <Route path="verification" element={<EmailVerification />} />
       <Route path="verification-success" element={<EmailVerificationSuccess />} />
@@ -53,6 +55,8 @@ const AppRoutes = () => (
     {/* Other routes (not using HospitalLayout) */}
     <Route path="/hospital/dashboard" element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />
+      <Route path="add-doctor" element={<AddDoctor />} />
+      <Route path="doctor-credential" element={<DoctorCredentials />} />
     </Route>
 
 
