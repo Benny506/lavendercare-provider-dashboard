@@ -24,6 +24,8 @@ import ProfileDetails from "@/pages/individual/ProfileDetails";
 import CredentialsExperience from "@/pages/individual/CredentialsExperience";
 import FeesSession from "@/pages/individual/FeesSession";
 import IndividualAccountCreated from "@/pages/individual/AccountCreated";
+import Dashboard from "@/pages/hospitalDashboard/Dashboard";
+import DashboardLayout from "@/layouts/DashboardLayout";
 
 const AppRoutes = () => (
   <Routes>
@@ -39,25 +41,30 @@ const AppRoutes = () => (
 
     {/* Hospital layout */}
     <Route path="/hospital" element={<HospitalLayout />}>
-      <Route index element={<SignUp />} /> 
-      <Route path="verification" element={<EmailVerification />} /> 
-      <Route path="verification-success" element={<EmailVerificationSuccess />} /> 
-      <Route path="hospital-information" element={<HospitalInformation />} /> 
-      <Route path="hospital-services" element={<HospitalServices />} /> 
-      <Route path="hospital-documents" element={<HospitalDocuments />} /> 
-      <Route path="account-created" element={<AccountCreated />} /> 
+      <Route index element={<SignUp />} />
+      <Route path="verification" element={<EmailVerification />} />
+      <Route path="verification-success" element={<EmailVerificationSuccess />} />
+      <Route path="hospital-information" element={<HospitalInformation />} />
+      <Route path="hospital-services" element={<HospitalServices />} />
+      <Route path="hospital-documents" element={<HospitalDocuments />} />
+      <Route path="account-created" element={<AccountCreated />} />
+    </Route>
+
+    {/* Other routes (not using HospitalLayout) */}
+    <Route path="/hospital/dashboard" element={<DashboardLayout />}>
+      <Route index element={<Dashboard />} />
     </Route>
 
 
     {/* Individual layout */}
-      <Route path="/individual" element={<IndividualLayout />}>
-        <Route index element={<IndividualSignUp />} /> 
-        <Route path="verification" element={<IndividualEmailVerification />} /> 
-        <Route path="verification-success" element={<IndividualEmailVerificationSuccess />} /> 
-      <Route path="profile-details" element={<ProfileDetails />} /> 
-      <Route path="credentials" element={<CredentialsExperience />} /> 
-      <Route path="fee-session" element={<FeesSession />} /> 
-      <Route path="account-created" element={<IndividualAccountCreated />} /> 
+    <Route path="/individual" element={<IndividualLayout />}>
+      <Route index element={<IndividualSignUp />} />
+      <Route path="verification" element={<IndividualEmailVerification />} />
+      <Route path="verification-success" element={<IndividualEmailVerificationSuccess />} />
+      <Route path="profile-details" element={<ProfileDetails />} />
+      <Route path="credentials" element={<CredentialsExperience />} />
+      <Route path="fee-session" element={<FeesSession />} />
+      <Route path="account-created" element={<IndividualAccountCreated />} />
     </Route>
 
   </Routes>
