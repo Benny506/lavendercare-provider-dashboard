@@ -24,10 +24,12 @@ import ProfileDetails from "@/pages/individualProvider/ProfileDetails";
 import CredentialsExperience from "@/pages/individualProvider/CredentialsExperience";
 import FeesSession from "@/pages/individualProvider/FeesSession";
 import IndividualAccountCreated from "@/pages/individualProvider/AccountCreated";
-import Dashboard from "@/pages/hospitalDashboard/Dashboard";
+
+import Dashboard from "@/pages/hospitalDashboard/dashboard/Dashboard";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import AddDoctor from "@/pages/hospitalDashboard/AddDoctor";
-import DoctorCredentials from "@/pages/hospitalDashboard/DoctorCredentials";
+import AddDoctor from "@/pages/hospitalDashboard/dashboard/AddDoctor";
+import DoctorCredentials from "@/pages/hospitalDashboard/dashboard/DoctorCredentials";
+import DoctorAvailability from "@/pages/hospitalDashboard/dashboard/DoctorAvailability";
 
 const AppRoutes = () => (
   <Routes>
@@ -52,11 +54,12 @@ const AppRoutes = () => (
       <Route path="account-created" element={<AccountCreated />} />
     </Route>
 
-    {/* Other routes (not using HospitalLayout) */}
+    {/* Hospital Dashboard*/}
     <Route path="/hospital/dashboard" element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />
       <Route path="add-doctor" element={<AddDoctor />} />
       <Route path="doctor-credential" element={<DoctorCredentials />} />
+      <Route path="doctor-availability" element={<DoctorAvailability />} />
     </Route>
 
 

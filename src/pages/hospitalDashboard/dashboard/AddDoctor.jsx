@@ -1,3 +1,4 @@
+import InviteDoctorModal from '@/components/InviteDoctorModal';
 import { Button } from '@/components/ui/button'
 import { Icon } from '@iconify/react'
 import React from 'react'
@@ -11,7 +12,6 @@ const AddDoctor = () => {
             <hr className="bg-[#D2C3EF] h-1 rounded-full w-full border-none mb-6 mt-3" />
             <div className="bg-white w-full flex items-start justify-between rounded-2xl">
                 <div className="w-xl bg-white rounded-2xl px-10 pt-6 pb-4 flex flex-col items-center justify-center">
-
                     <h1 className="text-2xl font-bold mb-2 text-left w-full">Add Doctor</h1>
                     <p className="mb-6 text-left text-gray-700 w-full text-sm">
                         Basic Information
@@ -69,9 +69,9 @@ const AddDoctor = () => {
                         </div>
                     </form>
                 </div>
-
                 <Button className="rounded-3xl px-4 py-6 bg-primary-600 font-extrabold text-white m-6 cursor-pointer">Invite Doctor via email</Button>
             </div>
+            <InviteDoctorModal />
         </div>
     )
 }

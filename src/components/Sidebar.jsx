@@ -58,7 +58,7 @@ const Sidebar = () => {
               <span className="w-6 h-6 flex items-center justify-center">
                 {item.icon}
               </span>
-              <span className="font-medium text-sm">{item.label}</span>
+              <span className="font-medium text-md">{item.label}</span>
             </div>
           ))}
         </nav>
@@ -69,13 +69,13 @@ const Sidebar = () => {
             <span className="w-6 h-6 flex items-center justify-center">
               <Icon icon="material-symbols:settings-outline-rounded" width="24" height="24" style={{ color: "#000000" }} />
             </span>
-            <span className="font-medium text-sm">Settings</span>
+            <span className="font-medium text-md">Settings</span>
           </div>
           <div className="flex items-center gap-4 py-3 px-4 rounded-lg cursor-pointer text-[#2D1A4A] hover:bg-[#F3F0FA]">
             <span className="w-6 h-6 flex items-center justify-center">
               <Icon icon="material-symbols-light:support-agent-outline-rounded" width="24" height="24" style={{ color: "#000000" }} />
             </span>
-            <span className="font-medium text-sm">Contact support</span>
+            <span className="font-medium text-md">Contact support</span>
           </div>
         </div>
       </div>
