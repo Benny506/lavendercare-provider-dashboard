@@ -30,6 +30,12 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import AddDoctor from "@/pages/hospitalDashboard/dashboard/AddDoctor";
 import DoctorCredentials from "@/pages/hospitalDashboard/dashboard/DoctorCredentials";
 import DoctorAvailability from "@/pages/hospitalDashboard/dashboard/DoctorAvailability";
+import AllDoctors from "@/pages/hospitalDashboard/doctors/AllDoctors";
+import DoctorProfile from "@/pages/hospitalDashboard/doctors/DoctorProfile";
+import DoctorSchedule from "@/pages/hospitalDashboard/doctors/DoctorSchedule";
+import AllConsultations from "@/pages/hospitalDashboard/consultations/AllConsultations";
+import AllSchedules from "@/pages/hospitalDashboard/schedules/AllSchedules";
+import AllCaseload from "@/pages/hospitalDashboard/caseload/AllCaseload";
 
 const AppRoutes = () => (
   <Routes>
@@ -54,7 +60,7 @@ const AppRoutes = () => (
       <Route path="account-created" element={<AccountCreated />} />
     </Route>
 
-    {/* Hospital Dashboard*/}
+    {/* Hospital Dashboard*/}---
     <Route path="/hospital/dashboard" element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />
       <Route path="add-doctor" element={<AddDoctor />} />
@@ -62,6 +68,27 @@ const AppRoutes = () => (
       <Route path="doctor-availability" element={<DoctorAvailability />} />
     </Route>
 
+    <Route path="/hospital/dashboard/doctor" element={<DashboardLayout />} >
+      <Route path="all-doctors" element={<AllDoctors />} />
+      <Route path="doctor-profile" element={<DoctorProfile />} />
+      <Route path="doctor-profile/schedule" element={<DoctorSchedule />} />
+    </Route>
+
+    <Route path="/hospital/dashboard/consultation" element={<DashboardLayout />} >
+      <Route index element={<AllConsultations />} />
+    </Route>
+
+    <Route path="/hospital/dashboard/schedules" element={<DashboardLayout />} >
+      <Route index element={<AllSchedules />} />
+    </Route>
+
+    <Route path="/hospital/dashboard/caseload" element={<DashboardLayout />} >
+      <Route index element={<AllCaseload />} />
+    </Route>
+
+    <Route path="/hospital/dashboard/analytics" element={<DashboardLayout />} >
+      <Route index element={<AllCaseload />} />
+    </Route>
 
     {/* Individual layout */}
     <Route path="/individual" element={<IndividualLayout />}>

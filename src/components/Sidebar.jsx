@@ -44,7 +44,7 @@ const Sidebar = () => {
     <aside className="h-screen max-w-max flex flex-col bg-white border-r border-[#E9E9E9] justify-between">
       <div className=''>
         {/* Logo */}
-        <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer" onClick={() => Navigate('/')}>
+        <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer" onClick={() => Navigate('/hospital/dashboard')}>
           <img src="/assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" />
         </div>
 
