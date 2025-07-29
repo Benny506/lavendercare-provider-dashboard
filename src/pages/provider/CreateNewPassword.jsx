@@ -17,7 +17,7 @@ const CreateNewPassword = () => {
           <FormInput type={"password"} placeholder={"Re-Type password"} label={"Confirm Password"} />
 
           <Button
-          className="w-full max-w-md bg-primary-600 outline-none border-none rounded-4xl text-white py-6 px-6 mt-1" onClick={() => navigate("/recorverd-password")}
+          className="w-full max-w-md bg-primary-600 outline-none border-none rounded-4xl text-white py-6 px-6 mt-1 cursor-pointer" onClick={() => navigate("/recovered-password")}
         >
           Create Password
         </Button>

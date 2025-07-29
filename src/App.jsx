@@ -1,10 +1,11 @@
-import Login from "./pages/provider/login"
+import { BrowserRouter } from "react-router-dom"
+import AppRoutes from "./routes/Routes"
 
 const App = () => {
   return (
-    <div>
-      <Login />
-    </div>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   )
 }
 

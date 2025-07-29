@@ -23,6 +23,9 @@ const LoginForm = () => {
           >
             Login
           </Button>
+
+          
+          <p className="text-center -mt-2">I am new here. <span className="text-primary-500 font-bold cursor-pointer" onClick={() => navigate('/individual')} >Create Provider Account</span></p>
         </form>
       </div>
 
@@ -32,23 +35,3 @@ const LoginForm = () => {
 
 
 export default LoginForm;
-
-
-{/* <div className="min-h-screen flex flex-col items-center justify-center bg-transparent">
-      <div className="w-full max-w-md flex flex-col items-center bg-white bg-opacity-70 rounded-xl shadow-md px-8 py-10">
-        <h1 className="text-3xl font-bold mb-2 text-center">Login</h1>
-        <p className="mb-6 text-center text-gray-700">Enter your email and password to Login</p>
-        <form className="w-full flex flex-col gap-4">
-          <FormInput type="email" placeholder="Type your business email address" />
-          <FormInput type="password" placeholder="Type your password" />
-          <div className="flex justify-end">
-            <button type="button" className="text-primary-600 font-semibold text-sm hover:underline">Forgot Password?</button>
-          </div>
-          <button type="submit" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-2 hover:bg-primary-700 transition w-full">Login</button>
-        </form>
-        <div className="mt-6 text-center">
-          <span className="text-gray-700">I am new here. </span>
-          <button type="button" className="text-primary-600 font-semibold hover:underline">Create Provider Account</button>
-        </div>
-      </div>
-    </div> */}

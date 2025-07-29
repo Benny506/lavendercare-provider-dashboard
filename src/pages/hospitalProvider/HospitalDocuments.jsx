@@ -1,9 +1,14 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import ProviderAccount from "@/components/ProviderAccount";
+import { useNavigate } from "react-router-dom";
 
 const HospitalDocuments = () => {
+   const Navigate = useNavigate();
   return (
-    <div className="min-h-screen flex items-center justify-center bg-transparent">
+    <div className="-mt-15">
+      <ProviderAccount />
+      <div className="min-h-screen flex items-center justify-center bg-transparent mt-10">
       <div className="w-full max-w-xl bg-white rounded-2xl px-8 py-10 flex flex-col items-center shadow-none">
         <h1 className="text-2xl font-bold mb-1 text-left w-full">Document Upload</h1>
         <p className="mb-6 text-left text-gray-700 w-full text-sm">
@@ -51,7 +56,7 @@ const HospitalDocuments = () => {
             </div>
           </div>
           {/* Create Account Button */}
-          <button type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-2 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
+          <button type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-2 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2 cursor-pointer" onClick={() => Navigate('/hospital-provider/account-created')}>
             Create Account <span className="ml-2">→</span>
           </button>
           {/* Pagination dots */}
@@ -62,6 +67,8 @@ const HospitalDocuments = () => {
           </div>
         </form>
       </div>
+    </div>
+
     </div>
   );
 };
