@@ -47,6 +47,11 @@ import GeneralSettings from "@/pages/hospitalDashboard/settings/GeneralSettings"
 import EditHospitalInformation from "@/pages/hospitalDashboard/settings/EditHospitalInformation";
 import Notifications from "@/pages/hospitalDashboard/settings/Notifications";
 import Documents from "@/pages/hospitalDashboard/settings/Documents";
+import Security from "@/pages/hospitalDashboard/settings/Security";
+import ChangePassword from "@/pages/hospitalDashboard/settings/ChangePassword";
+import Otp from "@/pages/hospitalDashboard/settings/Otp";
+import NewPassword from "@/pages/hospitalDashboard/settings/NewPassword";
+import ProfilePage from "@/pages/hospitalDashboard/profile/ProfilePage";
 
 const AppRoutes = () => (
   <Routes>
@@ -107,6 +112,11 @@ const AppRoutes = () => (
       <Route path="general-settings/hospital-information" element={<EditHospitalInformation />} />
       <Route path="notifications" element={<Notifications />} />
       <Route path="documents" element={<Documents />} />
+      <Route path="security" element={<Security />} />
+      <Route path="security/change-password" element={<ChangePassword />} />
+      <Route path="security/otp" element={<Otp />} />
+      <Route path="security/new-password" element={<NewPassword />} />
+      <Route path="profile" element={<ProfilePage />} />
     </Route>
 
     {/* Individual layout */}
