@@ -15,6 +15,7 @@ const specializations = [
     "Postpartum Doula Services",
 ];
 
+
 const ProfileDetails = () => {
     const navigate = useNavigate()
 
