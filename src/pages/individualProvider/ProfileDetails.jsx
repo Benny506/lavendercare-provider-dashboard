@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import ProviderAccount from "@/components/ProviderAccount";
+import { useNavigate } from "react-router-dom";
 
 const specializations = [
     "Obstetrics",
@@ -15,6 +16,8 @@ const specializations = [
 ];
 
 const ProfileDetails = () => {
+    const navigate = useNavigate()
+
     return (
         <div className="flex items-center justify-center overflow-x-hidden">
             <div className="absolute top-8 right-10 z-10">
@@ -59,7 +62,7 @@ const ProfileDetails = () => {
                         </div>
                     </div>
                     {/* Next Button */}
-                    <button type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
+                    <button onClick={() => navigate('/individual/credentials')} type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
                         Next <Icon icon="mdi:arrow-right" className="ml-2 text-xl" />
                     </button>
                     {/* Skip link */}

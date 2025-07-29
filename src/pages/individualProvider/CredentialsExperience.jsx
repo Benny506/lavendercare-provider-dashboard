@@ -1,7 +1,11 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
 
 const CredentialsExperience = () => {
+
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent">
       <div className="w-full max-w-xl bg-white rounded-2xl px-8 py-10 flex flex-col items-center shadow-none">
@@ -36,7 +40,7 @@ const CredentialsExperience = () => {
             <input type="text" placeholder="Are you affiliated to any hospitals /clinics" className="border border-gray-300 rounded px-3 py-2 w-full text-base focus:outline-none focus:ring-2 focus:ring-primary-200" readOnly />
           </div>
           {/* Next Button */}
-          <button type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
+          <button onClick={() => navigate('/individual/fee-session')} type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
             Next <Icon icon="mdi:arrow-right" className="ml-2 text-xl" />
           </button>
           {/* Skip link */}

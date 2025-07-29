@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const IndividualSignUp = () => {
-  const Navigate = useNavigate();
+  const navigate = useNavigate();
+
   return (
     <div className="flex items-center justify-center overflow-x-hidden">
 
@@ -51,7 +52,7 @@ const IndividualSignUp = () => {
             <input type="password" placeholder="Re-Type password" className="border border-[#B1B1B0] focus:outline-none rounded px-3 py-2 w-full text-base" />
           </div>
           {/* Next Button */}
-          <Button type="button" className="bg-primary-600 text-white rounded-full py-6 font-semibold text-lg mt-4 w-full flex items-center justify-center cursor-pointer" onClick={() => Navigate('/individual/verification')}>
+          <Button type="button" className="bg-primary-600 text-white rounded-full py-6 font-semibold text-lg mt-4 w-full flex items-center justify-center cursor-pointer" onClick={() => navigate('/individual/verification')}>
             Next <Icon icon="mdi:arrow-right" className="ml-2 text-xl" />
           </Button>
           {/* Pagination dots */}

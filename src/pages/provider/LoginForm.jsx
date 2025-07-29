@@ -25,7 +25,7 @@ const LoginForm = () => {
           </Button>
 
           
-          <p className="text-center -mt-2">I am new here. <span className="text-primary-500 font-bold cursor-pointer" onClick={() => navigate('/individual')} >Create Provider Account</span></p>
+          <p className="text-center -mt-2">I am new here. <span className="text-primary-500 font-bold cursor-pointer" onClick={() => navigate('/')} >Create Provider Account</span></p>
         </form>
       </div>
 

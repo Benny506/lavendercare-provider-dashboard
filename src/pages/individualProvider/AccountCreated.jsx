@@ -17,7 +17,7 @@ const IndividualAccountCreated = () => {
 
                 <Button
                     className="w-full max-w-md bg-primary-600 outline-none border-none rounded-3xl text-white py-6 px-6 mt-1 flex items-center justify-center gap-2"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/login")}
                 >
                     <span className="text-lg">Login</span>
                     {/* <Icon icon="mdi-light:arrow-right" className="" style={{ width: "1.5rem", height: "1.5rem" }} /> */}

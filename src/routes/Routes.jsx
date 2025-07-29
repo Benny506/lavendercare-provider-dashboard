@@ -60,6 +60,10 @@ const AppRoutes = () => (
       <Route path="/recovered-password" element={<PasswordRecovered />} />
     </Route>
 
+
+
+
+
     {/* HospitalProvider layout */}
     <Route path="/hospital-provider" element={<HospitalLayout />}>
       <Route index element={<SignUp />} />
@@ -71,7 +75,11 @@ const AppRoutes = () => (
       <Route path="account-created" element={<AccountCreated />} />
     </Route>
 
-    /* Hospital Dashboard */
+
+
+
+
+    { /* Hospital Dashboard */ }
     <Route path="/hospital/dashboard" element={<DashboardLayout />}>
       <Route index element={<Dashboard />} />
       <Route path="add-doctor" element={<AddDoctor />} />
@@ -108,6 +116,10 @@ const AppRoutes = () => (
       <Route path="notifications" element={<Notifications />} />
       <Route path="documents" element={<Documents />} />
     </Route>
+
+
+
+
 
     {/* Individual layout */}
     <Route path="/individual" element={<IndividualLayout />}>
