@@ -1,4 +1,5 @@
 import {useNavigate} from 'react-router-dom';
+import Image from './ui/image';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -6,7 +7,7 @@ const Navbar = () => {
     <div className="w-full">
       <div className="w-full h-22 pt-5 pb-6 p-25">
         <div className="flex items-start">
-          <img className="h-full cursor-pointer" src='/assets/lavendercare-logo.svg' onClick={() => navigate("/")} />
+          <Image className="h-full cursor-pointer" src='/assets/lavendercare-logo.svg' onClick={() => navigate("/")} />
         </div>
       </div>
     </div>
