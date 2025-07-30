@@ -2,6 +2,7 @@
 // import { Icon } from "@iconify/react";
 // import { Button } from "@/components/ui/button";
 import OtpForm from "@/components/OtpForm";
+import Image from "@/components/ui/image";
 
 const EmailVerification = () => {
   // const navigate = useNavigate();
@@ -30,7 +31,7 @@ export default EmailVerification;
 //   {/* OTP Card centered */}
 //   <div className="w-full max-w-md flex flex-col items-center mt-8">
 //     <div className="flex flex-col items-center">
-//       <img src="/assets/email-icon.svg" alt="OTP" className="h-16 w-16 mb-4" />
+//       <Image src="/assets/email-icon.svg" alt="OTP" className="h-16 w-16 mb-4" />
 //       <h1 className="text-3xl font-bold mb-2 text-center">Email Verification</h1>
 //       <p className="mb-2 text-center text-gray-700 text-base">Enter the 6-digit code we have sent to</p>
 //       <p className="mb-6 text-center font-bold text-lg text-primary-900">janed****@gmail.com</p>

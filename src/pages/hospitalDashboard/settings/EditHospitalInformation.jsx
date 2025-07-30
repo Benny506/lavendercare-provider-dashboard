@@ -1,6 +1,8 @@
 import TopDivider from "@/components/TopDivider"
 import { Button } from "@/components/ui/button"
+import Image from "@/components/ui/image"
 import { Icon } from "@iconify/react"
+
 
 const EditHospitalInformation = () => {
     return (
@@ -13,7 +15,7 @@ const EditHospitalInformation = () => {
                 <div className="w-full bg-white rounded-2xl p-3">
                     <div className="flex justify-between items-center p-4">
                         <div className="flex items-center gap-3">
-                            <img src="/assets/hospital-logo.svg" alt="" />
+                            <Image src="/assets/hospital-logo.svg" alt="" />
                             <div className="flex flex-col gap-3">
                                 <div className="flex items-center gap-2">
                                     <p className="font-bold">Grace Maternity Center</p>

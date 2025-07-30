@@ -2,7 +2,7 @@ import { Icon } from '@iconify/react'
 import React from 'react'
 import { Button } from './ui/button'
 
-const ConsultationInfoModal = () => {
+const ConsultationInfoModal = () => { 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
             <div className="bg-img rounded-xl p-4 w-full max-w-md shadow-xl relative">

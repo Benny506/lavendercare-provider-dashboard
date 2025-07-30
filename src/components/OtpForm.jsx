@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
+import Image from "./ui/image";
 
 const OtpForm = ({name, email = "janed****@gmail.com", btnName,navigationTo, changeEmailNavigation}) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const OtpForm = ({name, email = "janed****@gmail.com", btnName,navigationTo, cha
         {/* OTP Header */}
         <div className="w-full max-w-md flex flex-col items-center mt-8">
           <div className="flex flex-col items-center">
-            <img
+            <Image
               src="/assets/email-icon.svg"
               alt="OTP"
               className="h-16 w-16 mb-4"

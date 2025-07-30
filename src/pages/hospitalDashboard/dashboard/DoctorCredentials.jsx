@@ -1,5 +1,6 @@
 import TopDivider from "@/components/TopDivider"
 import { Button } from "@/components/ui/button"
+import Image from "@/components/ui/image"
 import { Icon } from "@iconify/react"
 
 const DoctorCredentials = () => {
@@ -21,7 +22,7 @@ const DoctorCredentials = () => {
                             <div className="font-semibold mb-1">Upload Credential Document</div>
                             <div className="border-2 border-dashed border-gray-300 rounded-xl px-4 py-5 flex flex-col items-center text-center mb-2">
                                 {/* <Icon icon="mdi:cloud-upload-outline" className="text-3xl text-gray-400 mb-2" /> */}
-                                <img src="/assets/cloud-add.svg" alt="Upload Icon" className="" />
+                                <Image src="/assets/cloud-add.svg" alt="Upload Icon" className="" />
                                 <div className="text-sm font-medium mb-1">Choose a file or drag & drop it here</div>
                                 <div className="text-xs text-gray-500 mb-3">PDF, JPG or PNG. Max 10 MB</div>
                                 <label className="border border-gray-300 rounded px-4 py-1 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 cursor-pointer">

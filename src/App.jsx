@@ -1,11 +1,17 @@
-import { BrowserRouter } from "react-router-dom"
+import { HashRouter } from "react-router-dom"
 import AppRoutes from "./routes/Routes"
+import { ToastContainer } from "react-toastify"
+import AppLoading from "./components/appLoading/AppLoading"
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <HashRouter>
+      <AppLoading />
+
       <AppRoutes />
-    </BrowserRouter>
+
+      <ToastContainer />
+    </HashRouter>
   )
 }
 

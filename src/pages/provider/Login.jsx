@@ -3,12 +3,19 @@ import ProfileCard from "../../components/ProfileCard";
 import ProviderAccount from "../../components/ProviderAccount";
 import { Icon } from '@iconify/react';
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
 
+  const [providerOption, setProviderOption] = useState('individual')
+
   const handleContinue = () => {
-    navigate("/login");
+    if(providerOption == 'individual') navigate('/individual');
+
+    if(providerOption == 'hospital') navigate('hospital-provider');
+
+    return;
   };
 
   return (
@@ -25,12 +32,16 @@ const Login = () => {
         <ProfileCard
           icon="ph:hospital-light"
           title="Are you a Hospital Admin"
-          selected={false}
+          providerOption={providerOption}
+          setProviderOption={setProviderOption}  
+          type="hospital"        
         />
         <ProfileCard
           icon="ph:hand-heart-light"
           title="Are you an Individual Provider"
-          selected={false}
+          providerOption={providerOption}
+          setProviderOption={setProviderOption}
+          type="individual"
         />
       </div>
       <div className="flex items-center justify-center mt-6">

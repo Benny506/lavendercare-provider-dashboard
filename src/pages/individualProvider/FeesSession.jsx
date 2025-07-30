@@ -1,7 +1,11 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
 
 const FeesSession = () => {
+
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent">
       <div className="w-full max-w-xl bg-white rounded-2xl px-8 py-10 flex flex-col items-center shadow-none">
@@ -60,7 +64,7 @@ const FeesSession = () => {
             </div>
           </div>
           {/* Next Button */}
-          <button type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
+          <button onClick={() => navigate('/individual/account-created')} type="button" className="bg-primary-600 text-white rounded-full py-3 font-semibold text-lg mt-4 hover:bg-primary-700 transition w-full flex items-center justify-center gap-2">
             Next <Icon icon="mdi:arrow-right" className="ml-2 text-xl" />
           </button>
           {/* Skip link */}

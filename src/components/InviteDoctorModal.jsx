@@ -2,7 +2,10 @@ import React from 'react'
 import { Button } from './ui/button'
 import { Icon } from '@iconify/react'
 
-const InviteDoctorModal = () => {
+const InviteDoctorModal = ({ visible, hide }) => {
+
+    if(!visible || !hide) return <></>
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
             {/* Modal Card */}
@@ -10,7 +13,7 @@ const InviteDoctorModal = () => {
                 <div className='bg-white rounded-xl p-6 w-full'>
                     {/* Close Icon */}
                     <div className="absolute top-4 right-4 m-6 text-xl cursor-pointer">
-                        <Icon icon="iconoir:cancel" width="24" height="24" style={{ color: "#020201" }} />
+                        <Icon onClick={hide} icon="iconoir:cancel" width="24" height="24" style={{ color: "#020201" }} />
                     </div>
 
                     <form action="" className='w-full flex flex-col gap-4'>

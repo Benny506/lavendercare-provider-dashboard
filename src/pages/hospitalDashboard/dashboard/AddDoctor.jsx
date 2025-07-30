@@ -1,11 +1,14 @@
 import InviteDoctorModal from '@/components/InviteDoctorModal';
 import { Button } from '@/components/ui/button'
 import { Icon } from '@iconify/react'
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const AddDoctor = () => {
     const Navigate = useNavigate();
+
+    const [inviteDocModalVisible, setInviteDocModalVisible] = useState(false)
+
     return (
         <div>
             {/* Top Divider */}
@@ -69,9 +72,12 @@ const AddDoctor = () => {
                         </div>
                     </form>
                 </div>
-                <Button className="rounded-3xl px-4 py-6 bg-primary-600 font-extrabold text-white m-6 cursor-pointer">Invite Doctor via email</Button>
+                <Button onClick={() => setInviteDocModalVisible(true)} className="rounded-3xl px-4 py-6 bg-primary-600 font-extrabold text-white m-6 cursor-pointer">Invite Doctor via email</Button>
             </div>
-            <InviteDoctorModal />
+            <InviteDoctorModal 
+                visible={inviteDocModalVisible}
+                hide={() => setInviteDocModalVisible(false)}
+            />
         </div>
     )
 }
