@@ -52,7 +52,7 @@ import ChangePassword from "@/pages/hospitalDashboard/settings/ChangePassword";
 import Otp from "@/pages/hospitalDashboard/settings/Otp";
 import NewPassword from "@/pages/hospitalDashboard/settings/NewPassword";
 import ProfilePage from "@/pages/hospitalDashboard/profile/ProfilePage";
-import IndividualDashboardLayout from "@/layouts/individualDashboardLayout";
+import IndividualDashboardLayout from "@/layouts/IndividualDashboardLayout";
 import Overview from "@/pages/individualDashboard/dashboard/Overview";
 import AvailabilityFeePage from "@/pages/individualDashboard/availability/AvailabilityFeePage";
 
