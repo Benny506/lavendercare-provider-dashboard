@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react";
 import { useNavigate } from "react-router-dom";
 
-const VerificationSuccess = ({ title, description, buttonText, redirectTo = "/", icon}) => {
+const VerificationSuccess = ({ title, description, buttonText, redirectTo = "/", icon }) => {
   const navigate = useNavigate();
 
   return (

@@ -52,6 +52,9 @@ import ChangePassword from "@/pages/hospitalDashboard/settings/ChangePassword";
 import Otp from "@/pages/hospitalDashboard/settings/Otp";
 import NewPassword from "@/pages/hospitalDashboard/settings/NewPassword";
 import ProfilePage from "@/pages/hospitalDashboard/profile/ProfilePage";
+import IndividualDashboardLayout from "@/layouts/individualDashboardLayout";
+import Overview from "@/pages/individualDashboard/dashboard/Overview";
+import AvailabilityFeePage from "@/pages/individualDashboard/availability/AvailabilityFeePage";
 
 const AppRoutes = () => (
   <Routes>
@@ -128,6 +131,12 @@ const AppRoutes = () => (
       <Route path="credentials" element={<CredentialsExperience />} />
       <Route path="fee-session" element={<FeesSession />} />
       <Route path="account-created" element={<IndividualAccountCreated />} />
+    </Route>
+
+    {/* Individual Dashboard  */}
+    <Route path="/individual/dashboard" element={<IndividualDashboardLayout />}>
+      <Route index element={<Overview />} />
+      <Route path="availability" element={<AvailabilityFeePage />} />
     </Route>
 
   </Routes>
