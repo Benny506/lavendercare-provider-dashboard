@@ -55,6 +55,9 @@ import ProfilePage from "@/pages/hospitalDashboard/profile/ProfilePage";
 import IndividualDashboardLayout from "@/layouts/IndividualDashboardLayout";
 import Overview from "@/pages/individualDashboard/dashboard/Overview";
 import AvailabilityFeePage from "@/pages/individualDashboard/availability/AvailabilityFeePage";
+import AllRequests from "@/pages/individualDashboard/bookings/AllRequests";
+import BookingDashboard from "@/pages/individualDashboard/bookings/BookingDashboard";
+import ChatSection from "@/pages/individualDashboard/bookings/ChatSection";
 
 const AppRoutes = () => (
   <Routes>
@@ -149,6 +152,9 @@ const AppRoutes = () => (
     <Route path="/individual/dashboard" element={<IndividualDashboardLayout />}>
       <Route index element={<Overview />} />
       <Route path="availability" element={<AvailabilityFeePage />} />
+      <Route path="bookings" element={<AllRequests />} />
+      <Route path="bookings/dashboard" element={<BookingDashboard />} />
+      <Route path="bookings/dashboard/chat" element={<ChatSection />} />
     </Route>
 
   </Routes>
