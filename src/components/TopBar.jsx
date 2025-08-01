@@ -37,7 +37,7 @@ const TopBar = () => {
                         <AvatarImage src="/assets/Avatar.svg" alt="User" />
                         <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
-                    <Image src="/assets/vector.svg" className="absolute -bottom-3 -right-2 text-white w-7 h-7 flex items-center justify-center" />
+                    <Image src="assets/vector.svg" className="absolute -bottom-3 -right-2 text-white w-7 h-7 flex items-center justify-center" />
                     {/* <span className="absolute -bottom-1 -right-1 bg-red-600 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
             !
           </span> */}

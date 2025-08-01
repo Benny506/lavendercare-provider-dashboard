@@ -46,7 +46,7 @@ const Sidebar = () => {
       <div className=''>
         {/* Logo */}
         <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer" onClick={() => Navigate('/hospital/dashboard')}>
-          <Image src="/assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" />
+          <Image src="assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" />
         </div>
 
         {/* Navigation */}
