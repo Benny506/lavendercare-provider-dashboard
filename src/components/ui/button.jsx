@@ -40,6 +40,8 @@ function Button({
   className,
   variant,
   size,
+  style,
+  disabled,
   asChild = false,
   ...props
 }) {
@@ -49,6 +51,8 @@ function Button({
     <Comp
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
+      style={style}
+      disabled={disabled}
       {...props} />
   );
 }

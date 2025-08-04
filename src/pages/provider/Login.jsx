@@ -11,9 +11,9 @@ const Login = () => {
   const [providerOption, setProviderOption] = useState('individual')
 
   const handleContinue = () => {
-    if(providerOption == 'individual') navigate('/individual');
+    if(providerOption == 'individual') navigate('/individual', { state: providerOption });
 
-    if(providerOption == 'hospital') navigate('hospital-provider');
+    if(providerOption == 'hospital') navigate('hospital-provider', { state: providerOption });
 
     return;
   };

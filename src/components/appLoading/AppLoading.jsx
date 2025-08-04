@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import './css/appLoading.css'
 import { getAppLoadingSlice } from '@/redux/slices/appLoadingSlice'
+import Image from '../ui/image'
 
 
 export default function AppLoading(){
@@ -10,7 +11,7 @@ export default function AppLoading(){
     if(appLoading){
         return(
             <div className="apploading-container">
-                <img 
+                <Image 
                     className='apploading-logo'
                     src="/assets/logo.svg" 
                     style={{ width: '70px', height: '70px' }} 
