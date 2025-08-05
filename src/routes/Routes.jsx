@@ -58,6 +58,17 @@ import AvailabilityFeePage from "@/pages/individualDashboard/availability/Availa
 import AllRequests from "@/pages/individualDashboard/bookings/AllRequests";
 import BookingDashboard from "@/pages/individualDashboard/bookings/BookingDashboard";
 import ChatSection from "@/pages/individualDashboard/bookings/ChatSection";
+import AllConsultation from "@/pages/individualDashboard/consultation/AllConsultation";
+import Messages from "@/pages/individualDashboard/consultation/Messages";
+import Caseload from "@/pages/individualDashboard/caseload/Caseload";
+import CaseDetailsView from "@/pages/individualDashboard/caseload/CaseDetailsView";
+import AllScreening from "@/pages/individualDashboard/screenings/AllScreening";
+import CaseReport from "@/pages/individualDashboard/screenings/CaseReport";
+import IndividualSettings from "@/pages/individualDashboard/settings/Settings";
+import NotificationsSettings from "@/pages/individualDashboard/settings/NotificationsSettings";
+import IntegrationsPage from "@/pages/individualDashboard/settings/IntegrationsPage";
+import IndividualGeneralSettings from "@/pages/individualDashboard/settings/GeneralSettings";
+import IndividualProfilePage from "@/pages/individualDashboard/settings/ProfilePage";
 
 const AppRoutes = () => (
   <Routes>
@@ -155,6 +166,17 @@ const AppRoutes = () => (
       <Route path="bookings" element={<AllRequests />} />
       <Route path="bookings/dashboard" element={<BookingDashboard />} />
       <Route path="bookings/dashboard/chat" element={<ChatSection />} />
+      <Route path="consultation" element={<AllConsultation />} />
+      <Route path="consultation/chat" element={<Messages />} />
+      <Route path="caseload" element={<Caseload />} />
+      <Route path="caseload/case" element={<CaseDetailsView />} />
+      <Route path="screenings" element={<AllScreening />} />
+      <Route path="screenings/case-report" element={<CaseReport />} />
+      <Route path="settings" element={<IndividualSettings />} />
+      <Route path="settings/notifications" element={<NotificationsSettings />} />
+      <Route path="settings/integrations" element={<IntegrationsPage />} />
+      <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
+      <Route path="profile" element={<IndividualProfilePage />} />
     </Route>
 
   </Routes>
