@@ -50,17 +50,17 @@ const IndividualSignUp = () => {
       .required('Phone number is required')
       .matches(/^[0-9]{10,15}$/, 'Phone number must be between 10 and 15 digits'),
   });
-  
+
 
   return (
-    <div className="flex items-center justify-center overflow-x-hidden">
+    <div className="flex flex-col items-center justify-center overflow-x-hidden">
 
-      <div className="absolute top-8 right-10">
+      <div className="hidden md:block absolute top-8 right-10">
         <ProviderAccount />
       </div>
 
-      <div className="w-full max-w-xl bg-white rounded-2xl px-10 pt-10 pb-4 mt-10 flex flex-col items-center justify-center">
-        
+      <div className="max-w-[340px] md:max-w-xl bg-white rounded-2xl p-4 md:px-10 pt-10 pb-4 md:mt-10 flex flex-col items-center justify-center">
+
         <h1 className="text-2xl font-bold mb-2 text-left w-full">Individual Provider Sign Up</h1>
         <p className="mb-6 text-left text-gray-700 w-full text-sm">
           This step ensures LavenderCare has verified contact and location details for legal and operational purposes.
@@ -76,7 +76,7 @@ const IndividualSignUp = () => {
             delete stateData.confirmPassword
             stateData.phone_number = stateData.countryCode + stateData.phone_number
 
-            navigate('/individual/verification', { state: {...stateData} })
+            navigate('/individual/verification', { state: { ...stateData } })
           }}
         >
           {({ values, handleBlur, handleChange, handleSubmit, isValid, dirty }) => (
@@ -84,122 +84,122 @@ const IndividualSignUp = () => {
               {/* Full Name */}
               <div>
                 <label className="mb-1 text-sm font-medium">Full Name</label>
-                <input 
+                <input
                   value={values.provider_name}
                   onChange={handleChange}
                   onBlur={handleBlur}
                   name="provider_name"
-                  type="text" 
-                  placeholder="Type your Full name" 
+                  type="text"
+                  placeholder="Type your Full name"
                   className="border border-[#B1B1B0] focus:outline-none rounded px-3 py-2 w-full text-base"
                 />
                 <ErrorMessage name="provider_name">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
                 </ErrorMessage>
               </div>
               {/* Email Address */}
               <div>
                 <div className="font-semibold mb-1">Email Address</div>
-                <input 
+                <input
                   value={values.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  name="email"                
-                  type="email" 
-                  placeholder="Type your Email Address" 
+                  name="email"
+                  type="email"
+                  placeholder="Type your Email Address"
                   className="border border-[#B1B1B0] focus:outline-none rounded px-3 py-2 w-full text-base"
                 />
                 <ErrorMessage name="email">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
-                </ErrorMessage>                
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                </ErrorMessage>
               </div>
               {/* Official Phone Number */}
               <div>
                 <div className="font-semibold mb-1">Official Phone Number</div>
                 <div className="flex">
-                  <select 
-                    className="border border-[#B1B1B0] focus:outline-none rounded-l px-3 py-2 text-base bg-white" 
+                  <select
+                    className="border border-[#B1B1B0] focus:outline-none rounded-l px-3 py-2 text-base bg-white"
                     value={values.countryCode}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    name="countryCode"                       
+                    name="countryCode"
                   >
                     <option className="text-gray-700" disabled>Select one</option>
                     {countryCodes.map((code, i) => (
                       <option key={i} value={code.type}>{code.label}</option>
-                    ))}                  
+                    ))}
                   </select>
-                  <input 
+                  <input
                     value={values.phone_number}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    name="phone_number"                   
-                    type="text" 
-                    placeholder="Type your phone number" 
+                    name="phone_number"
+                    type="text"
+                    placeholder="Type your phone number"
                     className="border-t border-b border-r border-[#B1B1B0] focus:outline-none rounded-r px-3 py-2 w-full text-base"
-                  />                  
+                  />
                 </div>
                 <ErrorMessage name="countryCode">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
-                </ErrorMessage>                
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                </ErrorMessage>
                 <ErrorMessage name="phone_number">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
-                </ErrorMessage>                  
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                </ErrorMessage>
               </div>
               {/* Create Password */}
               <div>
                 <div className="font-semibold mb-1">Create Password</div>
                 <div className="flex justify-between items-center border border-[#B1B1B0] focus:outline-none rounded w-full px-3 ">
-                    <input 
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      name="password"                 
-                      type={passwordVisible ? "text" : "password"}
-                      placeholder="Create password" 
-                      className="py-2 text-base w-4/5"
-                    />  
-                    {
-                      passwordVisible
+                  <input
+                    value={values.password}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    name="password"
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="Create password"
+                    className="py-2 text-base w-4/5"
+                  />
+                  {
+                    passwordVisible
                       ?
-                        <Eye className="cursor-pointer" onClick={togglePasswordVisibility} size={20} color="#6F3DCB" />
+                      <Eye className="cursor-pointer" onClick={togglePasswordVisibility} size={20} color="#6F3DCB" />
                       :
-                        <EyeOff className="cursor-pointer" onClick={togglePasswordVisibility} size={20} color="#6F3DCB" />
-                    }
+                      <EyeOff className="cursor-pointer" onClick={togglePasswordVisibility} size={20} color="#6F3DCB" />
+                  }
                 </div>
                 <ErrorMessage name="password">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
-                </ErrorMessage>                 
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                </ErrorMessage>
               </div>
               {/* Confirm Password */}
               <div>
                 <div className="font-semibold mb-1">Confirm Password</div>
                 <div className="flex justify-between items-center border border-[#B1B1B0] focus:outline-none rounded w-full px-3 ">
-                  <input 
+                  <input
                     value={values.confirmPassword}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    name="confirmPassword"                  
+                    name="confirmPassword"
                     type={confirmPasswordVisible ? "text" : "password"}
-                    placeholder="Re-Type password" 
+                    placeholder="Re-Type password"
                     className="py-2 text-base w-4/5"
                   />
                   {
                     confirmPasswordVisible
-                    ?
+                      ?
                       <Eye className="cursor-pointer" onClick={toggleConfirmPasswordVisibility} size={20} color="#6F3DCB" />
-                    :
+                      :
                       <EyeOff className="cursor-pointer" onClick={toggleConfirmPasswordVisibility} size={20} color="#6F3DCB" />
-                  }                  
+                  }
                 </div>
                 <ErrorMessage name="confirmPassword">
-                  { errorMsg => <ErrorMsg1 errorMsg={errorMsg} /> }
-                </ErrorMessage>                 
+                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                </ErrorMessage>
               </div>
               {/* Next Button */}
-              <Button 
-                type="button" 
-                className="bg-primary-600 text-white rounded-full py-6 font-semibold text-lg mt-4 w-full flex items-center justify-center cursor-pointer" 
+              <Button
+                type="button"
+                className="bg-primary-600 text-white rounded-full py-6 font-semibold text-lg mt-4 w-full flex items-center justify-center cursor-pointer"
                 onClick={handleSubmit}
                 style={{
                   opacity: !(isValid && dirty) ? 0.5 : 1
@@ -214,9 +214,13 @@ const IndividualSignUp = () => {
                 <span className="w-3 h-3 rounded-full bg-primary-200 inline-block"></span>
                 <span className="w-3 h-3 rounded-full bg-primary-200 inline-block"></span>
               </div>
-            </form>            
+            </form>
           )}
         </Formik>
+      </div>
+
+      <div className="block md:hidden my-4">
+        <ProviderAccount className="mx-auto justify-center" />
       </div>
     </div>
   );

@@ -7,8 +7,8 @@ const FeesSession = () => {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-transparent">
-      <div className="w-full max-w-xl bg-white rounded-2xl px-8 py-10 flex flex-col items-center shadow-none">
+    <div className="min-h-screen flex items-start justify-center bg-transparent">
+      <div className="max-w-[340px] md:max-w-xl bg-white rounded-2xl px-4 md:px-8 py-10 flex flex-col items-center shadow-none">
         <h1 className="text-2xl font-bold mb-1 text-left w-full">Fees & Session</h1>
         <p className="mb-6 text-left text-gray-700 w-full text-sm">
           This step ensures LavenderCare has verified contact and location details for legal and operational purposes.

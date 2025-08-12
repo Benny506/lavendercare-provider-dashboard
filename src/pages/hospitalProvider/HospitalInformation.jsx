@@ -7,12 +7,12 @@ const HospitalInformation = () => {
   return (
     <div className="flex flex-col items-center justify-center">
 
-        <div className="absolute top-8 right-10">
-            <ProviderAccount />
-        </div>
+      <div className="hidden md:block absolute top-8 right-10">
+        <ProviderAccount />
+      </div>
 
 
-      <div className="w-full max-w-xl bg-white rounded-2xl px-10 pt-10 pb-4 flex flex-col items-center mt-10">
+      <div className="w-full max-w-[340px] md:max-w-xl bg-white rounded-2xl px-4 md:px-10 pt-10 pb-4 flex flex-col items-center md:mt-10">
         <h1 className="text-3xl font-bold mb-2 text-left w-full">Fill Out Your Information</h1>
         <p className="mb-6 text-left text-gray-700 w-full text-base">
           This step ensures LavenderCare has verified contact and location details for legal and operational purposes.
@@ -95,6 +95,9 @@ const HospitalInformation = () => {
             <span className="w-3 h-3 rounded-full bg-primary-200 inline-block"></span>
           </div>
         </form>
+      </div>
+      <div className="block md:hidden my-4">
+        <ProviderAccount className="mx-auto justify-center" />
       </div>
     </div>
   )

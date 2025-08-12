@@ -18,7 +18,7 @@ const ProfileCard = ({ title, icon, type, providerOption, setProviderOption }) =
                     color={selected ? "#6F3DCB" : '#666666'}
                 />
             </div>
-            <p className="text-[21px] font-semibold gray-text-800 mb-14 text-start mt-2">
+            <p className="text-[21px] font-semibold gray-text-800 mb-14 lg:text-start text-center mt-6 md:mt-2">
                 {title}
             </p>
         </div>
