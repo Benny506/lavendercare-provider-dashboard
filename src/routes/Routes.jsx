@@ -69,117 +69,123 @@ import NotificationsSettings from "@/pages/individualDashboard/settings/Notifica
 import IntegrationsPage from "@/pages/individualDashboard/settings/IntegrationsPage";
 import IndividualGeneralSettings from "@/pages/individualDashboard/settings/GeneralSettings";
 import IndividualProfilePage from "@/pages/individualDashboard/settings/ProfilePage";
+import AutoLogin from "@/components/AutoLogin";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import ActiveConsultation from "@/pages/individualDashboard/consultation/ActiveConsultation";
 
 const AppRoutes = () => (
-  <Routes>
-    {/* Main provider layout */}
-    <Route element={<Layout />}>
-      <Route path="/" element={<Login />} />
-      <Route path="/login" element={<LoginForm />} />
-      <Route path="/recover-password" element={<RecoverPassword />} />
-      <Route path="/otp-verification" element={<OtpVerification />} />
-      <Route path="/create-password" element={<CreateNewPassword />} />
-      <Route path="/recovered-password" element={<PasswordRecovered />} />
-    </Route>
+  <AutoLogin>
+    <Routes>
+      {/* Main provider layout */}
+      <Route element={<Layout />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/recover-password" element={<RecoverPassword />} />
+        <Route path="/otp-verification" element={<OtpVerification />} />
+        <Route path="/create-password" element={<CreateNewPassword />} />
+        <Route path="/recovered-password" element={<PasswordRecovered />} />
+      </Route>
 
 
 
 
 
-    {/* HospitalProvider layout */}
-    <Route path="/hospital-provider" element={<HospitalLayout />}>
-      <Route index element={<SignUp />} />
-      <Route path="verification" element={<EmailVerification />} />
-      <Route path="verification-success" element={<EmailVerificationSuccess />} />
-      <Route path="hospital-information" element={<HospitalInformation />} />
-      <Route path="hospital-services" element={<HospitalServices />} />
-      <Route path="hospital-documents" element={<HospitalDocuments />} />
-      <Route path="account-created" element={<AccountCreated />} />
-    </Route>
+      {/* HospitalProvider layout */}
+      <Route path="/hospital-provider" element={<HospitalLayout />}>
+        <Route index element={<SignUp />} />
+        <Route path="verification" element={<EmailVerification />} />
+        <Route path="verification-success" element={<EmailVerificationSuccess />} />
+        <Route path="hospital-information" element={<HospitalInformation />} />
+        <Route path="hospital-services" element={<HospitalServices />} />
+        <Route path="hospital-documents" element={<HospitalDocuments />} />
+        <Route path="account-created" element={<AccountCreated />} />
+      </Route>
 
 
 
 
 
-    { /* Hospital Dashboard */ }
-    <Route path="/hospital/dashboard" element={<DashboardLayout />}>
-      <Route index element={<Dashboard />} />
-      <Route path="add-doctor" element={<AddDoctor />} />
-      <Route path="doctor-credential" element={<DoctorCredentials />} />
-      <Route path="doctor-availability" element={<DoctorAvailability />} />
-    </Route>
+      { /* Hospital Dashboard */ }
+      <Route path="/hospital/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Dashboard />} />
+        <Route path="add-doctor" element={<AddDoctor />} />
+        <Route path="doctor-credential" element={<DoctorCredentials />} />
+        <Route path="doctor-availability" element={<DoctorAvailability />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/doctor" element={<DashboardLayout />} >
-      <Route path="all-doctors" element={<AllDoctors />} />
-      <Route path="doctor-profile" element={<DoctorProfile />} />
-      <Route path="doctor-profile/schedule" element={<DoctorSchedule />} />
-    </Route>
+      <Route path="/hospital/dashboard/doctor" element={<DashboardLayout />} >
+        <Route path="all-doctors" element={<AllDoctors />} />
+        <Route path="doctor-profile" element={<DoctorProfile />} />
+        <Route path="doctor-profile/schedule" element={<DoctorSchedule />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/consultation" element={<DashboardLayout />} >
-      <Route index element={<AllConsultations />} />
-    </Route>
+      <Route path="/hospital/dashboard/consultation" element={<DashboardLayout />} >
+        <Route index element={<AllConsultations />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/schedules" element={<DashboardLayout />} >
-      <Route index element={<AllSchedules />} />
-    </Route>
+      <Route path="/hospital/dashboard/schedules" element={<DashboardLayout />} >
+        <Route index element={<AllSchedules />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/caseload" element={<DashboardLayout />} >
-      <Route index element={<AllCaseload />} />
-    </Route>
+      <Route path="/hospital/dashboard/caseload" element={<DashboardLayout />} >
+        <Route index element={<AllCaseload />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/analytics" element={<DashboardLayout />} >
-      <Route index element={<Insights />} />
-    </Route>
+      <Route path="/hospital/dashboard/analytics" element={<DashboardLayout />} >
+        <Route index element={<Insights />} />
+      </Route>
 
-    <Route path="/hospital/dashboard/settings" element={<DashboardLayout />} >
-      <Route index element={<Settings />} />
-      <Route path="general-settings" element={<GeneralSettings />} />
-      <Route path="general-settings/hospital-information" element={<EditHospitalInformation />} />
-      <Route path="notifications" element={<Notifications />} />
-      <Route path="documents" element={<Documents />} />
-      <Route path="security" element={<Security />} />
-      <Route path="security/change-password" element={<ChangePassword />} />
-      <Route path="security/otp" element={<Otp />} />
-      <Route path="security/new-password" element={<NewPassword />} />
-      <Route path="profile" element={<ProfilePage />} />
-    </Route>
-
-
+      <Route path="/hospital/dashboard/settings" element={<DashboardLayout />} >
+        <Route index element={<Settings />} />
+        <Route path="general-settings" element={<GeneralSettings />} />
+        <Route path="general-settings/hospital-information" element={<EditHospitalInformation />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="documents" element={<Documents />} />
+        <Route path="security" element={<Security />} />
+        <Route path="security/change-password" element={<ChangePassword />} />
+        <Route path="security/otp" element={<Otp />} />
+        <Route path="security/new-password" element={<NewPassword />} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
 
 
 
-    {/* Individual layout */}
-    <Route path="/individual" element={<IndividualLayout />}>
-      <Route index element={<IndividualSignUp />} />
-      <Route path="verification" element={<IndividualEmailVerification />} />
-      <Route path="verification-success" element={<IndividualEmailVerificationSuccess />} />
-      <Route path="profile-details" element={<ProfileDetails />} />
-      <Route path="credentials" element={<CredentialsExperience />} />
-      <Route path="fee-session" element={<FeesSession />} />
-      <Route path="account-created" element={<IndividualAccountCreated />} />
-    </Route>
 
-    {/* Individual Dashboard  */}
-    <Route path="/individual/dashboard" element={<IndividualDashboardLayout />}>
-      <Route index element={<Overview />} />
-      <Route path="availability" element={<AvailabilityFeePage />} />
-      <Route path="bookings" element={<AllRequests />} />
-      <Route path="bookings/dashboard" element={<BookingDashboard />} />
-      <Route path="bookings/dashboard/chat" element={<ChatSection />} />
-      <Route path="consultation" element={<AllConsultation />} />
-      <Route path="consultation/chat" element={<Messages />} />
-      <Route path="caseload" element={<Caseload />} />
-      <Route path="caseload/case" element={<CaseDetailsView />} />
-      <Route path="screenings" element={<AllScreening />} />
-      <Route path="screenings/case-report" element={<CaseReport />} />
-      <Route path="settings" element={<IndividualSettings />} />
-      <Route path="settings/notifications" element={<NotificationsSettings />} />
-      <Route path="settings/integrations" element={<IntegrationsPage />} />
-      <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
-      <Route path="profile" element={<IndividualProfilePage />} />
-    </Route>
 
-  </Routes>
+      {/* Individual layout */}
+      <Route path="/individual" element={<IndividualLayout />}>
+        <Route index element={<IndividualSignUp />} />
+        <Route path="verification" element={<IndividualEmailVerification />} />
+        <Route path="verification-success" element={<IndividualEmailVerificationSuccess />} />
+        <Route path="profile-details" element={<ProfileDetails />} />
+        <Route path="credentials" element={<CredentialsExperience />} />
+        {/* <Route path="fee-session" element={<FeesSession />} /> */}
+        <Route path="account-created" element={<IndividualAccountCreated />} />
+      </Route>
+
+      {/* Individual Dashboard  */}
+      <Route path="/individual/dashboard" element={<ProtectedRoute><IndividualDashboardLayout /></ProtectedRoute>}>
+        <Route index element={<Overview />} />
+        <Route path="availability" element={<AvailabilityFeePage />} />
+        {/* <Route path="bookings" element={<AllRequests />} />
+        <Route path="bookings/dashboard" element={<BookingDashboard />} />
+        <Route path="bookings/dashboard/chat" element={<ChatSection />} /> */}
+        <Route path="consultation" element={<AllConsultation />} />
+        <Route path="consultation/chat" element={<ActiveConsultation />} />
+        <Route path="consultation/all-chat" element={<Messages />} />
+        <Route path="caseload" element={<Caseload />} />
+        <Route path="caseload/case" element={<CaseDetailsView />} />
+        <Route path="screenings" element={<AllScreening />} />
+        <Route path="screenings/case-report" element={<CaseReport />} />
+        <Route path="settings" element={<IndividualSettings />} />
+        <Route path="settings/notifications" element={<NotificationsSettings />} />
+        <Route path="settings/integrations" element={<IntegrationsPage />} />
+        <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
+        <Route path="profile" element={<IndividualProfilePage />} />
+      </Route>
+
+    </Routes>
+  </AutoLogin>
 );
 
 export default AppRoutes;

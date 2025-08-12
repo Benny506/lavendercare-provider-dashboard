@@ -80,41 +80,52 @@ export const onRequestApi = async ({ requestInfo, successCallBack, failureCallba
 }
 
 export const cloudinaryUpload = async ({ files }) => {
-    try {
+  try {
+    const url = 'https://api.cloudinary.com/v1_1/dqcmfizfd/auto/upload'
 
-        // if(!folderName){
-        //     return
-        // }
+    // Map each file to a fetch-promise
+    const uploadPromises = files.map(file => {
+      if (!file) return Promise.resolve(null)
 
-        const formData = new FormData();
-        const url = `https://api.cloudinary.com/v1_1/dqcmfizfd/upload`
-    
-        const uploadedFiles = []
-    
-        for (let i = 0; i < files.length; i++) {          
-            let file = files[i];
-            formData.append("file", file);
-            formData.append("upload_preset", "testing");
-            formData.append("folder", "testing");
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', 'testing')
+      formData.append('folder', 'testing')
 
-            const uploadedFile = await fetch(url, { method: 'POST', body: formData, headers: { "content-type": "multipart/form-data" } })
-            const uploadedFile_data = await uploadedFile.text()          
-            const parsedFile = JSON.parse(uploadedFile_data)
+      return fetch(url, {
+        method: 'POST',
+        body: formData
+      })
+      .then(async response => {
 
-            uploadedFiles.push(parsedFile)
+        const data = await response.json()
+
+        if (!response.ok) {
+            console.log(data)
+          throw new Error(data?.error?.message || `Upload failed with status ${response.status}`)
         }
-        
-        return { responseStatus: true, result: uploadedFiles, errorMsg: null }
+        return data
+      })
+    })
 
-    } catch (error) {
-        console.log(error)
-        return { 
-            responseStatus: false, 
-            result: null, 
-            errorMsg: {
-                error: 'An unexpected error occured, try again later',
-                actualError: error
-            } 
-        }
+    // Await all uploads in parallel
+    const uploadedFiles = (await Promise.all(uploadPromises))
+      .filter(Boolean) // drop any nulls if files array had holes
+
+    return {
+      responseStatus: true,
+      result: uploadedFiles,
+      errorMsg: null
     }
+  } catch (error) {
+    console.error('Cloudinary upload error:', error)
+    return {
+      responseStatus: false,
+      result: null,
+      errorMsg: {
+        error: 'An unexpected error occurred, try again later',
+        actualError: error
+      }
+    }
+  }
 }

@@ -72,7 +72,15 @@ const OtpForm = ({
 
       setApiReqs({ isLoading: true, errorMsg: null })
 
-      const { token, error } = await createOrUpdateOtp({ email, requiresAuth: false })
+      const { token, error, userAlreadyExists } = await createOrUpdateOtp({ email, requiresAuth: false })
+
+      if(userAlreadyExists){
+        toast.error("Credentials in use by another provider")
+        setApiReqs({ isLoading: false, errorMsg: null })
+        navigate('/individual')
+        
+        return
+      }
 
       if(!token.otp || !token.expiresAt || error) throw new Error();
 

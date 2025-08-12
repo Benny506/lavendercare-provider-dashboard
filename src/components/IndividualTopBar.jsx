@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useSelector } from "react-redux";
+import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
+import Image from "./ui/image";
 
 const IndividualTopBar = () => {
+
+    const userProfile = useSelector(state => getUserDetailsState(state).profile)
+
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -50,14 +56,25 @@ const IndividualTopBar = () => {
                 <div className="relative cursor-pointer" ref={dropdownRef}>
                     <div onClick={() => setDropdownOpen(!dropdownOpen)}>
                         <Avatar className="w-10 h-10">
-                            <AvatarImage src="/assets/Avatar.svg" alt="User" />
-                            <AvatarFallback>JD</AvatarFallback>
+                            {
+                                userProfile?.profile_img
+                                ?
+                                    <img 
+                                        src={userProfile.profile_img}
+                                    />
+                                :
+                                    <Image
+                                        src={"/assets/Avatar.svg" }
+                                        alt="profile" 
+                                    />                                
+                            }
+                            {/* <AvatarFallback>JD</AvatarFallback> */}
                         </Avatar>
-                        <img
+                        {/* <Image
                             src="/assets/vector.svg"
                             className="absolute -bottom-3 -right-2 text-white w-7 h-7 flex items-center justify-center"
                             alt="status"
-                        />
+                        /> */}
                     </div>
 
                     {/* Dropdown Menu */}

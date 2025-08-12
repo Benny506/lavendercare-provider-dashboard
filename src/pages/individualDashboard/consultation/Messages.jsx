@@ -5,32 +5,46 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Paperclip, Send, Smile, Mic } from "lucide-react";
 import TopDivider from "@/components/TopDivider";
+import { useSelector } from "react-redux";
+import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
+import ProfileImg from "@/components/ui/ProfileImg";
 
 const messagesData = [
-  { id: 1, name: "Chimeyue Okeke", message: "Hello, Good day", time: "10:20 AM", unread: true },
-  { id: 2, name: "Abisola Grace", message: "Hello dear", time: "10:30 AM", unread: false },
-  { id: 3, name: "Yinka Praise", message: "Hi there", time: "12:05 PM", unread: true },
-  { id: 4, name: "Chimeyue Okeke", message: "Test result is ready", time: "1:20 PM", unread: false },
-  { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
+  // { id: 1, name: "Chimeyue Okeke", message: "Hello, Good day", time: "10:20 AM", unread: true },
+  // { id: 2, name: "Abisola Grace", message: "Hello dear", time: "10:30 AM", unread: false },
+  // { id: 3, name: "Yinka Praise", message: "Hi there", time: "12:05 PM", unread: true },
+  // { id: 4, name: "Chimeyue Okeke", message: "Test result is ready", time: "1:20 PM", unread: false },
+  // { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
+  // { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
+  // { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
+  // { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
+  // { id: 5, name: "Yinka Praise", message: "Thank you doctor", time: "1:30 PM", unread: false },
 ];
 
 const chatMessages = [
-  { id: 1, sender: "patient", message: "Hello, Good day", time: "10:20 AM" },
-  { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
-  { id: 3, sender: "doctor", message: "", time: "10:30 AM", isVoice: true },
+  // { id: 1, sender: "patient", message: "Hello, Good day", time: "10:20 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 2, sender: "doctor", message: "Approved report", time: "10:25 AM" },
+  // { id: 3, sender: "doctor", message: "", time: "10:30 AM", isVoice: true },
 ];
 
 export default function Messages() {
-  const [selectedChat, setSelectedChat] = useState(messagesData[0]);
+
+  const bookings = useSelector(state => getUserDetailsState(state).bookings)
+
+  const [selectedChat, setSelectedChat] = useState();
   const [messageInput, setMessageInput] = useState("");
   const [showPatientInfo, setShowPatientInfo] = useState(false);
 
   return (
     <div>
       <TopDivider />
-
-      <p className="p-3 font-bold text-2xl">Messages</p>
-      <div className="flex h-screen bg-gray-50 rounded-2xl">
+      <div className="flex h-[80vh] bg-gray-50 rounded-2xl">
         {/* Left Panel - Message List */}
         <div className="w-80 bg-white border-r border-gray-200 flex flex-col rounded-l-2xl">
           <div className="p-4 border-b border-gray-200">
@@ -44,121 +58,137 @@ export default function Messages() {
             />
           </div>
 
-          <ScrollArea className="flex-1">
+          <ScrollArea className="flex-1 overflow-y-auto">
             <div className="px-2">
-              {messagesData.map((chat) => (
-                <div
-                  key={chat.id}
-                  onClick={() => setSelectedChat(chat)}
-                  className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 mb-1 ${selectedChat.id === chat.id ? "bg-gray-200" : ""
-                    }`}
-                >
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage/>
-                    <AvatarFallback className="bg-purple-100 text-purple-600 font-medium">
-                      {chat.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-gray-900 text-sm truncate">{chat.name}</span>
-                      <span className="text-xs text-gray-500">{chat.time}</span>
+              {
+                bookings.map((booking) => {
+
+                  const { user_profile } = booking
+                
+                  return (
+                    <div
+                      key={booking.id}
+                      onClick={() => setSelectedChat(booking)}
+                      className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-50 mb-1 ${selectedChat?.id === booking.id ? "bg-gray-200" : ""
+                        }`}
+                    >
+                      <ProfileImg 
+                        profile_img={user_profile?.profile_img}
+                        name={user_profile?.name}
+                      />
+
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-medium text-gray-900 text-sm truncate">{user_profile?.name}</span>
+                          {/* <span className="text-xs text-gray-500">{chat.time}</span> */}
+                        </div>
+                        {/* <p className="text-sm text-gray-600 truncate">{chat.message}</p> */}
+                      </div>
+                      {/* {chat.unread && (
+                        <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></div>
+                      )} */}
                     </div>
-                    <p className="text-sm text-gray-600 truncate">{chat.message}</p>
-                  </div>
-                  {chat.unread && (
-                    <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></div>
-                  )}
-                </div>
-              ))}
+                  )})
+              }
             </div>
           </ScrollArea>
         </div>
 
         {/* Middle Panel - Chat Area */}
         <div className="flex-1 bg-white flex flex-col">
-          {/* Chat Header */}
-          <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-8 h-8">
-                <AvatarImage />
-                <AvatarFallback className="bg-purple-100 text-purple-600 text-sm">
-                  {selectedChat.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <h2 className="font-semibold text-gray-900">{selectedChat.name}</h2>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="text-gray-600"
-              onClick={() => setShowPatientInfo(true)}
-            >
-              View Info
-            </Button>
-          </div>
+          {
+            selectedChat
+            ?
+              <>
+                {/* Chat Header */}
+                <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white">
+                  <div className="flex items-center gap-3">
+                    <ProfileImg 
+                      profile_img={selectedChat?.user_profile?.profile_img}
+                      name={selectedChat?.user_profile?.name}
+                    />
+                    <h2 className="font-semibold text-gray-900">{selectedChat?.user_profile?.name}</h2>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-gray-600"
+                    onClick={() => setShowPatientInfo(true)}
+                  >
+                    View Info
+                  </Button>
+                </div>
 
-          {/* Chat Messages */}
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
-              {chatMessages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-xs ${msg.sender === 'doctor'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-900'
-                    } rounded-2xl px-4 py-3`}>
-                    {msg.isVoice ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                          <Mic className="w-4 h-4" />
+                {/* Chat Messages */}
+                <ScrollArea className="flex-1 overflow-y-auto p-4">
+                  <div className="space-y-4">
+                    {chatMessages.map((msg) => (
+                      <div key={msg.id} className={`flex ${msg.sender === 'doctor' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-xs ${msg.sender === 'doctor'
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-gray-100 text-gray-900'
+                          } rounded-2xl px-4 py-3`}>
+                          {msg.isVoice ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                <Mic className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1 h-2 bg-white bg-opacity-20 rounded-full">
+                                <div className="w-1/3 h-full bg-white rounded-full"></div>
+                              </div>
+                              <span className="text-xs opacity-75">0:15</span>
+                            </div>
+                          ) : (
+                            <p className="text-sm">{msg.message}</p>
+                          )}
                         </div>
-                        <div className="flex-1 h-2 bg-white bg-opacity-20 rounded-full">
-                          <div className="w-1/3 h-full bg-white rounded-full"></div>
-                        </div>
-                        <span className="text-xs opacity-75">0:15</span>
                       </div>
-                    ) : (
-                      <p className="text-sm">{msg.message}</p>
-                    )}
+                    ))}
+                  </div>
+                </ScrollArea>
+
+                {/* Message Input */}
+                <div className="p-4 border-t border-gray-200 bg-white">
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 relative">
+                      <Input
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        placeholder="Type a message..."
+                        className="w-full rounded-full pr-12 bg-gray-50 border-gray-200"
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 rounded-full hover:bg-gray-200"
+                      >
+                        <Smile className="w-4 h-4 text-gray-500" />
+                      </Button>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-10 w-10 p-0 rounded-full hover:bg-gray-100"
+                    >
+                      <Paperclip className="w-4 h-4 text-gray-500" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-10 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
+                    >
+                      Send
+                    </Button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
-
-          {/* Message Input */}
-          <div className="p-4 border-t border-gray-200 bg-white">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 relative">
-                <Input
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  placeholder="Type a message..."
-                  className="w-full rounded-full pr-12 bg-gray-50 border-gray-200"
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 rounded-full hover:bg-gray-200"
-                >
-                  <Smile className="w-4 h-4 text-gray-500" />
-                </Button>
+              </>
+            :
+              <div className="flex flex-col h-100 items-center justify-center">
+                <h1>
+                  A chat shows here once you have selected it
+                </h1>
               </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-10 w-10 p-0 rounded-full hover:bg-gray-100"
-              >
-                <Paperclip className="w-4 h-4 text-gray-500" />
-              </Button>
-              <Button
-                size="sm"
-                className="h-10 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
-              >
-                Send
-              </Button>
-            </div>
-          </div>
+          }
         </div>
 
         {/* Patient Info Modal */}

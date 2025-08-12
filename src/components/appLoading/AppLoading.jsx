@@ -4,11 +4,11 @@ import { getAppLoadingSlice } from '@/redux/slices/appLoadingSlice'
 import Image from '../ui/image'
 
 
-export default function AppLoading(){
+export default function AppLoading({ tempLoading }){
 
     const appLoading = useSelector(state => getAppLoadingSlice(state).appLoading)
 
-    if(appLoading){
+    if(appLoading || tempLoading){
         return(
             <div className="apploading-container">
                 <Image 
