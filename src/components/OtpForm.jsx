@@ -112,7 +112,7 @@ const OtpForm = ({
       <div className="w-full max-w-md flex flex-col items-center bg-opacity-70 rounded-xl px-8 py-10">
 
         {/* Back link */}
-        <div className="absolute top-20 left-10 flex items-center gap-2">
+        <div className="absolute top-16 md:top-20 -left-8 md:left-10 flex items-center gap-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
