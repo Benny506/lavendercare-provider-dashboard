@@ -42,7 +42,7 @@ export default function ActiveConsultation() {
             toast.info("Unable to locate active booking")
             navigate('/individual/dashboard/consultation')
         }
-    }, [])  
+    }, [])
     
     useEffect(() => {
     if (messages.length > 0) {

@@ -7,9 +7,9 @@ const IndividualProfilePage = () => {
     return (
         <div>
             <TopDivider />
-            <div className="min-h-screen bg-gray-50 p-8 flex justify-start items-start w-full flex-col">
+            <div className="min-h-screen bg-gray-50 p-4 md:p-8 rounded-2xl flex justify-start items-start w-full flex-col">
                 {/* Header */}
-                <div className="flex items-start justify-between mb-8 w-full">
+                <div className="flex flex-col md:flex-row gap-6 md:gap-0 items-start justify-between mb-8 w-full">
                     <div className="flex items-start space-x-4">
                         <div className="relative">
                             <Avatar className="w-20 h-20">
@@ -23,17 +23,17 @@ const IndividualProfilePage = () => {
                             </div>
                         </div>
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Hello, Prince!</h1>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Hello, Prince!</h1>
                             <p className="text-gray-600">Obstetrics</p>
                         </div>
                     </div>
-                    <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
+                    <button className="flex items-center space-x-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 w-fit self-start sm:self-auto">
                         <span>Edit</span>
                         <Icon icon="material-symbols:edit" className="w-4 h-4" />
                     </button>
                 </div>
 
-                <div className='flex flex-col gap-6 w-2xl'>
+                <div className='flex flex-col gap-6 w-full max-w-2xl'>
                     {/* Professional Title */}
                     <div>
                         <label className="block text-sm font-medium text-gray-900 mb-3">
@@ -84,15 +84,15 @@ const IndividualProfilePage = () => {
                         <label className="block text-sm font-medium text-gray-900 mb-3">
                             Phone number
                         </label>
-                        <div className="flex">
-                            <div className="flex items-center px-3 py-3 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50">
+                        <div className="flex flex-col sm:flex-row">
+                            <div className="flex items-center px-3 py-3 border border-gray-300 sm:border-r-0 rounded-t-lg sm:rounded-l-lg sm:rounded-t-none bg-gray-50">
                                 <Icon icon="twemoji:flag-nigeria" className="w-6 h-6 mr-2" />
                                 <span className="text-gray-600 text-sm">+234</span>
                                 <Icon icon="material-symbols:keyboard-arrow-down" className="w-4 h-4 text-gray-400 ml-1" />
                             </div>
                             <input
                                 type="tel"
-                                className="flex-1 px-4 py-3 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="flex-1 px-4 py-3 border border-gray-300 rounded-b-lg sm:rounded-r-lg sm:rounded-b-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             />
                         </div>
                     </div>
@@ -104,7 +104,7 @@ const IndividualProfilePage = () => {
                         </label>
                         <input
                             type="password"
-                            value="••••••••"
+                            placeholder="••••••••"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                     </div>

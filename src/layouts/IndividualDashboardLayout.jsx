@@ -1,13 +1,15 @@
 import IndividualSidebar from '@/components/IndividualSidebar'
 import IndividualTopBar from '@/components/IndividualTopBar'
+import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 
 const IndividualDashboardLayout = () => {
+  const [isOpen, setIsOpen] = useState(false)
   return (
     <div className="flex min-h-screen bg-primary-100 bg-img2">
-    <IndividualSidebar />
+    <IndividualSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
     <div className="flex-1 p-6">
-      <IndividualTopBar />
+      <IndividualTopBar setIsOpen={setIsOpen} />
       <Outlet />
     </div>
   </div>

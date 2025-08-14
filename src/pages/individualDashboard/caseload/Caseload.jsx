@@ -13,40 +13,40 @@ import { useState } from "react";
 
 // Dummy caseload data
 const caseloadData = [
-    { 
-        motherName: "Chinenye Okeke", 
-        firstConsult: "May 1, 2025", 
-        lastConsult: "July 12, 2025", 
-        careType: "Medical Consultation", 
-        status: "New" 
+    {
+        motherName: "Chinenye Okeke",
+        firstConsult: "May 1, 2025",
+        lastConsult: "July 12, 2025",
+        careType: "Medical Consultation",
+        status: "New"
     },
-    { 
-        motherName: "Aisha Bello", 
-        firstConsult: "June 15, 2025", 
-        lastConsult: "August 20, 2025", 
-        careType: "Physical Recovery", 
-        status: "New" 
+    {
+        motherName: "Aisha Bello",
+        firstConsult: "June 15, 2025",
+        lastConsult: "August 20, 2025",
+        careType: "Physical Recovery",
+        status: "New"
     },
-    { 
-        motherName: "Ngozi Eze", 
-        firstConsult: "July 2, 2025", 
-        lastConsult: "September 5, 2025", 
-        careType: "Mental Wellness", 
-        status: "Closed" 
+    {
+        motherName: "Ngozi Eze",
+        firstConsult: "July 2, 2025",
+        lastConsult: "September 5, 2025",
+        careType: "Mental Wellness",
+        status: "Closed"
     },
-    { 
-        motherName: "Ngozi Eze", 
-        firstConsult: "August 10, 2025", 
-        lastConsult: "October 15, 2025", 
-        careType: "Physical Recovery", 
-        status: "Ongoing" 
+    {
+        motherName: "Ngozi Eze",
+        firstConsult: "August 10, 2025",
+        lastConsult: "October 15, 2025",
+        careType: "Physical Recovery",
+        status: "Ongoing"
     },
-    { 
-        motherName: "Fatima Musa", 
-        firstConsult: "Sept 1, 2025", 
-        lastConsult: "Nov 10, 2025", 
-        careType: "Mental Wellness", 
-        status: "Closed" 
+    {
+        motherName: "Fatima Musa",
+        firstConsult: "Sept 1, 2025",
+        lastConsult: "Nov 10, 2025",
+        careType: "Mental Wellness",
+        status: "Closed"
     },
 ];
 
@@ -80,10 +80,10 @@ const Caseload = () => {
         <div>
 
             <TopDivider />
-            
+
             {/* Top section with date range and export */}
             <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap gap-2 md:gap-4">
                     <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-3xl border">
                         <span className="text-gray-700 font-medium">Status</span>
                         <Icon icon="mdi:chevron-down" className="w-4 h-4 text-gray-500" />
@@ -99,17 +99,25 @@ const Caseload = () => {
                 </div>
             </div>
 
+
             {/* Main content card */}
             <div className="rounded-lg bg-white p-6 shadow-sm">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b pb-4">
-                    <div>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 border-b pb-4">
+                    {/* Title */}
+                    <div className="flex-shrink-0">
                         <h2 className="text-2xl font-bold">All Caseload</h2>
                         <p className="text-gray-500">See all your Caseload below</p>
                     </div>
-                    <div className="flex space-x-4 w-full sm:w-auto">
+
+                    {/* Search + Filter */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        {/* Search */}
                         <div className="relative flex-1">
-                            <Icon icon="iconamoon:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Icon
+                                icon="iconamoon:search"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
                             <input
                                 type="text"
                                 placeholder="Search client or date"
@@ -118,10 +126,12 @@ const Caseload = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
-                        <div className="relative">
+
+                        {/* Filter */}
+                        <div className="relative flex-shrink-0">
                             <button
                                 onClick={() => setShowFilter(!showFilter)}
-                                className="w-32 py-2 rounded-lg border border-gray-300 text-sm"
+                                className="w-full sm:w-32 py-2 rounded-lg border border-gray-300 text-sm"
                             >
                                 Filter by: All
                             </button>
@@ -138,8 +148,8 @@ const Caseload = () => {
                                                 key={type}
                                                 onClick={() => setSelectedCareType(type)}
                                                 className={`px-3 py-1 rounded-full border text-sm ${selectedCareType === type
-                                                        ? "bg-primary-600 text-white"
-                                                        : "border-gray-400 text-gray-700"
+                                                    ? "bg-primary-600 text-white"
+                                                    : "border-gray-400 text-gray-700"
                                                     }`}
                                             >
                                                 {type}
@@ -147,7 +157,7 @@ const Caseload = () => {
                                         ))}
                                     </div>
 
-                                    <Button 
+                                    <Button
                                         className="w-full bg-primary-600 hover:bg-primary-700 text-white text-sm"
                                         onClick={() => setShowFilter(false)}
                                     >
@@ -160,7 +170,7 @@ const Caseload = () => {
                 </div>
 
                 {/* Table Headers */}
-                <div className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                <div className="hidden md:grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
                     <p>Mother's Name</p>
                     <p>First/Last Consult</p>
                     <p>Care Type</p>
@@ -171,18 +181,37 @@ const Caseload = () => {
                 {/* Table Rows */}
                 {filteredData.length > 0 ? (
                     filteredData.map((item, index) => (
-                        <div key={index} className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center gap-5 py-4 border-b text-sm pl-5">
+                        <div
+                            key={index}
+                            className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
+                        >
+                            {/* Mother's Name */}
                             <p className="font-medium text-gray-900">
+                                <span className="md:hidden font-semibold text-gray-600">Mother's Name: </span>
                                 {item.motherName}
                             </p>
+
+                            {/* First/Last Consult */}
                             <p className="text-gray-700">
+                                <span className="md:hidden font-semibold text-gray-600">First/Last Consult: </span>
                                 {item.firstConsult} / {item.lastConsult}
                             </p>
+
+                            {/* Care Type */}
                             <p className="text-gray-700 font-semibold">
+                                <span className="md:hidden font-semibold text-gray-600">Care Type: </span>
                                 {item.careType}
                             </p>
-                            {getStatusBadge(item.status)}
+
+                            {/* Status */}
                             <div>
+                                <span className="md:hidden font-semibold text-gray-600">Status: </span>
+                                {getStatusBadge(item.status)}
+                            </div>
+
+                            {/* Actions */}
+                            <div>
+                                <span className="md:hidden font-semibold text-gray-600">Actions: </span>
                                 <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
                                     View Case
                                 </button>
@@ -199,21 +228,31 @@ const Caseload = () => {
 
                 {/* Pagination */}
                 <div className="mt-6 flex items-center justify-between">
+                    {/* Previous Button */}
                     <button className="flex items-center text-gray-600 hover:text-gray-800 font-bold">
-                        <Icon icon="mdi:arrow-left" className="mr-2" /> Previous
+                        <Icon icon="mdi:arrow-left" className="mr-2" />
+                        <span className="hidden md:inline">Previous</span>
                     </button>
-                    <div className="flex space-x-2">
+
+                    {/* Page Numbers */}
+                    <div className="flex flex-wrap justify-center gap-2">
                         {[1, 2, 3, "...", 8, 9, 10].map((p, i) => (
                             <button
                                 key={i}
-                                className={`w-8 h-8 rounded-full ${p === 1 ? "bg-primary-100 text-primary-600" : "text-gray-600"} flex items-center justify-center`}
+                                className={`w-8 h-8 rounded-full ${p === 1
+                                    ? "bg-primary-100 text-primary-600"
+                                    : "text-gray-600"
+                                    } flex items-center justify-center`}
                             >
                                 {p}
                             </button>
                         ))}
                     </div>
+
+                    {/* Next Button */}
                     <button className="flex items-center text-gray-600 hover:text-gray-800 font-bold">
-                        Next <Icon icon="mdi:arrow-right" className="ml-2" />
+                        <span className="hidden md:inline">Next</span>
+                        <Icon icon="mdi:arrow-right" className="ml-2" />
                     </button>
                 </div>
             </div>

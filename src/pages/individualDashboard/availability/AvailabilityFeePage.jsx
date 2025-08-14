@@ -262,9 +262,9 @@ export default function AvailabilityFeePage() {
     <div className="w-full h-screen overflow-hidden">
       <TopDivider />
       <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto px-10 py-8">
+        <div className="flex-1 overflow-y-auto md:px-10 md:py-8">
           <div className="flex items-center justify-between mb-6">
-            <div className="text-2xl font-semibold">Availability & Fee</div>
+            <div className="text-xl md:text-2xl font-semibold">Availability & Fee</div>
             <div className="flex justify-end">
               <button
                 onClick={handleSave}
@@ -349,7 +349,7 @@ export default function AvailabilityFeePage() {
             }}
           >
             {({ handleBlur, handleChange, handleSubmit, values, isValid, dirty }) => (
-              <div className="flex-1 py-6">
+              <div className="flex-1 py-6 mb-4 md:mb-0">
                 <div className="flex items-center justify-between mb-6">
                   <div className="text-base font-bold">Fee</div>
                   <div className="flex justify-end">

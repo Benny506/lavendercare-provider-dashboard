@@ -29,11 +29,11 @@ const NotificationsSettings = () => {
       <TopDivider />
 
       <p className='text-xl font-bold p-3'>Notifications</p>
-      <div className="min-h-screen w-full p-3">
+      <div className="min-h-screen w-full p-0 md:p-3">
         <div className="bg-white rounded-lg w-full">
           <div className="p-4 max-w-4xl">
             {/* New Booking Requests */}
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+           <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-medium text-gray-900">New Booking Requests</h3>
               </div>
@@ -74,7 +74,7 @@ const NotificationsSettings = () => {
             </div>
 
             {/* Upcoming Session Reminders */}
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-medium text-gray-900">Upcoming Session Reminders</h3>
               </div>
@@ -115,7 +115,7 @@ const NotificationsSettings = () => {
             </div>
 
             {/* New Screening Submissions */}
-            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-medium text-gray-900">New Screening Submissions (MH only)</h3>
               </div>
@@ -156,7 +156,7 @@ const NotificationsSettings = () => {
             </div>
 
             {/* High-Risk Screening Alerts */}
-            <div className="flex items-center justify-between py-4 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between py-3 border-b border-gray-100 gap-4">
               <div className="flex-1">
                 <h3 className="text-lg font-medium text-gray-900">High-Risk Screening Alerts</h3>
               </div>

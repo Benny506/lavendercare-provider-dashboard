@@ -33,7 +33,7 @@ const AllScreening = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [showFilter, setShowFilter] = useState(false);
     const [selectedType, setSelectedType] = useState("All");
-    // const [apiReqs, setApiReqs] = useState({ isLoading: true, errorMsg: null })
+    const [apiReqs, setApiReqs] = useState({ isLoading: true, errorMsg: null })
 
     const resetFilters = () => {
         setSelectedType("All")
@@ -138,14 +138,14 @@ const AllScreening = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b">
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Submission Date</th>
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Client Name</th>
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Type</th>
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Score</th>
-                                    {/* <th className="text-center py-4 text-sm font-semibold text-gray-700">Interpretation</th> */}
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Risk Level</th>
-                                    <th className="text-center py-4 text-sm font-semibold text-gray-700">Actions</th>
+                                <tr className="border-b text-xs md:text-sm">
+                                    <th className="text-center py-4 font-semibold text-gray-700">Submission Date</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Client Name</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Type</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Score</th>
+                                    {/* <th className="text-center py-4 font-semibold text-gray-700">Interpretation</th> */}
+                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
