@@ -2,6 +2,8 @@ import { clsx } from "clsx";
 import { DateTime } from "luxon";
 import { twMerge } from "tailwind-merge"
 
+
+
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -192,4 +194,50 @@ export const MENTAL_HEALTH_TEST_TYPES = [
 
 export const sortByTimeStamp = ({ arr, key }) => {
   return [...arr].sort((a, b) => new Date(b[key]) - new Date(a[key]));
+}
+
+export function getPastDate(daysAgo) {
+  return DateTime.now().minus({ days: daysAgo }).toISO();
+}
+
+
+export function isDateBetween({ startDate, endDate, checkDate }) {
+  const start = DateTime.fromISO(startDate);
+  const end = DateTime.fromISO(endDate);
+  const check = DateTime.fromISO(checkDate);
+
+  // Compare in milliseconds for precision
+  const startMs = start.toMillis();
+  const endMs = end.toMillis();
+  const checkMs = check.toMillis();
+
+  return checkMs >= startMs && checkMs <= endMs;
+}
+
+export function isDateInRange({ dateToCheck, range }) {
+  const checkDate = DateTime.fromISO(dateToCheck).startOf("day");
+  const today = DateTime.now().startOf("day");
+  let startDate, endDate;
+
+  if (range === "this_week") {
+    startDate = today.startOf("week");
+    endDate = today;
+  } else if (range === "last_week") {
+    startDate = today.startOf("week").minus({ weeks: 1 });
+    endDate = startDate.endOf("week");
+  } else if (range === "this_month") {
+    startDate = today.startOf("month");
+    endDate = today;
+  } else if (range === "last_month") {
+    startDate = today.startOf("month").minus({ months: 1 });
+    endDate = startDate.endOf("month");
+  } else if (/^last_\d+_days$/.test(range)) {
+    const days = parseInt(range.match(/\d+/)[0], 10);
+    startDate = today.minus({ days });
+    endDate = today;
+  } else {
+    throw new Error("Invalid range type");
+  }
+
+  return checkDate >= startDate && checkDate <= endDate;
 }
