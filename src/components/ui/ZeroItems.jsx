@@ -12,7 +12,6 @@ export default function ZeroItems({ zeroText }){
             <Image 
                 src={'/assets/empty.svg'}
                 style={{
-                    marginLeft: '20px',
                     width: '80px',
                     height: '80px',
                 }}

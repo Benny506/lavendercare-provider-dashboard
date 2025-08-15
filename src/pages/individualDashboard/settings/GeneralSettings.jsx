@@ -25,7 +25,7 @@ const IndividualGeneralSettings = () => {
                 <div className='flex gap-3 justify-between items-center bg-white rounded-xl w-full p-6 cursor-pointer' onClick={() => navigate('/hospital/dashboard/settings/general-settings/hospital-information')}>
                     <Image src="assets/general-settings-icon.svg" />
                     <div className='flex flex-col flex-1'>
-                        <p className='text-xs text-gray-500'>Edit hospital Information</p>
+                        <p className='text-sm text-gray-500'>Edit personal Information</p>
                     </div>
                     <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
                 </div>

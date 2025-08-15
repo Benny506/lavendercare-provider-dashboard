@@ -1,4 +1,5 @@
-import { sortByTimeStamp } from "@/lib/utils"
+import { sortByDate, sortByHour, sortByTimeStamp } from "@/lib/utils"
+import { getAppointmentStatus, sortByStatusPriority } from "@/lib/utilsJsx"
 import { createSlice } from "@reduxjs/toolkit"
 
 const userDetailsSlice = createSlice({
@@ -27,15 +28,26 @@ const userDetailsSlice = createSlice({
             }
 
             if(action.payload?.bookings){
-                state.bookings = action.payload.bookings
+                const bookingsWithCorrectStatus = (action.payload?.bookings || []).map(b => {
+                    const { status, hour, duration, day } = b
+
+                    const date_ISO = new Date(day).toISOString()
+
+                    const computedStatus = getAppointmentStatus({ status, date_ISO, startHour: hour, duration_secs: duration })
+
+                    return {
+                        ...b,
+                        status: computedStatus
+                    }
+                })
+
+                const sortedWithPriority = sortByStatusPriority(bookingsWithCorrectStatus)
+
+                state.bookings = sortedWithPriority
             } 
             
             if(action.payload?.screenings){
-                const orderedScreening = sortByTimeStamp({ 
-                    arr: action.payload?.screenings,
-                    key: 'created_at'
-                })
-                state.screenings = orderedScreening
+                state.screenings = action.payload?.screenings
             }             
         }
     }

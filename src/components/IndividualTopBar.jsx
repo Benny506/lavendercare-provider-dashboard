@@ -4,8 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useSelector } from "react-redux";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import Image from "./ui/image";
+import { useNavigate } from "react-router-dom";
+import ProfileImg from "./ui/ProfileImg";
 
 const IndividualTopBar = () => {
+
+    const navigate = useNavigate()
 
     const userProfile = useSelector(state => getUserDetailsState(state).profile)
 
@@ -55,26 +59,11 @@ const IndividualTopBar = () => {
                 {/* Avatar with Dropdown */}
                 <div className="relative cursor-pointer" ref={dropdownRef}>
                     <div onClick={() => setDropdownOpen(!dropdownOpen)}>
-                        <Avatar className="w-10 h-10">
-                            {
-                                userProfile?.profile_img
-                                ?
-                                    <img 
-                                        src={userProfile.profile_img}
-                                    />
-                                :
-                                    <Image
-                                        src={"/assets/Avatar.svg" }
-                                        alt="profile" 
-                                    />                                
-                            }
-                            {/* <AvatarFallback>JD</AvatarFallback> */}
-                        </Avatar>
-                        {/* <Image
-                            src="/assets/vector.svg"
-                            className="absolute -bottom-3 -right-2 text-white w-7 h-7 flex items-center justify-center"
-                            alt="status"
-                        /> */}
+                        <ProfileImg 
+                            profile_img={userProfile?.profile_img}
+                            containerClass={"w-10 h-10"}
+                            name={userProfile?.provider_name}
+                        />
                     </div>
 
                     {/* Dropdown Menu */}
@@ -85,8 +74,8 @@ const IndividualTopBar = () => {
                                 <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                                     <Icon icon="mdi:account" className="text-gray-500" width="28" height="28" />
                                 </div>
-                                <p className="mt-2 font-medium">Hello [ Full name ]</p>
-                                <p className="text-sm text-gray-500">Hospital</p>
+                                <p className="mt-2 font-medium">Hello {userProfile?.provider_name}</p>
+                                <p className="text-sm text-gray-500">Individual</p>
                             </div>
 
                             {/* Join Hospital */}
@@ -99,7 +88,13 @@ const IndividualTopBar = () => {
 
                             {/* Settings */}
                             <div className="border-t">
-                                <button className="w-full text-left px-4 py-3 hover:bg-gray-100">
+                                <button 
+                                    onClick={() => {
+                                        setDropdownOpen(false)
+                                        navigate('/individual/dashboard/settings')
+                                    }} 
+                                    className="w-full text-left px-4 py-3 hover:bg-gray-100"
+                                >
                                     Settings
                                 </button>
                             </div>

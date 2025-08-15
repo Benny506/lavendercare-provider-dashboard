@@ -88,6 +88,7 @@ export async function getIndividualProviderDetails({ id }){
       user_profile:user_profiles (*)      
     `)
     .in('user_id', bookings_userIds) 
+    .order("created_at", { ascending: true, nullsFirst: false })  
 
   
   if(screeningsError){

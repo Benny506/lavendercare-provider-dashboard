@@ -1,185 +1,255 @@
 import TopDivider from "@/components/TopDivider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Calendar, Bookmark, CheckCircle, FileText, Stethoscope } from "lucide-react";
+import ErrorMsg2 from "@/components/ui/ErrorMsg2";
+import ProfileImg from "@/components/ui/ProfileImg";
+import ZeroItems from "@/components/ui/ZeroItems";
+import { getStatusBadge } from "@/lib/utilsJsx";
+import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
+import { Calendar, Bookmark, CheckCircle, FileText, Stethoscope, MessageCircleWarning, X, Ellipsis, FileWarning } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import PatientInfo from "../screenings/auxiliary/PatientInfo";
+import { useReactToPrint } from "react-to-print";
+import { formatDate1, isoToDateTime, timeToAMPM_FromHour } from "@/lib/utils";
 
 const CaseDetailsView = () => {
+
+    const navigate = useNavigate()
+
+    const { state } = useLocation() 
+    const booking_id = state?.booking_id
+
+    const bookings = useSelector(state => getUserDetailsState(state).bookings)
+    const screenings = useSelector(state => getUserDetailsState(state).screenings)
+
+    const containerRef = useRef(null)
+
+    const downloadEntireDoc = useReactToPrint({
+        contentRef: containerRef
+    });            
+
+    const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
+    const [singleBooking, setSingleBooking] = useState()
+
+    useEffect(() => {
+        if(!booking_id){
+            navigate('/individual/dashboard/caseload')
+        
+        } else {
+
+            const booking = (bookings || []).filter(s => s.id == booking_id)[0]
+
+            if(booking){
+                setSingleBooking(booking)
+            
+            } else{
+                setApiReqs({ isLoading: false, errorMsg: "Error fetching single booking information"})
+            }
+        }
+    }, [bookings])
+
+    if(apiReqs.errorMsg){
+        if(bookings?.length > 0){
+            return (
+                <div
+                    style={{
+                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        justifyContent: 'center', gap: '15px',
+                        height: '100%', flexGrow: 1                        
+                    }}                    
+                >
+                    <ZeroItems zeroText={'No case load found'} />
+                </div>
+            )
+        }
+
+        return(
+            <ErrorMsg2 
+                errorMsg={apiReqs.errorMsg}
+            />
+        )
+    }
+
+    if(!booking_id || !singleBooking) return <></>  
+    
+    const { user_profile } = singleBooking
+
+    const patientScreening = (screenings || []).filter(s => s.user_id == user_profile?.id)
+
     const timelineEvents = [
         {
             icon: <Calendar className="w-5 h-5 text-blue-500" />,
-            title: "Consultation - 07/15/2025, 2:00 PM",
-            description: "Note preview: Patient is experiencing mild anxiety...",
+            title: "Consultation preview",
+            description: singleBooking?.note_preview || "Not set",
             type: "consultation"
         },
         {
             icon: <Bookmark className="w-5 h-5 text-green-500" />,
-            title: "Booking made - 07/17/2025, 2:00 PM",
+            title: `Booking made - ${formatDate1({ dateISO: new Date(singleBooking?.day).toISOString() })}, ${timeToAMPM_FromHour({ hour: singleBooking?.hour })}`,
             description: "",
             type: "booking"
         },
         {
-            icon: <CheckCircle className="w-5 h-5 text-green-500" />,
-            title: "Screening Completed",
-            description: "Completed on 07/20/2025",
+            icon: patientScreening[0] ? <CheckCircle className="w-5 h-5 text-green-500" /> : <X className="w-5 h-5 text-red-500" />,
+            title: "Last screen date",
+            description: patientScreening[0] ? formatDate1({ dateISO: new Date(patientScreening[0].test_date).toISOString() }) : "Not screened before",
             type: "screening"
         },
-        {
-            icon: <FileText className="w-5 h-5 text-blue-500" />,
-            title: "Prescription Issued",
-            description: "Medication: Sertraline, Dosage: 50mg",
-            type: "prescription"
-        },
-        {
-            icon: <FileText className="w-5 h-5 text-gray-500" />,
-            title: "Therapy Notes Added",
-            description: "Notes added on 07/10/2024",
-            type: "notes"
-        },
-        {
-            icon: <Calendar className="w-5 h-5 text-blue-500" />,
-            title: "Consultation - 07/01/2024, 10:00 AM",
-            description: "Note preview: Initial assessment and treatment plan...",
-            type: "consultation"
-        }
-    ];
+        ...(
+            (singleBooking?.status == 'ongoing' || singleBooking?.status == 'new')
+            ? 
+                [
+                    {
+                        icon: <Ellipsis className="w-5 h-5 text-green-500" />,
+                        title: "Pending",
+                        description: "Available for completed sessioons",
+                        type: "pending"                    
+                    }
+                ] 
+            : 
+                [
+                    {
+                        icon: singleBooking?.prescription_text ? <FileText className="w-5 h-5 text-blue-500" /> : <FileWarning className="w-5 h-5 text-red-500" />,
+                        title: "Prescription Issued",
+                        description: singleBooking?.prescription_text || "Not set",
+                        type: "prescription"
+                    },
+                    {
+                        icon: singleBooking?.summary ? <FileText className="w-5 h-5 text-gray-500" /> : <MessageCircleWarning className="w-5 h-5 text-red-500" />,
+                        title: "Therapy Notes Added",
+                        description: singleBooking?.summary || 'Not set',
+                        type: "notes"
+                    },
+                ]
+        ),
+    ];    
 
     return (
         <div>
             <TopDivider />
-            <div className="flex p-6 min-h-screen">
-            {/* Left Panel - Patient Information */}
-            <div className="max-w-xs  bg-white rounded-l-lg p-6 h-full border-r border-gray-200 shadow-sm">
-                {/* Patient Header */}
-                <div className="flex items-center gap-4 mb-6">
-                    <Avatar className="w-16 h-16">
-                        <AvatarImage src="/api/placeholder/64/64" alt="Chinenye Okeke" />
-                        <AvatarFallback className="bg-orange-200 text-orange-800 text-lg font-semibold">
-                            CO
-                        </AvatarFallback>
-                    </Avatar>
+
+            <div ref={containerRef} className="flex p-6 min-h-screen">
+                {/* Left Panel - Patient Information */}
+                <div className="max-w-xs  bg-white rounded-l-lg p-6 h-full border-r border-gray-200 shadow-sm">
+                    {/* Patient Header */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <ProfileImg 
+                            profile_img={user_profile?.profile_img}
+                            name={user_profile?.name}
+                            width={'100px'}
+                            height={'100px'}
+                            containerClass={"w-16 h-16"}
+                            textClass={'text-2xl'}
+                        />
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900">{user_profile?.name}</h2>
+                            <p className="text-gray-500 text-sm">Case ID : {singleBooking?.id}</p>
+                        </div>
+                    </div>
+
+                    <div className="mb-6">
+                        { getStatusBadge(singleBooking?.status) }
+                    </div>
+
+                    {/* Patient Information */}
+                    <PatientInfo 
+                        patient={user_profile}
+                    />
+
+                    {/* Session Summary & Notes */}
+                    <div className="mb-8">
+                        <h3 className="font-semibold text-gray-900 mb-4">Session Summary & Notes</h3>
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                            {
+                                singleBooking?.status == 'new' || singleBooking?.status == 'ongoing'
+                                ?
+                                    `Available for completed sessions`
+                                :
+                                    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Doloremque sequi voluptate nam odio! Sit molestias nihil quidem iure illum autem suscipit ipsa, quod minima doloribus fugiat ipsum quam pariatur aliquam?'
+                            }
+                        </p>                       
+                    </div>
+
+                    {/* Attachments & Reports */}
+
                     <div>
-                        <h2 className="text-xl font-bold text-gray-900">Chinenye Okeke</h2>
-                        <p className="text-gray-500 text-sm">Case ID : #2025-078</p>
-                    </div>
-                </div>
-
-                <div className="mb-6">
-                    <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">
-                        Ongoing
-                    </span>
-                </div>
-
-                {/* Patient Information */}
-                <div className="mb-8">
-                    <h3 className="font-semibold text-gray-900 mb-4">Patient Information</h3>
-                    <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Age:</span>
-                            <span className="font-medium">29</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Postpartum Day:</span>
-                            <span className="font-medium">21</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Contact:</span>
-                            <span className="font-medium text-blue-600">email@example.com</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Phone no:</span>
-                            <span className="font-medium">0801 234 5678</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Pregnancy Status:</span>
-                            <span className="font-medium">Postpartum</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Session Summary & Notes */}
-                <div className="mb-8">
-                    <h3 className="font-semibold text-gray-900 mb-4">Session Summary & Notes</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et...
-                    </p>
-                </div>
-
-                {/* Attachments & Reports */}
-                <div>
-                    <h3 className="font-semibold text-gray-900 mb-4">Attachments & Reports</h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-700">Prescription Document</span>
-                            <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
-                                Download
-                            </Button>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-700">Test Results</span>
-                            <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
-                                View/Download
-                            </Button>
-                        </div>
-                        <div className="mb-4">
-                            <span className="text-sm text-gray-700 block mb-2">Full Medical Report</span>
-                        </div>
-                        <Button className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200">
-                            Download Consolidated PDF
-                        </Button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Panel - Assigned Provider & Timeline */}
-            <div className="flex-1 rounded-r-lg w-full bg-white">
-                {/* Assigned Provider */}
-                <div className=" p-6">
-                    <h3 className="font-semibold text-gray-900 mb-4">Assigned Provider</h3>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Avatar className="w-12 h-12">
-                                <AvatarImage src="/api/placeholder/48/48" alt="Dr. Evelyn Reed" />
-                                <AvatarFallback className="bg-gray-200 text-gray-700">
-                                    ER
-                                </AvatarFallback>
-                            </Avatar>
-                            <div>
-                                <h4 className="font-semibold text-gray-900">Dr. Evelyn Reed</h4>
-                                <p className="text-sm text-gray-500">Self</p>
-                            </div>
-                        </div>
-                        <Button variant="outline" size="sm">
-                            View
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Status Timeline */}
-                <div className=" p-6">
-                    <h3 className="font-semibold text-gray-900 mb-6">Status Timeline</h3>
-                    <div className="space-y-6">
-                        {timelineEvents.map((event, index) => (
-                            <div key={index} className="flex gap-4">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex-shrink-0 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                        {event.icon}
+                        <h3 className="font-semibold text-gray-900 mb-4">Attachments & Reports</h3>
+                        {
+                            (singleBooking?.status == 'new' || singleBooking?.status == 'ongoing')
+                            ?
+                                <p className="text-sm text-gray-600 leading-relaxed">
+                                    Available for completed sessions
+                                </p>
+                            :
+                                <div>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-700">Prescription Document</span>
+                                            {
+                                                singleBooking?.prescription_doc
+                                                ?
+                                                    <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
+                                                        Download
+                                                    </Button>
+                                                :
+                                                    <span className="text-sm text-gray-600 leading-relaxed">
+                                                        Not set
+                                                    </span>                                     
+                                            }
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm text-gray-700">Test Results</span>
+                                            {
+                                                singleBooking?.test_results
+                                                ?
+                                                    <Button variant="outline" size="sm" className="text-purple-600 border-purple-200">
+                                                        Download
+                                                    </Button>
+                                                :
+                                                    <p className="text-sm text-gray-600 leading-relaxed">
+                                                        Not set
+                                                    </p>                                     
+                                            }                                        
+                                        </div>
+                                        <Button onClick={downloadEntireDoc} className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200">
+                                            Download Consolidated PDF
+                                        </Button>
                                     </div>
-                                    {index < timelineEvents.length - 1 && (
-                                        <div className="w-px h-12 bg-gray-200 mt-2"></div>
-                                    )}
                                 </div>
-                                <div className="flex-1 pb-8">
-                                    <h4 className="font-semibold text-gray-900 mb-1">{event.title}</h4>
-                                    {event.description && (
-                                        <p className="text-sm text-gray-600">{event.description}</p>
-                                    )}
+                        }
+                    </div>
+                </div>
+
+                {/* Right Panel - Assigned Provider & Timeline */}
+                <div className="flex-1 rounded-r-lg w-full bg-white">
+                    {/* Status Timeline */}
+                    <div className=" p-6">
+                        <h3 className="font-semibold text-gray-900 mb-6">Status Timeline</h3>
+                        <div className="space-y-6">
+                            {timelineEvents.map((event, index) => (
+                                <div key={index} className="flex gap-4">
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex-shrink-0 w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                                            {event.icon}
+                                        </div>
+                                        {index < timelineEvents.length - 1 && (
+                                            <div className="w-px h-12 bg-gray-200 mt-2"></div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 pb-8">
+                                        <h4 className="font-semibold text-gray-900 mb-1">{event.title}</h4>
+                                        {event.description && (
+                                            <p className="text-sm text-gray-600">{event.description}</p>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 };

@@ -17,6 +17,15 @@ body{
   word-break: break-word;    /* Safari-specific odd case */  
 }
 
+button:enabled{
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: inherit;
+  color: inherit;
+}
+
 
 
 @layer base {

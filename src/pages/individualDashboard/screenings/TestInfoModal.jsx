@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import AppLoading from '@/components/appLoading/AppLoading';
@@ -9,11 +9,18 @@ import { isoToDateTime } from '@/lib/utils';
 import ErrorMsg2 from '@/components/ui/ErrorMsg2';
 import { getRiskLevelBadge } from '@/lib/utilsJsx';
 import ZeroItems from '@/components/ui/ZeroItems';
+import { useReactToPrint } from 'react-to-print';
 
 const TestInfoModal = ({ show, onClose, data }) => {
 
+    const containerRef = useRef(null)
+
     const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
     const [testQuestions, setTestQuestions] = useState([])
+
+    const exportElementToPdf = useReactToPrint({
+        contentRef: containerRef
+    });            
 
     useEffect(() => {
         if(data){
@@ -87,13 +94,19 @@ const TestInfoModal = ({ show, onClose, data }) => {
                 <div className="bg-white rounded-2xl shadow-xl w-full h-full flex flex-col">
                     {/* Header */}
                     <div className="flex items-start justify-between p-6 pb-4">
-                        <button 
-                            onClick={closeModal}
-                            className="flex cursor-pointer items-center text-purple-600 font-medium"
-                        >
-                            <ArrowLeft className="w-5 h-5 mr-2" />
-                            Back
-                        </button>
+                        <div>
+                            <button 
+                                onClick={closeModal}
+                                className="flex mb-2 cursor-pointer items-center text-purple-600 font-medium"
+                            >
+                                <ArrowLeft className="w-5 h-5 mr-2" />
+                                Back
+                            </button>
+
+                            <button onClick={exportElementToPdf} className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium">
+                                Download PDF
+                            </button>                            
+                        </div>
                         
                         <div>
                             <p className='text-base m-0 p-0 mb-1 text-end text-right fw-500 text-000'>
@@ -108,7 +121,7 @@ const TestInfoModal = ({ show, onClose, data }) => {
                         </div>
                     </div>       
 
-                    <div style={{ overflowY: 'auto' }}>
+                    <div ref={containerRef} style={{ overflowY: 'auto' }}>
                         <div className="flex flex-col">
 
                             <div className='p-6'>
