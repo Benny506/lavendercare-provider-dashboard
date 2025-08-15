@@ -6,7 +6,7 @@ export default function PatientInfo({ patient }){
         name, email, age, is_pregnant, postpartumDay,
         pregnant_months_count, weight, height, country, state: mothersState, profile_img,
         is_first_child, num_kids, is_home_mum, registered_antenatal,
-    } = patient
+    } = patient    
 
     return(
         <>

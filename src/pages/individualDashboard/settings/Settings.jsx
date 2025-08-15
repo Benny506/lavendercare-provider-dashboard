@@ -23,7 +23,7 @@ const IndividualSettings = () => {
                         <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
                     </div>
 
-                    <div className='flex gap-3 justify-between items-center cursor-pointer' onClick={() => navigate('/hospital/dashboard/settings/notification')}>
+                    <div className='flex gap-3 justify-between items-center cursor-pointer' onClick={() => navigate('/individual/dashboard/settings/notifications')}>
                         <Image src="assets/general-settings-icon.svg" />
                         <div className='flex flex-col flex-1'>
                             <h1 className='text-md font-bold'>Notification</h1>
@@ -43,7 +43,7 @@ const IndividualSettings = () => {
                     </div>
 
 
-                    <div className='flex gap-3 justify-between items-center '>
+                    <div className='flex gap-3 justify-between items-center cursor-pointer' onClick={() => navigate('/individual/dashboard/settings/integrations')}>
                         <Image src="assets/general-settings-icon.svg" />
                         <div className='flex flex-col flex-1'>
                             <h1 className='text-md font-bold'>Integrations</h1>

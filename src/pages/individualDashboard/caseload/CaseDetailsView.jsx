@@ -127,12 +127,14 @@ const CaseDetailsView = () => {
     ];    
 
     return (
-        <div>
+        <div className="md:p-6 min-h-screen">
             <TopDivider />
+            
+            {/* Wrap both panels */}
+            <div className="flex flex-col lg:flex-row">
 
-            <div ref={containerRef} className="flex p-6 min-h-screen">
-                {/* Left Panel - Patient Information */}
-                <div className="max-w-xs  bg-white rounded-l-lg p-6 h-full border-r border-gray-200 shadow-sm">
+                {/* Left Panel */}
+                <div className="w-full lg:max-w-xs h-max bg-white rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none p-6 border-b lg:border-b-0 lg:border-r border-gray-200 shadow-sm">
                     {/* Patient Header */}
                     <div className="flex items-center gap-4 mb-6">
                         <ProfileImg 

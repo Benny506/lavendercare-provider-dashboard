@@ -102,10 +102,10 @@ const Caseload = () => {
         <div>
 
             <TopDivider />
-            
+
             {/* Top section with date range and export */}
             <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap gap-2 md:gap-4">
 
                     <div className="relative">
                         <div onClick={toggleStatusFilter} className="flex items-center gap-2 bg-white px-4 py-2 rounded-3xl border cursor-pointer">
@@ -226,17 +226,25 @@ const Caseload = () => {
                 </div>
             </div>
 
+
             {/* Main content card */}
             <div className="rounded-lg bg-white p-6 shadow-sm">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b pb-4">
-                    <div>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 border-b pb-4">
+                    {/* Title */}
+                    <div className="flex-shrink-0">
                         <h2 className="text-2xl font-bold">All Caseload</h2>
                         <p className="text-gray-500">See all your Caseload below</p>
                     </div>
-                    <div className="flex space-x-4 w-full sm:w-auto">
+
+                    {/* Search + Filter */}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                        {/* Search */}
                         <div className="relative flex-1">
-                            <Icon icon="iconamoon:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Icon
+                                icon="iconamoon:search"
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                            />
                             <input
                                 type="text"
                                 placeholder="Search client or date"
@@ -249,7 +257,7 @@ const Caseload = () => {
                 </div>
 
                 {/* Table Headers */}
-                <div className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                <div className="hidden md:grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
                     <p>Mother's Name</p>
                     <p>Consult date</p>
                     <p>Care Type</p>
@@ -266,17 +274,22 @@ const Caseload = () => {
                         const { name } = user_profile
 
                         return (
-                            <div key={index} className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center gap-5 py-4 border-b text-sm pl-5">
-                                <p className="font-medium text-gray-900">
+                            <div 
+                                key={index} 
+                                className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
+                            >
+                                <p className="md:hidden font-semibold text-gray-600">
                                     { name }
                                 </p>
-                                <p className="text-gray-700">
+                                <p className="md:hidden font-semibold text-gray-600">
                                     { formatDate1({ dateISO: new Date(day).toISOString() }) }
                                 </p>
-                                <p className="text-gray-700 font-semibold capitalize">
+                                <p className="md:hidden font-semibold text-gray-600">
                                     {service_type?.replaceAll("_", " ")}
                                 </p>
-                                {getStatusBadge(status)}
+                                <span className="md:hidden font-semibold text-gray-600">
+                                    {getStatusBadge(status)}
+                                </span>
                                 <div>
                                     <button 
                                         onClick={() => navigate('/individual/dashboard/caseload/case', { state: { booking_id: item?.id } })}
@@ -309,10 +322,11 @@ const Caseload = () => {
                                 }}
                                 className="cursor-not-allowed flex items-center text-gray-600 hover:text-gray-800 font-bold"
                             >
-                                <Icon icon="mdi:arrow-left" className="mr-2" /> Previous
+                                <Icon icon="mdi:arrow-left" className="mr-2" /> 
+                                <span className="hidden md:inline">Previous</span>
                             </button>                        
 
-                            <div className="flex space-x-2">
+                            <div className="flex flex-wrap justify-center gap-2">
                                 {pageList?.map((p, i) => {
 
                                     const isActivePAge = p-1 === currentPage
@@ -354,7 +368,7 @@ const Caseload = () => {
                                 }}
                                 className="cursor-pointer flex items-center text-gray-600 hover:text-gray-800 font-bold"
                             >
-                                Next <Icon icon="mdi:arrow-right" className="ml-2" />
+                                <span className="hidden md:inline">Next</span> <Icon icon="mdi:arrow-right" className="ml-2" />
                             </button>                        
                         </div>                    
                 }

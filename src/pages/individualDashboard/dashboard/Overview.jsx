@@ -30,17 +30,18 @@ const Overview = () => {
       <TopDivider />
 
       {/* Quick Actions */}
-      <div className="flex w-full justify-between items-center">
-        <p className='font-bold text-lg'>Quick Action</p>
-        <div className="flex gap-4 justify-end mb-6 ">
-          <Button onClick={() => navigate("/individual/dashboard/availability")} className="rounded-3xl px-6 py-6 bg-white text-black font-extrabold cursor-pointer">{availabilitySet ? 'Update' : 'Set'} Availability</Button>
+      <div className="flex flex-col md:flex-row w-full items-start md:justify-between md:items-center gap-4 md:gap-0">
+        <p className='font-bold text-lg'>Quick Action</p>              
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-0 justify-end mb-6 ">
+          <Button onClick={() => navigate("/individual/dashboard/availability")}  className="rounded-3xl px-6 py-6 bg-white text-black font-extrabold cursor-pointer">Set Availability</Button>
           <Button onClick={() => navigate("/individual/dashboard/caseload")} className="rounded-3xl px-6 py-6 bg-primary-600 font-extrabold text-white cursor-pointer">
             View Caseload
           </Button>
         </div>
       </div>
 
-      <div className="flex gap-4 mb-6">
+
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Card 1 */}
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">Upcoming sessions</p>

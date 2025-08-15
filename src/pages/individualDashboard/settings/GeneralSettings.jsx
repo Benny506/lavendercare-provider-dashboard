@@ -22,7 +22,7 @@ const IndividualGeneralSettings = () => {
                     </div>
                 </div>
 
-                <div className='flex gap-3 justify-between items-center bg-white rounded-xl w-full p-6 cursor-pointer' onClick={() => navigate('/hospital/dashboard/settings/general-settings/hospital-information')}>
+                <div className='flex gap-3 justify-between items-center bg-white rounded-xl w-full p-6 cursor-pointer' onClick={() => navigate('/individual/dashboard/profile')}>
                     <Image src="assets/general-settings-icon.svg" />
                     <div className='flex flex-col flex-1'>
                         <p className='text-sm text-gray-500'>Edit personal Information</p>

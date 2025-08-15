@@ -6,8 +6,9 @@ import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import Image from "./ui/image";
 import { useNavigate } from "react-router-dom";
 import ProfileImg from "./ui/ProfileImg";
+import { Menu } from "lucide-react";
 
-const IndividualTopBar = () => {
+const IndividualTopBar = ({ setIsOpen }) => {
 
     const navigate = useNavigate()
 
@@ -30,14 +31,23 @@ const IndividualTopBar = () => {
     }, []);
 
     return (
-        <header className="w-full px-6 py-2 flex items-center justify-between relative">
-            {/* Left: Page Title */}
-            <h1 className="text-2xl font-bold text-[#000000]">Overview</h1>
+        <header className="w-full lg:px-6 py-2 flex items-center justify-between relative">
+            <div className="flex items-center gap-2">
+                {/* Hamburger for mobile */}
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="lg:hidden"
+                >
+                    <Menu size={24} />
+                </button>
+                {/* Left: Page Title */}
+                <h1 className="text-2xl font-bold text-[#000000]">Overview</h1>
+            </div>
 
             {/* Right: Search + Notification + Avatar */}
-            <div className="flex items-center gap-4">
-                {/* Search Bar */}
-                <div className="flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200 w-[350px]">
+            <div className="flex items-center gap-3 sm:gap-4 flex-wrap sm:flex-nowrap justify-end flex-1">
+                {/* Search Bar - hidden on very small screens */}
+                <div className="hidden sm:flex items-center px-3 sm:px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200 w-full sm:w-[350px]">
                     <Icon icon="iconamoon:search" className="text-lg text-gray-500 mr-2" />
                     <input
                         type="text"
@@ -59,17 +69,23 @@ const IndividualTopBar = () => {
                 {/* Avatar with Dropdown */}
                 <div className="relative cursor-pointer" ref={dropdownRef}>
                     <div onClick={() => setDropdownOpen(!dropdownOpen)}>
-                        <ProfileImg 
-                            profile_img={userProfile?.profile_img}
-                            containerClass={"w-10 h-10"}
-                            name={userProfile?.provider_name}
-                        />
+                        {/* // <ProfileImg 
+                        //     profile_img={userProfile?.profile_img}
+                        //     containerClass={"w-10 h-10"}
+                        //     name={userProfile?.provider_name}
+                        // /> */}
+
+                        <Avatar className="w-10 h-10">
+                            {userProfile?.profile_img ? (
+                                <img src={userProfile.profile_img} />
+                            ) : (
+                                <Image src={"/assets/Avatar.svg"} alt="profile" />
+                            )}
+                        </Avatar>
                     </div>
 
-                    {/* Dropdown Menu */}
                     {dropdownOpen && (
                         <div className="absolute right-0 mt-3 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                            {/* Profile Section */}
                             <div className="flex flex-col items-center p-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
                                     <Icon icon="mdi:account" className="text-gray-500" width="28" height="28" />
@@ -77,16 +93,12 @@ const IndividualTopBar = () => {
                                 <p className="mt-2 font-medium">Hello {userProfile?.provider_name}</p>
                                 <p className="text-sm text-gray-500">Individual</p>
                             </div>
-
-                            {/* Join Hospital */}
                             <div className="border-t">
                                 <button className="w-full text-left px-4 py-3 text-[#4CAEA0] flex items-center gap-2 hover:bg-gray-100 bg-[#F4F4F5]">
                                     <Icon icon="mdi:plus" width="18" height="18" />
                                     Join Hospital
                                 </button>
                             </div>
-
-                            {/* Settings */}
                             <div className="border-t">
                                 <button 
                                     onClick={() => {
@@ -98,8 +110,6 @@ const IndividualTopBar = () => {
                                     Settings
                                 </button>
                             </div>
-
-                            {/* Sign Out */}
                             <div className="border-t">
                                 <button className="w-full text-left px-4 py-3 hover:bg-gray-100">
                                     Sign out
@@ -110,6 +120,7 @@ const IndividualTopBar = () => {
                 </div>
             </div>
         </header>
+
     );
 };
 

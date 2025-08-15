@@ -144,7 +144,7 @@ const AllConsultation = () => {
                 </div>
 
                 {/* Header */}
-                <div className="grid grid-cols-[2.5fr_2.5fr_2fr_2.5fr_1.5fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                <div className="grid grid-cols-[2.5fr_2.5fr_2fr_2.5fr_1.5fr] items-center font-semibold text-xs md:text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
                     <p className="">Opening Date</p>
                     <p className="">Client Name</p>
                     <p className="">Service Type</p>
