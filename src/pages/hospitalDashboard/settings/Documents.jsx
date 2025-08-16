@@ -89,7 +89,7 @@ const Documents = () => (
         <h2 className="font-extrabold text-xl mb-3">Documents & Accreditation</h2>
         <div className="w-full bg-white rounded-2xl p-4">
             {/* Header Row */}
-            <div className="grid grid-cols-5 gap-4 items-center font-semibold text-sm text-gray-600 border-b pb-2">
+            <div className="hidden sm:grid grid-cols-5 gap-4 items-center font-semibold text-sm text-gray-600 border-b pb-2">
                 <div>Document Name</div>
                 <div>Status</div>
                 <div>ReSubmission Date</div>
@@ -101,7 +101,7 @@ const Documents = () => (
             {documents.map((doc, idx) => (
                 <div
                     key={idx}
-                    className="grid grid-cols-5 gap-4 items-center text-sm text-gray-700 py-3 border-b last:border-b-0"
+                    className="hidden sm:grid grid-cols-5 gap-4 items-center text-sm text-gray-700 py-3 border-b last:border-b-0"
                 >
                     <div>{doc.name}</div>
                     <div>{getStatusBadge(doc.status)}</div>
@@ -110,9 +110,34 @@ const Documents = () => (
                     <div>{getActionButtons(doc.status)}</div>
                 </div>
             ))}
+
+            {documents.map((doc, idx) => (
+                <div key={idx} className="flex flex-col border-b last:border-b-0 py-4 gap-4 px-2 sm:hidden">
+                    <div className="flex justify-between">
+                        <span className="font-medium text-gray-500">Document Name:</span>
+                        <p className='text-wrap text-end'>{doc.name}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-gray-500">Status:</span>
+                        <p>{getStatusBadge(doc.status)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-gray-500">ReSubmission Date:</span>
+                        <p>{doc.reSubmissionDate}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-gray-500">Approval:</span>
+                        <p>{getApprovalBadge(doc.approval)}</p>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="font-medium text-gray-500">Action:</span>
+                        <p>{getActionButtons(doc.status)}</p>
+                    </div>
+                </div>
+            ))}
         </div>
 
-        <UploadCredential />
+        {/* <UploadCredential /> */}
     </div>
 )
 

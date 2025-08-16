@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Image from './ui/image';
+import { X } from 'lucide-react';
 
 const navItems = [
   {
@@ -39,14 +40,15 @@ const navItems = [
   },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({isOpen, setIsOpen}) => {
   const Navigate = useNavigate();
   return (
-    <aside className="h-screen max-w-max flex flex-col bg-white border-r border-[#E9E9E9] justify-between">
+    <aside className={`fixed top-0 left-0 h-full md:h-max lg:h-screen w-64 bg-white border-r border-[#E9E9E9] flex flex-col justify-between transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static`}>
       <div className=''>
         {/* Logo */}
-        <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer" onClick={() => Navigate('/hospital/dashboard')}>
+        <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer gap-2" onClick={() => Navigate('/hospital/dashboard')}>
           <Image src="assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" />
+          <X size={30} onClick={() => { setIsOpen(false) }} className='block lg:hidden' />
         </div>
 
         {/* Navigation */}

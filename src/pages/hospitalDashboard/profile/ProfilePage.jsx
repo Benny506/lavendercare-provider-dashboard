@@ -10,11 +10,11 @@ const ProfilePage = () => {
             <TopDivider />
 
             <div className="w-full bg-white rounded-2xl p-3">
-                <div className="flex justify-between items-center p-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 gap-4 md:gap-0">
                     <div className="flex items-center gap-3">
-                        <img src="/assets/hospital-logo.svg" alt="" />
+                        <img src="/assets/hospital-logo.svg" alt="hospital logo" />
                         <div className="flex flex-col gap-3">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
                                 <p className="font-bold">Grace Maternity Center</p>
                                 <span className="bg-[#FCE8E7] text-[#CF190F] rounded-3xl px-2">Unverified</span>
                             </div>
@@ -32,7 +32,7 @@ const ProfilePage = () => {
 
                 {/* Form  */}
 
-                <div className="max-w-xl p-6 flex flex-col gap-2">
+                <div className="w-full md:max-w-xl p-6 flex flex-col gap-2">
                     <p className='font-bold'>Hospital information</p>
 
                     <form action="" className='flex flex-col gap-3'>

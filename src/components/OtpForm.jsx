@@ -10,8 +10,8 @@ import { createOrUpdateOtp, validateOtp } from "@/database/dbInit";
 
 const initialSeconds = 30
 
-const OtpForm = ({ 
-  name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs
+const OtpForm = ({
+  name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs, showBackLink = true
 }) => {
 
   const navigate = useNavigate();
@@ -109,19 +109,21 @@ const OtpForm = ({
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="w-full max-w-md flex flex-col items-center bg-opacity-70 rounded-xl px-8 py-10">
+      <div className="w-full md:max-w-md flex flex-col items-center bg-opacity-70 rounded-xl md:px-8 md:py-10">
 
         {/* Back link */}
-        <div className="absolute top-16 md:top-20 -left-8 md:left-10 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="cursor-pointer relative text-primary-600 text-base flex items-center gap-1 font-extrabold left-15 top-3"
-          >
-            <Icon icon="mdi-light:arrow-left" className="text-[30px]" />
-            <span>Back</span>
-          </button>
-        </div>
+        {showBackLink && (
+          <div className="absolute top-16 md:top-20 left-2 md:left-10 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="cursor-pointer relative text-primary-600 text-base flex items-center gap-1 font-extrabold"
+            >
+              <Icon icon="mdi-light:arrow-left" className="text-[30px]" />
+              <span>Back</span>
+            </button>
+          </div>
+        )}
 
         {/* OTP Header */}
         <div className="w-full max-w-md flex flex-col items-center mt-8">

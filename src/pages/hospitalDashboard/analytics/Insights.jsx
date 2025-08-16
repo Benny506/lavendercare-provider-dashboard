@@ -33,11 +33,22 @@ const sampleData = [
 const Insights = () => {
     const [data, setData] = useState(sampleData)
 
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 640);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     return (
         <div>
             <TopDivider />
 
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 mb-6">
                 <DateRangePicker />
                 <Button className="flex items-center gap-2 px-4 py-2 bg-white border-gray-400 text-black rounded-md focus:outline-none">
                     <Download className="w-4 h-4" />
@@ -45,7 +56,7 @@ const Insights = () => {
                 </Button>
             </div>
 
-            <div className="flex gap-4 mb-6">
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
                 {/* Summary Cards */}
                 <div className="flex-1 bg-white rounded-xl p-6">
                     <p className="text-md font-medium">Average Consultations per Doctor</p>
@@ -79,7 +90,11 @@ const Insights = () => {
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart
                             data={data}
-                            margin={{ top: 20, right: 30, left: 0, bottom: 50 }}
+                            margin={
+                                isSmallScreen
+                                    ? { top: 20, right: 10, left: -25, bottom: 40 }
+                                    : { top: 20, right: 30, left: 0, bottom: 50 }
+                            }
                             barCategoryGap="20%"
                         >
                             <CartesianGrid strokeDasharray="3 3" />
@@ -87,9 +102,13 @@ const Insights = () => {
                                 dataKey="name"
                                 tick={{ fontSize: 12 }}
                                 interval={0}
-                                angle={360}
+                                angle={
+                                    isSmallScreen ? -75 : 340
+                                }
                                 textAnchor="end"
-                                height={60}
+                                height={
+                                    isSmallScreen ? 80 : 60
+                                }
                             />
                             <YAxis />
                             <Tooltip />

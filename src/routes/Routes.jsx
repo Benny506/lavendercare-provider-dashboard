@@ -74,7 +74,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ActiveConsultation from "@/pages/individualDashboard/consultation/ActiveConsultation";
 
 const AppRoutes = () => (
-  <AutoLogin>
+  // <AutoLogin>
     <Routes>
       {/* Main provider layout */}
       <Route element={<Layout />}>
@@ -164,7 +164,7 @@ const AppRoutes = () => (
       </Route>
 
       {/* Individual Dashboard  */}
-      <Route path="/individual/dashboard" element={<ProtectedRoute><IndividualDashboardLayout /></ProtectedRoute>}>
+      <Route path="/individual/dashboard" element={/*<ProtectedRoute>*/<IndividualDashboardLayout />/*</ProtectedRoute>}*/ }>
         <Route index element={<Overview />} />
         <Route path="availability" element={<AvailabilityFeePage />} />
         {/* <Route path="bookings" element={<AllRequests />} />
@@ -185,7 +185,7 @@ const AppRoutes = () => (
       </Route>
 
     </Routes>
-  </AutoLogin>
+  // </AutoLogin>
 );
 
 export default AppRoutes;

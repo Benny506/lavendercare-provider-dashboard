@@ -9,7 +9,7 @@ const Notifications = () => {
 
             <div className="w-full bg-white rounded-2xl p-3">
 
-                <div className='flex justify-between items-center max-w-lg'>
+                <div className='flex justify-between items-center w-full md:max-w-lg'>
 
                     <div className='flex flex-col w-full'>
                         <div className='flex justify-between items-center p-4 border-b border-gray-200'>

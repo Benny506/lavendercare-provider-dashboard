@@ -5,7 +5,7 @@ const UploadCredential = () => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
             {/* Background Image Container */}
-            <div className="bg-img rounded-xl p-4 w-full max-w-sm shadow-xl relative">
+            <div className="bg-img rounded-xl p-4 w-full max-w-sm shadow-xl relative mx-4 md:mx-0">
                 <div className="bg-white rounded-xl p-6 w-full relative flex flex-col gap-1">
 
                     {/* Back Icon */}
@@ -24,7 +24,7 @@ const UploadCredential = () => {
                             <button type="button" className="border border-gray-300 rounded px-4 py-1 text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100">Browse File</button>
                         </div>
 
-                        <Button className="bg-primary-600 text-white rounded-full py-3 font-semibold text-md mt-4 transition w-full flex items-center justify-center gap-2">
+                        <Button className="bg-primary-600 text-white rounded-full py-6 lg:py-3 font-semibold text-md mt-4 transition w-full flex items-center justify-center gap-2">
                             Submit
                         </Button>
                     </div>
