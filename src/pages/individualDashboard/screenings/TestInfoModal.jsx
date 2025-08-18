@@ -3,17 +3,20 @@ import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import AppLoading from '@/components/appLoading/AppLoading';
 import supabase from '@/database/dbInit';
-import { useSelector } from 'react-redux';
-import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetailsState, setUserDetails } from '@/redux/slices/userDetailsSlice';
 import { isoToDateTime } from '@/lib/utils';
 import ErrorMsg2 from '@/components/ui/ErrorMsg2';
-import { getRiskLevelBadge } from '@/lib/utilsJsx';
+import { getAlertLevelBadge, getRiskLevelBadge } from '@/lib/utilsJsx';
 import ZeroItems from '@/components/ui/ZeroItems';
 import { useReactToPrint } from 'react-to-print';
 
 const TestInfoModal = ({ show, onClose, data }) => {
+    const dispatch = useDispatch()
 
     const containerRef = useRef(null)
+
+    const highRiskAlerts = useSelector(state => getUserDetailsState(state).highRiskAlerts)
 
     const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
     const [testQuestions, setTestQuestions] = useState([])
@@ -27,6 +30,59 @@ const TestInfoModal = ({ show, onClose, data }) => {
             fetchTestResults({ answer: data?.answer })
         }
     }, [data])
+
+    const screening_id = data?.id
+    const highRiskAlertNotViewed = (highRiskAlerts || [])?.filter(risk_alert => (risk_alert?.screening_id === screening_id) && (risk_alert?.viewed === false))[0]
+
+    const markAsViewed = async () => {
+        try {
+
+            console.log(screening_id)
+
+            if(!highRiskAlertNotViewed) return;
+
+            setApiReqs({ isLoading: true, errorMsg: null })         
+
+            const { data, error } = await supabase
+                .from('high_risk_alerts')
+                .update({ viewed: true })
+                .eq("screening_id", screening_id)
+
+            if(error){
+                console.log(error)
+                throw new Error()
+            }
+
+            const updatedHighRiskAlerts = (highRiskAlerts || [])?.map(risk_alert => {
+                if(risk_alert?.screening_id == screening_id){
+                    return {
+                        ...risk_alert,
+                        viewed: true
+                    }
+                }
+
+                return risk_alert
+            })
+
+            dispatch(setUserDetails({
+                highRiskAlerts: updatedHighRiskAlerts
+            }))
+
+            setApiReqs({ isLoading: false, errorMsg: null })
+
+            toast.success("Marked as viewed")
+            
+        } catch (error) {
+            console.log(error)
+            return markAsViewedFailure({ errorMsg: 'Something went wrong! Try again' })
+        }
+    }
+    const markAsViewedFailure = ({ errorMsg }) => {
+        setApiReqs({ isLoading: false, errorMsg })
+        toast.error(errorMsg)
+
+        return;
+    }
 
     const fetchTestResults = async ({ answer }) => {
         try {
@@ -81,6 +137,8 @@ const TestInfoModal = ({ show, onClose, data }) => {
     
     const { test_date, user_id, score, risk_level } = data
 
+    const answerInfo = data?.answer
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
 
@@ -103,9 +161,19 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                 Back
                             </button>
 
-                            <button onClick={exportElementToPdf} className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium">
-                                Download PDF
-                            </button>                            
+                            <div className='flex flex-col gap-1'>
+                                <button onClick={exportElementToPdf} className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium">
+                                    Download PDF
+                                </button>    
+
+                                {
+                                    highRiskAlertNotViewed
+                                    &&
+                                        <button onClick={markAsViewed} className="cursor-pointer bg-purple-600 text-white px-6 py-2 rounded-lg font-medium">
+                                            Mark as viewed
+                                        </button>                                                                                            
+                                }
+                            </div>
                         </div>
                         
                         <div>
@@ -116,7 +184,7 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                 Score: { score }
                             </p>
                             <div className='text-base m-0 p-0 text-end text-right fw-500 text-000'>
-                                Risk level: { getRiskLevelBadge(risk_level) }
+                                Risk level (Score): { getRiskLevelBadge(risk_level) }
                             </div>                                                        
                         </div>
                     </div>       
@@ -137,7 +205,9 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                         <div>
                                             {
                                                 testQuestions.map((ques, i) => {
-                                                    const { prompt, type, options, answer } = ques
+                                                    const { prompt, type, options, answer, id } = ques
+
+                                                    const answerInfoForQues = (answerInfo || []).filter(info => info?.question_id == id)[0]
 
                                                     return(
                                                         <div
@@ -166,17 +236,35 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                                                                 key={optIndex}
                                                                                 className='mb-1 flex items-center gap-4'
                                                                             >
-                                                                                <p className='m-0 p-0 text-sm txt-000 fw-500 txt-15'>
+                                                                                <p className='max:w-3/5 m-0 p-0 text-sm txt-000 fw-500 txt-15'>
                                                                                     {label}
                                                                                 </p>
 
                                                                                 {
                                                                                     isAnswer
                                                                                     &&
-                                                                                        <CheckCircle 
-                                                                                            size={20}
-                                                                                            color='#6F3DCB'
-                                                                                        />
+                                                                                        <>
+                                                                                            <CheckCircle 
+                                                                                                size={20}
+                                                                                                color='#6F3DCB'
+                                                                                            />
+
+                                                                                            {
+                                                                                                answerInfoForQues?.alert_level
+                                                                                                &&
+                                                                                                    <>
+                                                                                                        { getAlertLevelBadge(answerInfoForQues?.alert_level) }
+                                                                                                        
+                                                                                                        {
+                                                                                                            answerInfoForQues?.risk_percent >= 0
+                                                                                                            && 
+                                                                                                                <p className='px-3 py-1 rounded-full text-sm font-medium'>
+                                                                                                                    Answer risk - { answerInfoForQues?.risk_percent } %
+                                                                                                                </p>                                                                                                    
+                                                                                                        }                                                                                                             
+                                                                                                    </>
+                                                                                            }                                                                                       
+                                                                                        </>
                                                                                 }
                                                                             </div>
                                                                         )

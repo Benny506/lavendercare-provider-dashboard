@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import ErrorMsg1 from '@/components/ErrorMsg1';
 import ErrorMsg2 from '@/components/ui/ErrorMsg2';
 import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
-import { isoToDateTime, sortByTimeStamp } from '@/lib/utils';
+import { getMaxByKey, isoToDateTime, sortByTimeStamp } from '@/lib/utils';
 import { useReactToPrint } from 'react-to-print';
 import ZeroItems from '@/components/ui/ZeroItems';
 import PatientInfo from './auxiliary/PatientInfo';
@@ -91,7 +91,7 @@ const CaseReport = () => {
     if(!patient_id || !latestScreeningInfo) return <></>
     
     const { 
-        user_profile, risk_level, test_date, score, test_type, remark
+        user_profile, risk_level, test_date, score, test_type, remark, answer
     } = latestScreeningInfo
 
     const { 
@@ -163,7 +163,8 @@ const CaseReport = () => {
                                     [
                                         { field: "Score", value: score },
                                         { field: "Test type", value: test_type },
-                                        { field: "Risk level", value: risk_level },
+                                        { field: "Risk level (Score)", value: risk_level },
+                                        { field: "Max Risk % (Answer)", value: `${getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })?.risk_percent}%` },
                                         { field: "Interpretation", value: remark },
                                         { field: "Submitted on", value: new Date(test_date).toDateString() },                                        
                                         { field: "Test Info", value: "View", callBack: ({ data }) => openTestInfoModal({ data }) },                                        
@@ -199,7 +200,8 @@ const CaseReport = () => {
                                     <th className="text-left py-3 text-gray-600 font-medium">Date</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Type</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Score</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Risk Level</th>
+                                    <th className="text-left py-3 text-gray-600 font-medium">Risk Level (Score)</th>
+                                    <th className="text-left py-3 text-gray-600 font-medium">Max Risk % (Answer)</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Action</th>
                                 </tr>
                             </thead>
@@ -207,7 +209,9 @@ const CaseReport = () => {
                                 {
                                     patientScreeningHistory.map((history, i) => {
 
-                                        const { test_type, score, created_at } = history
+                                        const { test_type, score, created_at, answer, risk_level } = history
+
+                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })                                        
 
                                         return (
                                             <tr key={i} className="border-b border-gray-100">
@@ -215,10 +219,13 @@ const CaseReport = () => {
                                                 <td className="py-3">{test_type}</td>
                                                 <td className="py-3">{score}</td>
                                                 <td className="py-3">
-                                                    <span className={`${getRiskLevelBadgeClass(risk_level)} px-2 py-1 rounded text-sm`}>
+                                                    <span className={`${getRiskLevelBadgeClass(risk_level?.toLowerCase())} px-2 py-1 rounded text-sm`}>
                                                         { risk_level }
                                                     </span>
                                                 </td>
+                                                <td className="py-3 text-center">
+                                                    { max_risk_percent?.risk_percent }%
+                                                </td>                                                  
                                                 <td className="py-3">
                                                     <button
                                                         onClick={() => openTestInfoModal({ data: history })}

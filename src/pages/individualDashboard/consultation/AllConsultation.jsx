@@ -9,7 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { formatDate1 } from "@/lib/utils";
+import { formatDate1, timeToAMPM_FromHour } from "@/lib/utils";
 import { allStatus, getStatusBadge } from "@/lib/utilsJsx";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import { Icon } from "@iconify/react";
@@ -156,7 +156,7 @@ const AllConsultation = () => {
                 {filteredConsultations.length > 0 ? (
                     filteredConsultations.map((consultation, i) => {
 
-                        const { user_profile, service_type, status, day } = consultation
+                        const { user_profile, service_type, status, day, hour } = consultation
                         const name = user_profile?.name
                         
                         return (
@@ -164,7 +164,7 @@ const AllConsultation = () => {
                                 key={i}
                                 className="grid grid-cols-[2.5fr_2.5fr_2fr_2.5fr_1.8fr] items-center gap-5 py-4 border-b text-sm pl-5"
                             >
-                                <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })}</p>
+                                <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} { timeToAMPM_FromHour({ hour }) }</p>
                                 <p className="px-3 py-2 text-[#101828] capitalize">{name}</p>
                                 <p className="px-3 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")}</p>
                                 {getStatusBadge(status)}

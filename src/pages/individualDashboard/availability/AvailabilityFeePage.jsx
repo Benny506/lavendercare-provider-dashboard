@@ -275,7 +275,7 @@ export default function AvailabilityFeePage() {
             </div>
           </div>
 
-          <div className="bg-white border rounded-lg p-3">
+          <div className="overflow-x-auto w-full bg-white border rounded-lg p-3">
             <div className="overflow-x-auto">
               <table className="table-fixed w-full">
                 <thead>

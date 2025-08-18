@@ -9,7 +9,7 @@ import { getUserDetailsState, setUserDetails } from "@/redux/slices/userDetailsS
 import { appLoadStart, appLoadStop } from "@/redux/slices/appLoadingSlice";
 import { toast } from "react-toastify";
 import supabase from "@/database/dbInit";
-import { getPastDate, isDateBetween, isDateInRange, MENTAL_HEALTH_TEST_TYPES, weekFilters } from "@/lib/utils";
+import { getMaxByKey, getPastDate, isDateBetween, isDateInRange, MENTAL_HEALTH_TEST_TYPES, weekFilters } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { getRiskLevelBadge } from "@/lib/utilsJsx";
 import ZeroItems from "@/components/ui/ZeroItems";
@@ -88,7 +88,7 @@ const AllScreening = () => {
                         </button>
 
                         {showWeekFilter && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 {/* Screening Type Pills */}
@@ -156,7 +156,7 @@ const AllScreening = () => {
                                 </button>
 
                                 {showFilter && (
-                                    <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                                    <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                         <h4 className="font-semibold mb-2">Filter</h4>
 
                                         {/* Screening Type Pills */}
@@ -201,7 +201,8 @@ const AllScreening = () => {
                                     <th className="text-center py-4 font-semibold text-gray-700">Type</th>
                                     <th className="text-center py-4 font-semibold text-gray-700">Score</th>
                                     {/* <th className="text-center py-4 font-semibold text-gray-700">Interpretation</th> */}
-                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level (Score)</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Max Risk % (Answer)</th>
                                     <th className="text-center py-4 font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
@@ -211,12 +212,14 @@ const AllScreening = () => {
 
                                         const { 
                                             user_profile, risk_level, test_date, score,
-                                            test_type,
+                                            test_type, answer
                                         } = item
                                         
                                         const { 
                                             name,
                                         } = user_profile
+
+                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })
 
                                         const submissionDate = new Date(test_date).toDateString()
 
@@ -238,8 +241,11 @@ const AllScreening = () => {
                                                     {getInterpretationBadge(item.interpretation)}
                                                 </td> */}
                                                 <td className="text-center py-6">
-                                                    {getRiskLevelBadge(risk_level)}
+                                                    {getRiskLevelBadge(risk_level?.toLowerCase())}
                                                 </td>
+                                                <td className="text-center py-6">
+                                                    { max_risk_percent?.risk_percent }%
+                                                </td>                                                
                                                 {
                                                     handleViewDetails
                                                     &&

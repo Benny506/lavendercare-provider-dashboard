@@ -8,18 +8,8 @@ import FormInput from "@/components/FormInput";
 import ErrorMsg1 from "@/components/ErrorMsg1";
 import { Square, SquareCheckBig } from "lucide-react";
 import { toast } from "react-toastify";
-
-const specializations = [
-    "Obstetrics",
-    "Mental Health Support",
-    "Physical Recovery",
-    "Pelvic Health",
-    "Maternal Mental Health",
-    "Lactation Support",
-    "Family Planning",
-    "Fertility Support",
-    "Postpartum Doula Services",
-];
+import { specializations } from "@/redux/slices/userDetailsSlice";
+import OtpForm from "@/components/OtpForm";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 

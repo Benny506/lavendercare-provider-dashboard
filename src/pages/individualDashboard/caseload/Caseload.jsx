@@ -114,7 +114,7 @@ const Caseload = () => {
                         </div>                        
 
                         {filters.statusFilterVisible && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 <label className="block text-sm text-gray-600 mb-2">Status</label>
@@ -153,7 +153,7 @@ const Caseload = () => {
                         </div>                        
 
                         {filters.careTypeFilterVisible && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 <label className="block text-sm text-gray-600 mb-2">Care Type</label>
@@ -192,7 +192,7 @@ const Caseload = () => {
                         </div>                        
 
                         {filters.dateRangeFilterVisible && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 <label className="block text-sm text-gray-600 mb-2">Date Range</label>
@@ -278,16 +278,16 @@ const Caseload = () => {
                                 key={index} 
                                 className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
                             >
-                                <p className="md:hidden font-semibold text-gray-600">
+                                <p className="font-semibold text-gray-600">
                                     { name }
                                 </p>
-                                <p className="md:hidden font-semibold text-gray-600">
+                                <p className="font-semibold text-gray-600">
                                     { formatDate1({ dateISO: new Date(day).toISOString() }) }
                                 </p>
-                                <p className="md:hidden font-semibold text-gray-600">
+                                <p className="font-semibold text-gray-600">
                                     {service_type?.replaceAll("_", " ")}
                                 </p>
-                                <span className="md:hidden font-semibold text-gray-600">
+                                <span className="font-semibold text-gray-600">
                                     {getStatusBadge(status)}
                                 </span>
                                 <div>

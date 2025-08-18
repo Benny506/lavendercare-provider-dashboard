@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
-import { Paperclip, Send, Smile, Mic, ClockFading, MessageCircleWarning } from "lucide-react";
+import { Paperclip, Send, Smile, Mic, ClockFading, MessageCircleWarning, Check, CheckCheck } from "lucide-react";
 import TopDivider from "@/components/TopDivider";
 import { useSelector } from "react-redux";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
@@ -13,6 +13,12 @@ import { toast } from "react-toastify";
 import { useDirectChat } from "@/hooks/chatHooks/useDirectChat";
 import { dmTopic } from "@/hooks/chatHooks/dm";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatDate1, formatTimeToHHMMSS, isoToAMPM, isoToDateTime, timeToAMPM_FromHour, timeToAMPM_FromHour_Duration } from "@/lib/utils";
+import PatientInfoModal from "./auxiliary/PatientInfoModal";
+import { useCountdown } from "@/hooks/useCountdown";
+import SummaryNotesModal from "./auxiliary/SummaryNotesModal";
+import supabase from "@/database/dbInit";
+
 
 
 export default function ActiveConsultation() {
@@ -22,18 +28,27 @@ export default function ActiveConsultation() {
     const bookings = useSelector(state => getUserDetailsState(state).bookings)
     const profile = useSelector(state => getUserDetailsState(state).profile)
 
-    const msgsContainerRef = useRef(null)
-
-    const [input, setInput] = useState("");
-    const [showPatientInfo, setShowPatientInfo] = useState(false);  
+    const bottomRef = useRef(null)
 
     const { state } = useLocation()
 
     const selectedChat = bookings.filter(b => b.user_profile?.id == state?.user_id)[0]
     const meId = profile?.id
-    const peerId = selectedChat?.user_profile?.id
+    const peerId = selectedChat?.user_profile?.id    
 
-    const { status, messages, sendMessage, onlineUsers } = useDirectChat({ topic: dmTopic(peerId, meId), meId, peerId });
+    const [input, setInput] = useState("");
+    const [showPatientInfo, setShowPatientInfo] = useState(false);  
+    const [showSummaryNotesModal, setShowSummaryNotesModal] = useState(false);  
+    const [showSessionEndedModal, setShowSessionEndedModal] = useState(false);  
+    const [summaryNote, setSummaryNote] = useState('')
+
+    const { 
+        status, messages, sendMessage, onlineUsers, insertSubStatus, updateSubStatus 
+    } = useDirectChat({ topic: selectedChat?.id, meId, peerId });
+
+    const {
+        remaining
+    } = useCountdown({ startHour: selectedChat?.hour, durationInSeconds: selectedChat?.duration })
 
     const peerOnline = onlineUsers.includes(peerId)
 
@@ -41,32 +56,71 @@ export default function ActiveConsultation() {
         if(!selectedChat){
             toast.info("Unable to locate active booking")
             navigate('/individual/dashboard/consultation')
+
+            return;
+        
         }
+
+        const booking_id = localStorage.getItem('booking_id')
+
+        if(booking_id == selectedChat?.id){
+            const summary_note = localStorage.getItem('summary_note')
+
+            setSummaryNote(summary_note)
+        }               
     }, [])
     
     useEffect(() => {
-    if (messages.length > 0) {
-        const iSentTheLastOne = messages[messages.length-1]?.from == meId
-        if(iSentTheLastOne){
-            msgsContainerRef.current?.scrollTo({
-                top: msgsContainerRef.current.scrollHeight,
-                behavior: 'smooth', // similar to animated: true
-            });            
+        if (messages.length > 0) {
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
         }
-    }
-    }, [messages]);        
+    }, [messages]); 
+    
+    // useEffect(() => {
+    //     if(remaining <= 0){
+    //         console.log("Session ended!!!")
+    //         setShowSessionEndedModal(true)
+    //     }
+    // }, [remaining])
 
     if(!selectedChat){
         return <></>
     }
 
-    const { user_profile } = selectedChat
+    const { 
+        user_profile, duration, 
+        hour, 
+        day 
+    } = selectedChat
+
+    const updateStatusToAwaitingCompletion = async () => {
+        try {
+
+            await supabase
+                .from('bookings')
+                .update({
+                    status: 'awaiting_completion'
+                })
+                .eq("id", selectedChat?.id)
+
+        } catch (error) {
+            console.log(error)
+            toast.error("Error updating appointment status. Contact support after this session")
+        }
+    }
 
     const sendNow = () => {
+        const myMessagesCount = (messages || []).filter(msg => msg.from_user == meId).length 
+
+        if(myMessagesCount === 1){
+            // On first msg, update the booking status to awaiting_completion
+            updateStatusToAwaitingCompletion()
+        }
+
         if (!input.trim()) return;
-        sendMessage({ text: input, toUser: peerId, bookingId: selectedChat?.id });
+        sendMessage({ text: input.trim(), toUser: peerId, bookingId: selectedChat?.id });
         setInput('');
-    };        
+    };   
 
     return (
         <div>
@@ -90,18 +144,42 @@ export default function ActiveConsultation() {
                                     <div>
                                         <h2 className="font-semibold text-gray-900">{user_profile?.name}</h2>
                                         <p className="font-semibold text-xs text-primary-600 text-gray-900">
-                                            {peerOnline ? 'online' : onlineUsers.length > 0 ? 'offline' : ''}
+                                            {peerOnline ? 'online' : remaining <= 0 ? 'Session timer expired' : onlineUsers.length > 0 ? 'offline' : ''}
                                         </p>
                                     </div>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-gray-600"
-                                    onClick={() => setShowPatientInfo(true)}
-                                >
-                                View Info
-                                </Button>
+
+                                <div>
+                                    <p className="text-center txt-13 text-gray-600">
+                                        { formatDate1({ dateISO: new Date(day).toISOString() })}
+                                    </p>
+                                    <p className="text-center txt-15 text-gray-600">
+                                        { timeToAMPM_FromHour({ hour }) } - { timeToAMPM_FromHour_Duration({ startHour: hour, durationInSeconds: duration }) }
+                                    </p>
+                                    <p className="text-center txt-16 text-gray-600">
+                                        { formatTimeToHHMMSS({ secs: remaining }) }
+                                    </p>                                    
+                                </div>
+
+                                <div className="flex items-center justify-end gap-3">
+                                    <Button
+                                        variant="default"
+                                        size="sm"
+                                        className="text-white bg-primary-600"
+                                        onClick={() => setShowSummaryNotesModal(true)}
+                                    >
+                                        Notes    
+                                    </Button>                                
+
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-gray-600"
+                                        onClick={() => setShowPatientInfo(true)}
+                                    >
+                                        View Info
+                                    </Button>                                  
+                                </div>
                             </div>
 
                             {/* Chat Messages */}
@@ -110,9 +188,12 @@ export default function ActiveConsultation() {
                                     {
                                         messages.map((msg) => {
 
-                                            const { message, from_user, pending, failed } = msg
+                                            const { message, from_user, pending, failed, created_at, read_at, delivered_at } = msg
 
                                             const iAmSender = from_user === meId ? true : false
+
+                                            const seen = read_at ? true : false
+                                            const delivered = delivered_at ? true : false
 
                                             return (
                                                 <div key={msg.id} className={`flex ${iAmSender ? 'justify-end' : 'justify-start'}`}>
@@ -133,7 +214,32 @@ export default function ActiveConsultation() {
                                                                 </div>
                                                             ) : (
                                                                 <>
-                                                                    <p className="text-sm">{message}</p>
+                                                                    <p className="text-sm mb-3">{message}</p>
+
+                                                                    <div className="flex flex-col items-end justify-end gap-">
+                                                                        <p 
+                                                                            style={{
+                                                                                color: iAmSender ? '#FFF' : "_000"
+                                                                            }}
+                                                                            className="txt-10 m-0 p-0"
+                                                                        >
+                                                                            { isoToAMPM({ isoString: created_at }) }
+                                                                        </p>
+
+                                                                        {
+                                                                            iAmSender
+                                                                            &&
+                                                                                (
+                                                                                    seen
+                                                                                    ?
+                                                                                        <CheckCheck size={11} color="#FFF" />
+                                                                                    :
+                                                                                    delivered
+                                                                                    &&
+                                                                                        <Check size={11} color="#FFF" />
+                                                                                )
+                                                                        }
+                                                                    </div>                                                                    
                                                                 </>
                                                             )}
                                                         </div>
@@ -169,11 +275,16 @@ export default function ActiveConsultation() {
                                         })
                                     }                                
                                 </div>
+
+                                {/* Bottom Ref  */}
+                                <div ref={bottomRef} />                                
                             </ScrollArea>
 
                             {/* Message Input */}
                             {
-                                status == 'subscribed'
+                                ((status == 'subscribed' && insertSubStatus == 'subscribed' && updateSubStatus == 'subscribed')
+                                &&
+                                (remaining > 0))
                                 &&
                                     <div className="p-4 border-t border-gray-200 bg-white">
                                         <div className="flex items-center gap-3">
@@ -220,89 +331,26 @@ export default function ActiveConsultation() {
                 </div>
 
                 {/* Patient Info Modal */}
-                {showPatientInfo && (
-                    <div className="fixed inset-0 bg-opacity-30 z-50">
-                        <div className="absolute right-10 top-10 w-80 bg-white shadow-xl rounded-lg">
-                            {/* Patient Header */}
-                            <div className="p-6">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-16 h-16 rounded-full bg-orange-200 flex items-center justify-center overflow-hidden">
-                                        <img 
-                                            src="/api/placeholder/64/64" 
-                                            alt="Patient" 
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-semibold text-gray-900">Chinenye Okeke</h2>
-                                        <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full mt-1">
-                                            New
-                                        </span>
-                                    </div>
-                                </div>
+                <PatientInfoModal 
+                    closeModal={() => setShowPatientInfo(false)}
+                    visible={showPatientInfo}
+                    patient={selectedChat?.user_profile}
+                />
 
-                                {/* Patient Information Section */}
-                                <div className="mb-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Patient Information</h3>
-                                    <div className="space-y-3">
-                                        <div className="flex">
-                                            <span className="text-gray-500 w-32">Age:</span>
-                                            <span className="text-gray-900 font-medium">29</span>
-                                        </div>
-                                        <div className="flex">
-                                            <span className="text-gray-500 w-32">Postpartum Day:</span>
-                                            <span className="text-gray-900 font-medium">21</span>
-                                        </div>
-                                        <div className="flex">
-                                            <span className="text-gray-500 w-32">Contact:</span>
-                                            <span className="text-gray-900 font-medium">email@example.com</span>
-                                        </div>
-                                        <div className="flex">
-                                            <span className="text-gray-500 w-32">Phone no</span>
-                                            <span className="text-gray-900 font-medium">0801 234 5678</span>
-                                        </div>
-                                        <div className="flex">
-                                            <span className="text-gray-500 w-32">Pregnancy Status:</span>
-                                            <span className="text-gray-900 font-medium">Postpartum</span>
-                                        </div>
-                                    </div>
-                                </div>
+                {/* Summary note modal  */}
+                <SummaryNotesModal 
+                    closeModal={() => setShowSummaryNotesModal(false)}
+                    visible={showSummaryNotesModal}
+                    booking={selectedChat}
+                />
 
-                                {/* Divider */}
-                                <div className="border-t border-gray-200 mb-6"></div>
-
-                                {/* Attachments & Reports Section */}
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Attachments & Reports</h3>
-                                
-                                    {/* Upload Prescription */}
-                                    <div className="flex items-center gap-2 mb-4">
-                                        <span className="text-gray-700">Upload Prescription</span>
-                                        <div className="w-5 h-5 rounded-full border-2 border-purple-400 flex items-center justify-center">
-                                            <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                                        </div>
-                                    </div>
-
-                                    {/* Empty space for uploaded files */}
-                                    <div className="h-8 mb-6"></div>
-
-                                    {/* Action Buttons */}
-                                    <div className="space-y-3">
-                                        <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
-                                            Request Test
-                                        </button>
-                                        <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
-                                            Refer Provider
-                                        </button>
-                                        <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
-                                            Download Full Report
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {/* Session ended modal  */}
+                {/* <SessionEndedModal 
+                    closeModal={() => setShowSessionEndedModal(false)}
+                    booking_id={selectedChat?.id}
+                    visible={showSessionEndedModal}
+                    summaryNote={summaryNote}
+                /> */}
             </div>
         </div>
     );

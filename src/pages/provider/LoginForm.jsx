@@ -12,6 +12,7 @@ import { appLoadStart, appLoadStop } from "@/redux/slices/appLoadingSlice";
 import { toast } from "react-toastify";
 import supabase, { individualProviderLogin } from "@/database/dbInit";
 import { setUserDetails } from "@/redux/slices/userDetailsSlice";
+import { setNotifications } from "@/redux/slices/notificationSlice";
 
 const LoginForm = () => {
   const dispatch = useDispatch()
@@ -46,9 +47,11 @@ const LoginForm = () => {
 
       if(!data) throw new Error();
 
-      const { user, availability, bookingCostData, bookings, screenings, session } = data
+      const { user, availability, bookingCostData, bookings, screenings, notifications, highRiskAlerts, session } = data
 
-      dispatch(setUserDetails({ profile: user, availability, bookingCostData, bookings, screenings }))
+      dispatch(setUserDetails({ profile: user, availability, bookingCostData, bookings, screenings, highRiskAlerts }))
+
+      dispatch(setNotifications({ notifications }))
 
       setApiReqs({ isLoading: false, errorMsg: null })      
 

@@ -5,9 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 export function useDirectChat({ topic, meId, peerId }) {
 
   const channelRef = useRef(null);
-  const realtimeSubRef = useRef(null);
+  const insertSubRef = useRef(null);
+  const updateSubRef = useRef(null);
+  const msgsRef = useRef(null);
 
   const [status, setStatus] = useState('connecting');
+  const [insertSubStatus, setInsertSubStatus] = useState('connecting')
+  const [updateSubStatus, setUpdateSubStatus] = useState('connecting')
   const [messages, setMessages] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
 
@@ -28,6 +32,14 @@ export function useDirectChat({ topic, meId, peerId }) {
         failed: false,
       };
 
+      const realMessage = {
+        ...optimisticMessage,
+        booking_id: bookingId
+      }
+
+      delete realMessage.pending
+      delete realMessage.failed
+
       // Optimistic UI update
       setMessages((prev) => [...prev, optimisticMessage]);
 
@@ -37,20 +49,12 @@ export function useDirectChat({ topic, meId, peerId }) {
 
       while (attempts < maxAttempts && !inserted) {
         attempts++;
-        const { error } = await supabase.from('bookings_chats').insert([
-          {
-            id: tempId,
-            from_user: meId,
-            to_user: toUser,
-            message: optimisticMessage.message,
-            created_at: optimisticMessage.created_at,
-            delivered_at: null,
-            read_at: null,
-            booking_id: bookingId,
-          },
-        ]);
+        const { error } = await supabase.from('bookings_chats').insert(realMessage);
         if (!error) inserted = true;
-        console.log("ERROR ON COUNT", attempts, error)
+
+        else{
+          console.log("ERROR ON COUNT", attempts, error)
+        }
       }
 
       if (!inserted) {
@@ -59,90 +63,308 @@ export function useDirectChat({ topic, meId, peerId }) {
             msg.id === tempId ? { ...msg, pending: false, failed: true } : msg
           )
         );
+      
+      } else{
+        channelRef.current?.send({
+          type: 'broadcast',
+          event: 'sendMsg',
+          payload: realMessage
+        })        
       }
     },
     [meId, topic]
   );
 
+  // mark a message as delivered
+  const messageDelivered = async (messageId, read_at) => {
+    const { data, error } = await supabase
+      .from("bookings_chats")
+      .update({ delivered_at: new Date().toISOString() })
+      .eq("id", messageId)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error("msgDelivered error:", error);
+      return null;
+    }
+
+    const payload = {
+      ...data
+    }
+
+    if(read_at){
+      payload.read_at = read_at
+    }
+
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'messageDelivered',
+      payload
+    })       
+
+    return payload; // updated message
+  }
+
+  // mark a message as read
+  const messageRead = async (messageId) => {
+    const { data, error } = await supabase
+      .from("bookings_chats")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", messageId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("msgRead error:", error);
+      return null;
+    }
+
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'messageRead',
+      payload: data
+    })         
+
+    return data; // updated message
+  }
+
+  const onMsgReceived = (msg) => {
+    if(msg?.to_user === meId){
+
+        const msgId = msg?.id
+        const msgDelivered = messages.find(m => (m?.id == msgId) && m?.delivered_at)  
+        
+        if(!msgDelivered){
+          messageDelivered(msg?.id, msg?.read_at)
+        }
+    }    
+  }  
+
+  const onMsgRead = (msg) => {
+    if(msg?.to_user === meId){
+
+      const msgId = msg?.id
+      const msgRead = messages.find(m => (m?.id == msgId) && m?.read_at)
+
+      if(!msgRead){
+        messageRead(msg?.id)
+      }
+    }
+  }  
+
+  const onMsgsLoaded = (by_id, timestamp) => {
+    if(by_id == meId && msgsRef.current?.length > 0) return 
+
+    console.log("Messages loaded by other user")
+
+    //all msgs sent to "by_id" that aren't read/delivered are now read/delivered at timestamp  
+
+    const updatedMsgs = [...msgsRef.current];
+
+    for (let i = 0; i < updatedMsgs.length; i++) {
+      const msg = updatedMsgs[i];
+      if (msg.to_user === by_id && (!msg.delivered_at || !msg.read_at)) {
+        updatedMsgs[i] = {
+          ...msg,
+          delivered_at: msg.delivered_at || timestamp,
+          read_at: msg.read_at || timestamp
+        };
+      }
+    }     
+
+    setMessages(dedupeMessages(updatedMsgs))
+  }
+
+  // helper: dedupe messages by id
+  const dedupeMessages = (msgs) => {
+    const seen = new Set();
+    return msgs.filter((msg) => {
+      if (seen.has(msg.id)) return false;
+      seen.add(msg.id);
+      return true;
+    });
+  };
+
+  const replaceOptimisticMessages = (msgs, newMsg) => {
+    const idx = msgs.findIndex((msg) => msg.id === newMsg.id);
+    if (idx !== -1) {
+      // Replace optimistic message
+      const updated = [...msgs];
+      updated[idx] = { ...newMsg, pending: false, failed: false };
+      return updated;
+    }
+
+    const replacedMsgs =  [...msgs, { ...newMsg, pending: false, failed: false }];    
+
+    return dedupeMessages(replacedMsgs)
+  }
+
+  const loadMessages = async ({ msgLoadedTimeStamp }) => {
+    const { data, error } = await supabase
+      .rpc('fetch_and_mark_booking_chat_messages', {
+        p_booking_id: topic,
+        p_user_id: meId,
+        p_timestamp: msgLoadedTimeStamp
+      });
+
+    if (!error) {
+      setMessages((prev) => dedupeMessages([...(prev || []), ...(data || [])]));     
+    }
+  };  
+  
+  useEffect(() => {
+    msgsRef.current = messages
+  }, [messages])  
+
   useEffect(() => {
     if (!topic || !meId) return;
 
     setStatus('connecting');
+    setInsertSubStatus('connecting');
+    setUpdateSubStatus('connecting')
+
+    const msgLoadedTimeStamp = new Date().toISOString()
+    
+    loadMessages({ msgLoadedTimeStamp })
 
     // Presence channel setup remains the same
     const channel = supabase.channel(topic, {
-      config: { broadcast: { self: true, ack: true }, presence: { key: meId, user: { id: meId } } },
-    });
+      config: { broadcast: { self: true, ack: true }, presence: { key: meId } },
+    });   
+
+    channel.on('broadcast', { event: 'sendMsg' }, (payload) => {
+      const msg = payload.payload
+
+      setMessages((prev) => replaceOptimisticMessages(prev || [], msg));
+
+      onMsgReceived(msg)
+    })    
+
+    channel.on('broadcast', { event: 'messageRead' }, (payload) => {
+      const msg = payload.payload
+
+      setMessages((prev) => replaceOptimisticMessages(prev || [], msg));
+    }) 
+    
+    channel.on('broadcast', { event: 'messageDelivered' }, (payload) => {
+      const msg = payload.payload
+
+      setMessages((prev) => replaceOptimisticMessages(prev || [], msg));
+
+      onMsgRead(msg)
+    }) 
+    
+    channel.on('broadcast', { event: 'messagesLoaded' }, (payload) => {
+      const { by_id, timestamp } = payload.payload
+      
+      onMsgsLoaded(by_id, timestamp)
+    })      
 
     // Presence event handlers (join, leave, sync) unchanged
     channel.on('presence', { event: 'sync' }, () => {
       const presenceState = channel.presenceState();
-      const users = Object.keys(presenceState).map((key) => ({
-        key,
-        user: presenceState[key][0]?.user || null,
-      }));
+      const users = Object.keys(presenceState).map((key) => key);
       setOnlineUsers(users);
     });
     channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
       setOnlineUsers((prev) => {
-        if (prev.find((u) => u.key === key)) return prev;
-        return [...prev, { key, user: newPresences[0]?.user || null }];
+        if (prev.includes(key)) return prev;
+        return [...prev, key];
       });
     });
     channel.on('presence', { event: 'leave' }, ({ key }) => {
-      setOnlineUsers((prev) => prev.filter((u) => u.key !== key));
+      setOnlineUsers((prev) => prev.filter((u) => u !== key));
     });
 
     channel.subscribe(async (subStatus) => {
       if (subStatus === 'SUBSCRIBED') {
         setStatus('subscribed');
-        await channel.track({ online_at: new Date().toISOString() });
+
+        channel.send({
+          type: 'broadcast',
+          event: 'messagesLoaded',
+          payload: {
+            by_id: meId,
+            timestamp: msgLoadedTimeStamp
+          }
+        })         
+
+        await channel.track({ online_at: new Date().toISOString() }); 
       } else if (subStatus === 'CLOSED' || subStatus === 'CHANNEL_ERROR') {
         setStatus('error');
       }
     });
 
-    channelRef.current = channel;
+    channelRef.current = channel;      
 
-    // NEXT: Work on this!
-    const realtimeSubscription = supabase.channel('realtime-bookings-chats')
-    
-    realtimeSubscription.on(
+    // New: Subscribe to realtime bookings_chats table changes filtered by booking_id
+    const insertSubscription = supabase
+      .channel('realtime-bookings-chats-insert')
+      .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'bookings_chats',          
-          filter: `or(and(from_user.eq.${meId},to_user.eq.${peerId}),and(from_user.eq.${peerId},to_user.eq.${meId}))`        
+          table: 'bookings_chats',
+          filter: `booking_id=eq.${topic}`,
         },
         (payload) => {
           const newMsg = payload.new;
-          console.log(payload)
-          setMessages((prev) => {
-            const idx = prev.findIndex((msg) => msg.id === newMsg.id);
-            if (idx !== -1) {
-              // Replace optimistic message
-              const updated = [...prev];
-              updated[idx] = { ...newMsg, pending: false, failed: false };
-              return updated;
-            }
-            return [...prev, { ...newMsg, pending: false, failed: false }];
-          });
+          // console.log(newMsg)
+          setMessages((prev) => replaceOptimisticMessages(prev || [], newMsg));
+
+          onMsgReceived(newMsg)
         }
       )
+      .subscribe(status => {
+        console.log("Insert Real-Time status", status)
+        if(status === 'SUBSCRIBED'){
+          setInsertSubStatus('subscribed');
+          return
+        }
 
+        setInsertSubStatus('error');
+      });
 
-    realtimeSubscription.subscribe(status => {
-      console.log("REAL-TIME subscription status", status)
-    });
+    const updateSubscription = supabase
+      .channel('realtime-bookings-chats-update')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'bookings_chats',
+          filter: `booking_id=eq.${topic}`,
+        },
+        (payload) => {
+          const newMsg = payload.new;
+          // console.log(newMsg)
+          setMessages((prev) => replaceOptimisticMessages(prev || [], newMsg));
 
-    realtimeSubRef.current = realtimeSubscription;
+          onMsgRead(newMsg)
+        }
+      )
+      .subscribe(status => {
+        console.log("Update Real-Time status", status)
+        if(status === 'SUBSCRIBED'){
+          setUpdateSubStatus('subscribed');
+          return
+        }
+
+        setUpdateSubStatus('error');
+      });      
+
+    insertSubRef.current = insertSubscription;
+    updateSubRef.current = updateSubscription;
 
     return () => {
       supabase.removeChannel(channel);
-      supabase.removeChannel(realtimeSubscription);
+      supabase.removeChannel(insertSubscription);
+      supabase.removeChannel(updateSubscription)
       channelRef.current = null;
-      realtimeSubRef.current = null;
+      insertSubRef.current = null;
+      updateSubRef.current = null;
       setMessages([]);
       setOnlineUsers([]);
     };
@@ -152,6 +374,8 @@ export function useDirectChat({ topic, meId, peerId }) {
     sendMessage,
     messages,
     status,
+    insertSubStatus,
+    updateSubStatus,
     onlineUsers,
   };
 }

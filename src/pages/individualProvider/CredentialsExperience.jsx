@@ -52,9 +52,12 @@ const CredentialsExperience = () => {
   const createProviderProfile = async (requestBody) => {
     try {
 
+      const updateData = requestBody
+      delete updateData?.email
+
       const { data, error } = await supabase
         .from("provider_profiles")
-        .update(requestBody)
+        .update(updateData)
         .eq("provider_id", userProfile.id)
         .select('*')
 

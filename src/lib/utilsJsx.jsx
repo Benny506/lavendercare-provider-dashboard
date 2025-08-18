@@ -34,12 +34,36 @@ export const RISK_LEVEL_STYLES = {
   }
 };
 
+export const ALERT_LEVEL_STYLES = {
+  "mild": { 
+    bg: 'bg-yellow-100', 
+    text: 'text-yellow-700', 
+    interpretation: 'Slight concern — monitor but not alarming' 
+  },
+  "moderate": { 
+    bg: 'bg-orange-100', 
+    text: 'text-orange-700', 
+    interpretation: 'Noticeable concern — requires attention soon' 
+  },
+  "high": { 
+    bg: 'bg-red-100', 
+    text: 'text-red-700', 
+    interpretation: 'Serious concern — immediate action recommended' 
+  },
+  "severe": { 
+    bg: 'bg-rose-100', 
+    text: 'text-rose-700', 
+    interpretation: 'Critical — urgent and potentially dangerous situation' 
+  }
+};
+
+
 export const getInterpretation = (risklevel) => {
     return RISK_LEVEL_STYLES[risklevel]?.interpretation
 }
 
 export function getRiskLevelBadge(riskLevel) {
-    const { bg, text } = RISK_LEVEL_STYLES[riskLevel] || RISK_LEVEL_STYLES["moderate"];
+    const { bg, text } = RISK_LEVEL_STYLES[riskLevel?.toLowerCase()] || RISK_LEVEL_STYLES["moderate"];
     return (
         <span className={`${bg} ${text} px-3 py-1 rounded-full text-sm font-medium`}>
             {riskLevel}
@@ -47,8 +71,17 @@ export function getRiskLevelBadge(riskLevel) {
     );
 }
 
+export function getAlertLevelBadge(alert_level) {
+    const { bg, text } = ALERT_LEVEL_STYLES[alert_level?.toLowerCase()] || ALERT_LEVEL_STYLES["moderate"];
+    return (
+        <span className={`${bg} ${text} px-3 py-1 rounded-full text-sm font-medium`}>
+            {alert_level}
+        </span>
+    );
+}
+
 export function getRiskLevelBadgeClass(riskLevel){
-    const { bg, text } = RISK_LEVEL_STYLES[riskLevel] || RISK_LEVEL_STYLES["moderate"];
+    const { bg, text } = RISK_LEVEL_STYLES[riskLevel?.toLowerCase()] || RISK_LEVEL_STYLES["moderate"];
 
     return `${bg} ${text}`
 }
@@ -56,7 +89,7 @@ export function getRiskLevelBadgeClass(riskLevel){
 
 export const STATUS_STYLES = {
   new: { bg: 'bg-[#F0F5EA]', text: 'text-[#669F2A]' },
-  completed: { bg: 'bg-[#FCE8E7]', text: 'text-[#E41C11]' },
+  completed: { bg: 'bg-[#74D478]', text: 'text-[#0B400D]' },
   ongoing: { bg: 'bg-[#FFF0E6]', text: 'text-[#B54C00]' },
   missed: { bg: 'bg-[#F4F4F5]', text: 'text-[#6B7280]' },       // neutral gray
   cancelled: { bg: 'bg-[#FDEDED]', text: 'text-[#B91C1C]' },    // soft red background + dark red text
@@ -101,7 +134,7 @@ export function getAppointmentStatus({ status, date_ISO, startHour, duration_sec
   const hasEnded   = now > bookingEndTime;
 
   // 1) If the appointment is new and is currently in progress
-  if (status === 'new' && hasStarted && !hasEnded) {
+  if ((status === 'new' || status == 'awaiting_completion') && hasStarted && !hasEnded) {
     return 'ongoing';
   }
 
@@ -120,10 +153,15 @@ export function getAppointmentStatus({ status, date_ISO, startHour, duration_sec
     return 'cancelled';
   }
 
-  // 5) Completed → either awaiting final confirmation or done
+  // 5) Completed → as is
   if (status === 'completed') {
-    return hasEnded ? 'awaiting_completion' : 'completed';
+    return 'completed';
   }
+
+  // 6) Awating completion → as is
+  if (status === 'awaiting_completion') {
+    return 'awaiting_completion';
+  }  
 
   // Fallback to the raw status
   return status;

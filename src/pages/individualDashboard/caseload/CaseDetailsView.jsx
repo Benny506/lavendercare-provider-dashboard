@@ -82,7 +82,7 @@ const CaseDetailsView = () => {
         {
             icon: <Calendar className="w-5 h-5 text-blue-500" />,
             title: "Consultation preview",
-            description: singleBooking?.note_preview || "Not set",
+            description: singleBooking?.booking_brief || "Not set",
             type: "consultation"
         },
         {
@@ -111,15 +111,15 @@ const CaseDetailsView = () => {
             : 
                 [
                     {
-                        icon: singleBooking?.prescription_text ? <FileText className="w-5 h-5 text-blue-500" /> : <FileWarning className="w-5 h-5 text-red-500" />,
+                        icon: singleBooking?.prescription_note ? <FileText className="w-5 h-5 text-blue-500" /> : <FileWarning className="w-5 h-5 text-red-500" />,
                         title: "Prescription Issued",
-                        description: singleBooking?.prescription_text || "Not set",
+                        description: singleBooking?.prescription_note || "Not set",
                         type: "prescription"
                     },
                     {
-                        icon: singleBooking?.summary ? <FileText className="w-5 h-5 text-gray-500" /> : <MessageCircleWarning className="w-5 h-5 text-red-500" />,
+                        icon: singleBooking?.summary_note ? <FileText className="w-5 h-5 text-gray-500" /> : <MessageCircleWarning className="w-5 h-5 text-red-500" />,
                         title: "Therapy Notes Added",
-                        description: singleBooking?.summary || 'Not set',
+                        description: singleBooking?.summary_note || 'Not set',
                         type: "notes"
                     },
                 ]
@@ -131,7 +131,7 @@ const CaseDetailsView = () => {
             <TopDivider />
             
             {/* Wrap both panels */}
-            <div className="flex flex-col lg:flex-row">
+            <div ref={containerRef} className="flex flex-col lg:flex-row">
 
                 {/* Left Panel */}
                 <div className="w-full lg:max-w-xs h-max bg-white rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none p-6 border-b lg:border-b-0 lg:border-r border-gray-200 shadow-sm">
@@ -169,7 +169,7 @@ const CaseDetailsView = () => {
                                 ?
                                     `Available for completed sessions`
                                 :
-                                    'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Doloremque sequi voluptate nam odio! Sit molestias nihil quidem iure illum autem suscipit ipsa, quod minima doloribus fugiat ipsum quam pariatur aliquam?'
+                                    singleBooking?.summary_note || "Not set"
                             }
                         </p>                       
                     </div>
@@ -187,7 +187,7 @@ const CaseDetailsView = () => {
                             :
                                 <div>
                                     <div className="space-y-3">
-                                        <div className="flex justify-between items-center">
+                                        {/* <div className="flex justify-between items-center">
                                             <span className="text-sm text-gray-700">Prescription Document</span>
                                             {
                                                 singleBooking?.prescription_doc
@@ -214,10 +214,14 @@ const CaseDetailsView = () => {
                                                         Not set
                                                     </p>                                     
                                             }                                        
-                                        </div>
+                                        </div> */}
                                         <Button onClick={downloadEntireDoc} className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200">
                                             Download Consolidated PDF
                                         </Button>
+
+                                        <Button variant={'default'} onClick={() => navigate('/individual/dashboard/consultation/chat', { state: { user_id: user_profile?.id } })} className="w-full bg-primary-600 text-white hover:bg-purple-600">
+                                            View chat messages
+                                        </Button>                                        
                                     </div>
                                 </div>
                         }

@@ -52,6 +52,16 @@ export function generateNumericCode(length = 6) {
   return code;
 }
 
+
+export const formatTimeToHHMMSS = ({ secs }) => {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  return `${h.toString().padStart(2, "0")}:${m
+    .toString()
+    .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+};
+
 export function formatTimeToMMSS({ seconds }) {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -378,3 +388,15 @@ export const weekFilters = [
   { title: 'Next month', keyword: 'next_month' },
   { title: 'Last month', keyword: "last_month" },
 ]
+
+export function removeDuplicatesFromStringArr({ arr }) {
+  return [...new Set(arr)];
+}
+
+export function getMaxByKey({ arr, key }) {
+  if (!arr.length) return null;
+
+  return arr.reduce((maxObj, current) => {
+    return current[key] > maxObj[key] ? current : maxObj;
+  });
+}

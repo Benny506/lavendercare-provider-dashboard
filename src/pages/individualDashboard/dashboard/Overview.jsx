@@ -2,7 +2,7 @@ import Notifications from '@/components/Notifications';
 import TopDivider from '@/components/TopDivider'
 import { Button } from '@/components/ui/button'
 import ZeroItems from '@/components/ui/ZeroItems';
-import { formatDate1, timeToAMPM } from '@/lib/utils';
+import { formatDate1, getMaxByKey, timeToAMPM } from '@/lib/utils';
 import { getNotificationState } from '@/redux/slices/notificationSlice';
 import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
 import { Icon } from '@iconify/react'
@@ -20,11 +20,26 @@ const Overview = () => {
   const bookings = useSelector(state => getUserDetailsState(state).bookings)
   const screenings = useSelector(state => getUserDetailsState(state).screenings)
   const notifications = useSelector(state => getNotificationState(state).notifications)
+  const highRiskAlerts = useSelector(state => getUserDetailsState(state).highRiskAlerts)
 
   const availabilitySet = (availability || [])?.length > 0
   const newConsultations = (bookings || [])?.filter(b => b.status === 'new')
   const totalScreeningsCount = (screenings || [])?.length
 
+  const getHighRiskAlertCount = () => {
+
+    const riskAlerts = (highRiskAlerts || [])
+
+    const viewedCount = riskAlerts?.filter(r_alert => r_alert?.viewed === true)?.length
+
+    return {
+      viewed: viewedCount,
+      total: riskAlerts?.length
+    }
+  }
+
+  const higeRiskAlertCount = getHighRiskAlertCount()
+ 
   return (
     <div>
       <TopDivider />
@@ -76,10 +91,22 @@ const Overview = () => {
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">High-Risk Alerts</p>
           <div className="flex items-start gap-4 py-4">
-            <hr className='h-2 w-4 bg-black my-4' />
+            <p className='flex gap-5 justify-between align-center w-100 text-center m-0 p-0 fw-700 txt-40'>
+              <span>
+                <span className='text-base'>Total: </span>
+                <br />
+                <span>{ higeRiskAlertCount?.total }</span>
+              </span>
+
+              <span>
+                <span className='text-base'>Viewed: </span>
+                <br />
+                <span>{ higeRiskAlertCount?.viewed }</span>
+              </span>              
+            </p>
           </div>
           <hr className="bg-[#D2C3EF] h-0.5 border-none" />
-          <div className='flex items-center gap-2 text-primary-600 font-extrabold'>
+          <div onClick={() => navigate('/individual/dashboard/screenings')} className='flex items-center gap-2 text-primary-600 font-extrabold'>
             <p className="text-lg mt-3 cursor-pointer">View all</p>
             <Icon icon="mdi:arrow-right" className="mt-3.5 text-xl text-[#4CAEA0]" />
           </div>
@@ -100,7 +127,10 @@ const Overview = () => {
               <>
                 <Notifications count={3} />
 
-                <button className="text-start text-[#8B8B8A] text-sm mt-2 cursor-pointer">
+                <button 
+                  onClick={() => navigate('/individual/dashboard/all-notifications')}
+                  className="text-start text-[#8B8B8A] text-sm mt-2 cursor-pointer"
+                >
                   View All Notifications
                 </button>
               </>

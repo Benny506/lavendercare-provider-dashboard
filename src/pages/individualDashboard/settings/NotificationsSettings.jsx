@@ -38,14 +38,14 @@ const NotificationsSettings = () => {
                 <h3 className="text-lg font-medium text-gray-900">New Booking Requests</h3>
               </div>
               <div className="flex items-center space-x-6">
-                <div
+                {/* <div
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.newBookingRequests.enabled ? 'bg-purple-600' : 'bg-gray-300'
                     }`}
                   onClick={() => toggleSetting('newBookingRequests')}
                 >
                   <div className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.newBookingRequests.enabled ? 'translate-x-6' : 'translate-x-1'
                     }`} />
-                </div>
+                </div> */}
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center">
                     <input
@@ -79,14 +79,14 @@ const NotificationsSettings = () => {
                 <h3 className="text-lg font-medium text-gray-900">Upcoming Session Reminders</h3>
               </div>
               <div className="flex items-center space-x-6">
-                <div
+                {/* <div
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.upcomingSessionReminders.enabled ? 'bg-purple-600' : 'bg-gray-300'
                     }`}
                   onClick={() => toggleSetting('upcomingSessionReminders')}
                 >
                   <div className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.upcomingSessionReminders.enabled ? 'translate-x-6' : 'translate-x-1'
                     }`} />
-                </div>
+                </div> */}
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center">
                     <input
@@ -120,14 +120,14 @@ const NotificationsSettings = () => {
                 <h3 className="text-lg font-medium text-gray-900">New Screening Submissions (MH only)</h3>
               </div>
               <div className="flex items-center space-x-6">
-                <div
+                {/* <div
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.newScreeningSubmissions.enabled ? 'bg-purple-600' : 'bg-gray-300'
                     }`}
                   onClick={() => toggleSetting('newScreeningSubmissions')}
                 >
                   <div className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.newScreeningSubmissions.enabled ? 'translate-x-6' : 'translate-x-1'
                     }`} />
-                </div>
+                </div> */}
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center">
                     <input
@@ -161,14 +161,14 @@ const NotificationsSettings = () => {
                 <h3 className="text-lg font-medium text-gray-900">High-Risk Screening Alerts</h3>
               </div>
               <div className="flex items-center space-x-6">
-                <div
+                {/* <div
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.highRiskScreeningAlerts.enabled ? 'bg-purple-600' : 'bg-gray-300'
                     }`}
                   onClick={() => toggleSetting('highRiskScreeningAlerts')}
                 >
                   <div className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${settings.highRiskScreeningAlerts.enabled ? 'translate-x-6' : 'translate-x-1'
                     }`} />
-                </div>
+                </div> */}
                 <div className="flex items-center space-x-4">
                   <label className="flex items-center">
                     <input

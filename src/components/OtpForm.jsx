@@ -11,7 +11,8 @@ import { createOrUpdateOtp, validateOtp } from "@/database/dbInit";
 const initialSeconds = 30
 
 const OtpForm = ({ 
-  name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs
+  name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs, backBtnFunc, requiresAuth,
+  credentialsInUseCallback
 }) => {
 
   const navigate = useNavigate();
@@ -72,17 +73,19 @@ const OtpForm = ({
 
       setApiReqs({ isLoading: true, errorMsg: null })
 
-      const { token, error, userAlreadyExists } = await createOrUpdateOtp({ email, requiresAuth: false })
+      const { token, error, userAlreadyExists } = await createOrUpdateOtp({ email, requiresAuth: requiresAuth ?? false })
 
       if(userAlreadyExists){
         toast.error("Credentials in use by another provider")
         setApiReqs({ isLoading: false, errorMsg: null })
-        navigate('/individual')
+        credentialsInUseCallback ? credentialsInUseCallback() : navigate('/individual')
         
         return
       }
 
-      if(!token.otp || !token.expiresAt || error) throw new Error();
+      console.log(token, error, userAlreadyExists)
+
+      if(!token?.otp || !token?.expiresAt || error) throw new Error();
 
       alert("Still working on email validation! For now, enter this token! You only get to see this once! " + token.otp)
 
@@ -115,7 +118,7 @@ const OtpForm = ({
         <div className="absolute top-16 md:top-20 -left-8 md:left-10 flex items-center gap-2">
           <button
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => backBtnFunc ? backBtnFunc () : navigate(-1)}
             className="cursor-pointer relative text-primary-600 text-base flex items-center gap-1 font-extrabold left-15 top-3"
           >
             <Icon icon="mdi-light:arrow-left" className="text-[30px]" />
