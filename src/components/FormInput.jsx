@@ -1,12 +1,12 @@
 const FormInput = ({ 
     type, placeholder="", label, id, icon, 
     name, onChange=()=>{}, onBlur=()=>{}, 
-    value 
+    value, className, style={}
 }) => {
     return (
         <div className="flex flex-col text-left">
             <label htmlFor={id || type} className="mb-1 text-sm font-light">{label}</label>
-            <div className="flex align-items-center border px-4 justify-between rounded-lg bg-white">
+            <div className={`flex align-items-center border px-4 justify-between rounded-lg bg-white ${className}`}>
                 <input 
                     id={id || type} 
                     name={name}
@@ -17,7 +17,8 @@ const FormInput = ({
                     placeholder={placeholder} 
                     className="py-2 focus:outline-none" 
                     style={{
-                        width: icon ? '85%' : '100%'
+                        width: icon ? '85%' : '100%',
+                        ...style
                     }}
                 />
                 {

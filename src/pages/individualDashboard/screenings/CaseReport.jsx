@@ -3,7 +3,7 @@ import ProfileImg from '@/components/ui/ProfileImg';
 import supabase from '@/database/dbInit';
 import { getInterpretation, getRiskLevelBadgeClass } from '@/lib/utilsJsx';
 import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,59 +12,25 @@ import { Button } from '@/components/ui/button';
 import ErrorMsg1 from '@/components/ErrorMsg1';
 import ErrorMsg2 from '@/components/ui/ErrorMsg2';
 import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
-import { isoToDateTime, sortByTimeStamp } from '@/lib/utils';
-
-const patient = {
-    name: "Chinenye Okeke",
-    risk: "High",
-    age: 29,
-    postpartumDay: 21,
-    contact: "email@example.com",
-    phone: "0801 234 5678",
-    pregnancyStatus: "Postpartum",
-    screeningType: "Medical Consultation",
-    summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et...",
-    attachment: "Mental Health Report",
-};
-
-const latestResult = [
-    { field: "Score", value: "24" },
-    { field: "Interpretation", value: "Severe Depression" },
-    { field: "Submitted on", value: "Jul 12, 2025 - 3:15 PM" },
-];
-
-const history = [
-    {
-        date: "Jul 12, 2025",
-        type: "PHQ-9",
-        score: "24",
-        interpretation: "Severe Depression",
-        risk: { label: "Medium", color: "orange" },
-    },
-    {
-        date: "Jun 30, 2025",
-        type: "EPDS",
-        score: "8",
-        interpretation: "Mild Anxiety",
-        risk: { label: "High", color: "red" },
-    },
-    {
-        date: "Jun 30, 2025",
-        type: "PHQ-9",
-        score: "12",
-        interpretation: "Severe Depression",
-        risk: { label: "Medium", color: "orange" },
-    },
-];
+import { getMaxByKey, isoToDateTime, sortByTimeStamp } from '@/lib/utils';
+import { useReactToPrint } from 'react-to-print';
+import ZeroItems from '@/components/ui/ZeroItems';
+import PatientInfo from './auxiliary/PatientInfo';
 
 const CaseReport = () => {
     const dispatch = useDispatch()
 
     const navigate = useNavigate()
 
-    const { state } = useLocation()
+    const { state } = useLocation()   
 
     const screenings = useSelector(state => getUserDetailsState(state).screenings)
+
+    const containerRef = useRef(null)
+
+    const exportElementToPdf = useReactToPrint({
+        contentRef: containerRef
+    });        
 
     const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
     const [latestScreeningInfo, setLatestScreeningInfo] = useState() 
@@ -79,15 +45,16 @@ const CaseReport = () => {
         
         } else {
 
-            const orderedScreenings = sortByTimeStamp({ arr: screenings, key: 'created_at' })
+            const patientScreenings = (screenings || []).filter(s => s.user_id == patient_id)
 
-            const latestScreeningInfo = orderedScreenings[0]
+            // const patientScreenings = sortByTimeStamp({ arr: patientScreenings, key: 'created_at' })
 
-            const p_screeningHistory = orderedScreenings
+            const latestScreeningInfo = patientScreenings[0]
+
+            const p_screeningHistory = patientScreenings
 
             if(!latestScreeningInfo){
                 const errorMsg = "Error fetching patient information"
-                toast.error(errorMsg)
                 setApiReqs({ isLoading: false, errorMsg })
             
             } else{
@@ -100,17 +67,31 @@ const CaseReport = () => {
     const openTestInfoModal = ({ data }) => setTestInfoModal({ show: true, data })
 
     if(apiReqs.errorMsg){
+        if(screenings?.length > 0){
+            return (
+                <div
+                    style={{
+                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        justifyContent: 'center', gap: '15px',
+                        height: '100%', flexGrow: 1                        
+                    }}                    
+                >
+                    <ZeroItems zeroText={'No screening info found'} />
+                </div>
+            )
+        }
+
         return(
             <ErrorMsg2 
                 errorMsg={apiReqs.errorMsg}
             />
         )
-    }
+    }    
 
     if(!patient_id || !latestScreeningInfo) return <></>
     
     const { 
-        user_profile, risk_level, test_date, score, test_type, remark
+        user_profile, risk_level, test_date, score, test_type, remark, answer
     } = latestScreeningInfo
 
     const { 
@@ -122,7 +103,7 @@ const CaseReport = () => {
     return (
         <div>
             <TopDivider />
-            <div className="min-h-screen bg-white flex rounded-lg">
+            <div ref={containerRef} className="min-h-screen bg-white flex rounded-lg">
                 {/* Left Sidebar */}
                 <div className="w-1/3 p-6 border-r border-gray-200">
                     {/* Patient Header */}
@@ -143,68 +124,12 @@ const CaseReport = () => {
                                     {risk_level}
                                 </span>
                             </div>                      
-                        </div>
-
-                        <div className=''>
-                            <Button 
-                                onClick={() => navigate('/individual/dashboard/consultation/chat', { state: { user_id: user_profile?.id } })}
-                                className={"cursor-pointer bg-primary-600"}
-                            >
-                                Chat
-                            </Button>                                
                         </div>                        
                     </div>
 
-                    <div>
-                        <h2 className="text-lg font-bold mb-4">Patient Information</h2>
-                        <div className="space-y-3 mb-8 text-sm">
-                            {
-                                [
-                                    { title: "Age", value: age },
-                                    { title: "Weight", value: weight ? `${weight}kg` : "not set" },
-                                    { title: "Height", value: height ? `${height}ft` : "not set" },
-                                    { title: "Contact", value: email },
-                                    { title: "Country", value: country },
-                                    { title: "State", value: mothersState },
-                                    { title: "Works from home", value: is_home_mum ? 'YES' : "NO" },
-                                ].map((info, i) => {
-                                    const { title, value } = info
-
-                                    return(
-                                        <div key={i}>
-                                            <span className="font-medium text-gray-600">{title}: </span>
-                                            <span className="font-bold">{value || "not set"}</span>
-                                        </div>                                     
-                                    )
-                                })                           
-                            }                                                                     
-                        </div>
-                    </div>
-
-                    <hr className="border-gray-200 mt-8 mb-8" />
-
-                    <div>
-                        <h2 className="text-lg font-bold mb-4">Pregnancy Information</h2>
-                        <div className="space-y-3 mb-8 text-sm">
-                            {
-                                [
-                                    { title: "Pregnancy Status", value: is_pregnant ? 'Pregnant' : "PostPartum" },
-                                    { title: is_pregnant ? "Pregnant months count" : "Postpartum Day", value: is_pregnant ? pregnant_months_count || 'not set' : postpartumDay || 'not set' },
-                                    { title: "Number of children", value: num_kids ?? "not set "},
-                                    { title: "Registered Antenatal", value: registered_antenatal ? "YES" : "NO" }
-                                ].map((info, i) => {
-                                    const { title, value } = info
-
-                                    return(
-                                        <div key={i}>
-                                            <span className="font-medium text-gray-600">{title}: </span>
-                                            <span className="font-bold">{value || "not set"}</span>
-                                        </div>                                     
-                                    )
-                                })                           
-                            }                                                                     
-                        </div>
-                    </div>                    
+                    <PatientInfo 
+                        patient={user_profile}
+                    />                   
 
                     {/* <div className="text-sm mb-8">
                         <span className="font-bold">Screening Type: </span>
@@ -217,8 +142,7 @@ const CaseReport = () => {
                     </div>
                     <h3 className="font-bold mb-4">Attachments & Reports</h3> */}
                     <div className="mb-6">
-                        <p className="text-gray-600 mb-4">{patient.attachment}</p>
-                        <button className="bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium">
+                        <button onClick={exportElementToPdf} className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium">
                             Download PDF
                         </button>
                     </div>
@@ -239,7 +163,8 @@ const CaseReport = () => {
                                     [
                                         { field: "Score", value: score },
                                         { field: "Test type", value: test_type },
-                                        { field: "Risk level", value: risk_level },
+                                        { field: "Risk level (Score)", value: risk_level },
+                                        { field: "Max Risk % (Answer)", value: `${getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })?.risk_percent}%` },
                                         { field: "Interpretation", value: remark },
                                         { field: "Submitted on", value: new Date(test_date).toDateString() },                                        
                                         { field: "Test Info", value: "View", callBack: ({ data }) => openTestInfoModal({ data }) },                                        
@@ -275,7 +200,8 @@ const CaseReport = () => {
                                     <th className="text-left py-3 text-gray-600 font-medium">Date</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Type</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Score</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Risk Level</th>
+                                    <th className="text-left py-3 text-gray-600 font-medium">Risk Level (Score)</th>
+                                    <th className="text-left py-3 text-gray-600 font-medium">Max Risk % (Answer)</th>
                                     <th className="text-left py-3 text-gray-600 font-medium">Action</th>
                                 </tr>
                             </thead>
@@ -283,7 +209,9 @@ const CaseReport = () => {
                                 {
                                     patientScreeningHistory.map((history, i) => {
 
-                                        const { test_type, score, created_at } = history
+                                        const { test_type, score, created_at, answer, risk_level } = history
+
+                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })                                        
 
                                         return (
                                             <tr key={i} className="border-b border-gray-100">
@@ -291,10 +219,13 @@ const CaseReport = () => {
                                                 <td className="py-3">{test_type}</td>
                                                 <td className="py-3">{score}</td>
                                                 <td className="py-3">
-                                                    <span className={`${getRiskLevelBadgeClass(risk_level)} px-2 py-1 rounded text-sm`}>
+                                                    <span className={`${getRiskLevelBadgeClass(risk_level?.toLowerCase())} px-2 py-1 rounded text-sm`}>
                                                         { risk_level }
                                                     </span>
                                                 </td>
+                                                <td className="py-3 text-center">
+                                                    { max_risk_percent?.risk_percent }%
+                                                </td>                                                  
                                                 <td className="py-3">
                                                     <button
                                                         onClick={() => openTestInfoModal({ data: history })}

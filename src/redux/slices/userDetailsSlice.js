@@ -1,5 +1,18 @@
-import { sortByTimeStamp } from "@/lib/utils"
+import { sortByDate, sortByHour, sortByTimeStamp } from "@/lib/utils"
+import { getAppointmentStatus, sortByStatusPriority } from "@/lib/utilsJsx"
 import { createSlice } from "@reduxjs/toolkit"
+
+export const specializations = [
+    "Obstetrics",
+    "Mental Health Support",
+    "Physical Recovery",
+    "Pelvic Health",
+    "Maternal Mental Health",
+    "Lactation Support",
+    "Family Planning",
+    "Fertility Support",
+    "Postpartum Doula Services",
+];
 
 const userDetailsSlice = createSlice({
     name: 'userDetailsSlice',
@@ -10,7 +23,8 @@ const userDetailsSlice = createSlice({
         availability: [],
         bookingCostData: [],
         bookings: [],
-        screenings: []
+        screenings: [],
+        highRiskAlerts: []
     },
     reducers: {
         setUserDetails: (state, action) => {
@@ -27,21 +41,47 @@ const userDetailsSlice = createSlice({
             }
 
             if(action.payload?.bookings){
-                state.bookings = action.payload.bookings
+                const bookingsWithCorrectStatus = (action.payload?.bookings || []).map(b => {
+                    const { status, hour, duration, day } = b
+
+                    const date_ISO = new Date(day).toISOString()
+
+                    const computedStatus = getAppointmentStatus({ status, date_ISO, startHour: hour, duration_secs: duration })
+
+                    return {
+                        ...b,
+                        status: computedStatus
+                    }
+                })
+
+                const sortedWithPriority = sortByStatusPriority(bookingsWithCorrectStatus)
+
+                state.bookings = sortedWithPriority
             } 
             
             if(action.payload?.screenings){
-                const orderedScreening = sortByTimeStamp({ 
-                    arr: action.payload?.screenings,
-                    key: 'created_at'
-                })
-                state.screenings = orderedScreening
-            }             
+                state.screenings = action.payload?.screenings
+            } 
+            
+            if(action?.payload?.highRiskAlerts){
+                state.highRiskAlerts = action.payload?.highRiskAlerts
+            }
+        },
+
+        clearUserDetails: (state, action) => {
+            state.dailyLogs = []
+            state.profile = null
+            state.session = null
+            state.availability = []
+            state.bookingCostData = []
+            state.bookings = []
+            state.screenings = []
+            state.highRiskAlerts = []
         }
     }
 })
 
-export const { setUserDetails } = userDetailsSlice.actions
+export const { setUserDetails, clearUserDetails } = userDetailsSlice.actions
 
 export const getUserDetailsState = state => state.userDetailsSlice
 

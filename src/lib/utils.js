@@ -52,6 +52,16 @@ export function generateNumericCode(length = 6) {
   return code;
 }
 
+
+export const formatTimeToHHMMSS = ({ secs }) => {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  return `${h.toString().padStart(2, "0")}:${m
+    .toString()
+    .padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+};
+
 export function formatTimeToMMSS({ seconds }) {
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
@@ -122,9 +132,23 @@ export function getTomorrowISO() {
   return DateTime.now().plus({ days: 1 }).toISO();
 }
 
-export function formatDate1({ dateISO }){
-  //Mon July 21
-  return DateTime.fromISO(dateISO).toFormat('ccc dd LLLL');
+export function formatDate1({ dateISO }) {
+  try {
+    if (!dateISO || typeof dateISO !== "string") {
+      return ""; // or "Invalid date"
+    }
+
+    const date = DateTime.fromISO(dateISO);
+
+    if (!date.isValid) {
+      return ""; // or "Invalid date"
+    }
+
+    return date.toFormat("ccc dd LLLL");
+  } catch (error) {
+    console.error("formatDate1 error:", error);
+    return ""; // fallback if something unexpected happens
+  }
 }
 
 export function getWeekdayName({ dateISO }) {
@@ -188,13 +212,103 @@ export function isoToAMPM({ isoString }) {
   return dt.toFormat('hh:mm a'); // hh = 2-digit hour, a = AM/PM
 }
 
+export function isoToTimeAgo({ isoString }) {
+  if (!isoString || typeof isoString !== 'string') return '';
+
+  const date = DateTime.fromISO(isoString, { zone: 'utc' });
+  if (!date.isValid) return '';
+
+  const now = DateTime.now().setZone('utc');
+  const diff = now.diff(date, [
+    'years',
+    'months',
+    'weeks',
+    'days',
+    'hours',
+    'minutes',
+    'seconds'
+  ]).toObject();
+
+  // Determine the largest unit to display
+  if (diff.years >= 1) {
+    return `${Math.floor(diff.years)} year${diff.years >= 2 ? 's' : ''} ago`;
+  }
+  if (diff.months >= 1) {
+    return `${Math.floor(diff.months)} month${diff.months >= 2 ? 's' : ''} ago`;
+  }
+  if (diff.weeks >= 1) {
+    return `${Math.floor(diff.weeks)} week${diff.weeks >= 2 ? 's' : ''} ago`;
+  }
+  if (diff.days >= 1) {
+    return `${Math.floor(diff.days)} day${diff.days >= 2 ? 's' : ''} ago`;
+  }
+  if (diff.hours >= 1) {
+    return `${Math.floor(diff.hours)} hour${diff.hours >= 2 ? 's' : ''} ago`;
+  }
+  if (diff.minutes >= 1) {
+    return `${Math.floor(diff.minutes)} minute${diff.minutes >= 2 ? 's' : ''} ago`;
+  }
+  return `${Math.floor(diff.seconds)} second${diff.seconds >= 2 ? 's' : ''} ago`;
+}
+
 export const MENTAL_HEALTH_TEST_TYPES = [
     "EPDS"
 ]
 
-export const sortByTimeStamp = ({ arr, key }) => {
-  return [...arr].sort((a, b) => new Date(b[key]) - new Date(a[key]));
-}
+export const sortByTimeStamp = ({ arr, key, ascending = false }) => {
+  if (!Array.isArray(arr) || !key) return [];
+
+  return [...arr].sort((a, b) => {
+    const dateA = DateTime.fromISO(a[key]);
+    const dateB = DateTime.fromISO(b[key]);
+
+    // Handle invalid dates gracefully
+    if (!dateA.isValid && !dateB.isValid) return 0;
+    if (!dateA.isValid) return 1;
+    if (!dateB.isValid) return -1;
+
+    return ascending
+      ? dateA.toMillis() - dateB.toMillis()
+      : dateB.toMillis() - dateA.toMillis();
+  });
+};
+
+export const sortByDate = ({ arr, key, ascending = false }) => {
+  if (!Array.isArray(arr) || !key) return [];
+
+  return [...arr].sort((a, b) => {
+    const dateA = DateTime.fromISO(a[key]);
+    const dateB = DateTime.fromISO(b[key]);
+
+    if (!dateA.isValid && !dateB.isValid) return 0;
+    if (!dateA.isValid) return 1; // invalid date goes last
+    if (!dateB.isValid) return -1;
+
+    return ascending
+      ? dateA.toMillis() - dateB.toMillis()
+      : dateB.toMillis() - dateA.toMillis();
+  });
+};
+
+export const sortByHour = ({ arr, key, ascending = false }) => {
+  if (!Array.isArray(arr)) return [];
+
+  return [...arr].sort((a, b) => {
+    const hourA = key ? parseInt(a[key], 10) : parseInt(a, 10);
+    const hourB = key ? parseInt(b[key], 10) : parseInt(b, 10);
+
+    if (isNaN(hourA) && isNaN(hourB)) return 0;
+    if (isNaN(hourA)) return 1;
+    if (isNaN(hourB)) return -1;
+
+    // Use Luxon to normalize hours
+    const millisA = DateTime.now().set({ hour: hourA, minute: 0 }).toMillis();
+    const millisB = DateTime.now().set({ hour: hourB, minute: 0 }).toMillis();
+
+    return ascending ? millisA - millisB : millisB - millisA;
+  });
+}; 
+
 
 export function getPastDate(daysAgo) {
   return DateTime.now().minus({ days: daysAgo }).toISO();
@@ -215,29 +329,74 @@ export function isDateBetween({ startDate, endDate, checkDate }) {
 }
 
 export function isDateInRange({ dateToCheck, range }) {
+  if (!dateToCheck || typeof dateToCheck !== "string") {
+    return false; // Prevent invalid input crash
+  }
+
   const checkDate = DateTime.fromISO(dateToCheck).startOf("day");
+  if (!checkDate.isValid) return false;
+
   const today = DateTime.now().startOf("day");
   let startDate, endDate;
 
   if (range === "this_week") {
     startDate = today.startOf("week");
-    endDate = today;
-  } else if (range === "last_week") {
+    endDate = today; // or .endOf("week") if you want whole week
+  } 
+  else if (range === "last_week") {
     startDate = today.startOf("week").minus({ weeks: 1 });
     endDate = startDate.endOf("week");
-  } else if (range === "this_month") {
+  } 
+  else if (range === "next_week") {
+    startDate = today.startOf("week").plus({ weeks: 1 });
+    endDate = startDate.endOf("week");
+  } 
+  else if (range === "this_month") {
     startDate = today.startOf("month");
-    endDate = today;
-  } else if (range === "last_month") {
+    endDate = today.endOf('month');
+  } 
+  else if (range === "last_month") {
     startDate = today.startOf("month").minus({ months: 1 });
     endDate = startDate.endOf("month");
-  } else if (/^last_\d+_days$/.test(range)) {
+  } 
+  else if (range === "next_month") {
+    startDate = today.startOf("month").plus({ months: 1 });
+    endDate = startDate.endOf("month");
+  } 
+  else if (/^last_\d+_days$/.test(range)) {
     const days = parseInt(range.match(/\d+/)[0], 10);
     startDate = today.minus({ days });
     endDate = today;
-  } else {
+  } 
+  else {
     throw new Error("Invalid range type");
   }
 
   return checkDate >= startDate && checkDate <= endDate;
+}
+
+export const weekFilters = [
+  { title: 'All', keyword: null },
+
+  //Weeks
+  { title: 'This week', keyword: "this_week" },
+  { title: 'Last week', keyword: "last_week" },
+  { title: 'Next week', keyword: "next_week" },
+
+  //Months
+  { title: 'This month', keyword: 'this_month' },
+  { title: 'Next month', keyword: 'next_month' },
+  { title: 'Last month', keyword: "last_month" },
+]
+
+export function removeDuplicatesFromStringArr({ arr }) {
+  return [...new Set(arr)];
+}
+
+export function getMaxByKey({ arr, key }) {
+  if (!arr.length) return null;
+
+  return arr.reduce((maxObj, current) => {
+    return current[key] > maxObj[key] ? current : maxObj;
+  });
 }

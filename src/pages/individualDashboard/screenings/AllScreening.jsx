@@ -1,12 +1,5 @@
 import TopDivider from "@/components/TopDivider";
 import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Icon } from "@iconify/react";
 import { Download, ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -16,27 +9,18 @@ import { getUserDetailsState, setUserDetails } from "@/redux/slices/userDetailsS
 import { appLoadStart, appLoadStop } from "@/redux/slices/appLoadingSlice";
 import { toast } from "react-toastify";
 import supabase from "@/database/dbInit";
-import { getPastDate, isDateBetween, isDateInRange, MENTAL_HEALTH_TEST_TYPES } from "@/lib/utils";
+import { getMaxByKey, getPastDate, isDateBetween, isDateInRange, MENTAL_HEALTH_TEST_TYPES, weekFilters } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { getRiskLevelBadge } from "@/lib/utilsJsx";
 import ZeroItems from "@/components/ui/ZeroItems";
-import useDivToPDF from "@/lib/useDivToPdf";
+import { useReactToPrint } from "react-to-print";
 
-
-const weekFilters = [
-    { title: 'All', keyword: null },
-    { title: 'This week', keyword: "this_week" },
-    { title: 'Last week', keyword: "last_week" },
-    { title: 'Last month', keyword: "last_month" },
-]
 
 
 const AllScreening = () => {
     const dispatch = useDispatch()
 
     const navigate = useNavigate()
-
-    const exportPDF = useDivToPDF();
 
     const screenings = useSelector(state => getUserDetailsState(state).screenings)
     const bookings = useSelector(state => getUserDetailsState(state).bookings)
@@ -48,8 +32,7 @@ const AllScreening = () => {
     const [showWeekFilter, setShowWeekFilter] = useState(false)
     const [selectedType, setSelectedType] = useState("All");
     const [selectedWeekFilter, setSelectedWeekFilter] = useState(weekFilters[0])
-    const [toPdf, setToPdf] = useState(false)
-    const [apiReqs, setApiReqs] = useState({ isLoading: true, errorMsg: null })
+    // const [apiReqs, setApiReqs] = useState({ isLoading: true, errorMsg: null })
 
     const resetFilters = () => {
         setSelectedType("All")
@@ -57,6 +40,10 @@ const AllScreening = () => {
         setShowFilter(false)
     }
 
+    const exportElementToPdf = useReactToPrint({
+        contentRef: screeningsContainerRef
+    });   
+    
     const filteredData = screenings.filter(item => {
 
         const { user_profile, test_type, test_date } = item
@@ -76,26 +63,12 @@ const AllScreening = () => {
 
     const handleExportBtnClick = async () => {
         try {
-
-            setToPdf(true)
-
-            dispatch(appLoadStart())
-
-            const timer = setTimeout(async () => {
-                await exportPDF(screeningsContainerRef.current, 'all-screenings.pdf')
-
-                clearInterval(timer)
-            })
-
-            toast.success("Screenings data exported")
+            exportElementToPdf({ ref: screeningsContainerRef.current })
             
         } catch (error) {
             console.log(error)
             toast.error("Error exporting screenings data")
         
-        } finally{
-            setToPdf(false)
-            dispatch(appLoadStop())
         }
     }  
 
@@ -115,7 +88,7 @@ const AllScreening = () => {
                         </button>
 
                         {showWeekFilter && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 {/* Screening Type Pills */}
@@ -155,7 +128,7 @@ const AllScreening = () => {
                 </div>
 
                 {/* Main content card */}
-                <div id="all-screening-main-container" className="rounded-lg bg-white p-6 shadow-sm">
+                <div ref={screeningsContainerRef} className="rounded-lg bg-white p-6 shadow-sm">
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b pb-4">
                         <div>
@@ -183,7 +156,7 @@ const AllScreening = () => {
                                 </button>
 
                                 {showFilter && (
-                                    <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-10">
+                                    <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                         <h4 className="font-semibold mb-2">Filter</h4>
 
                                         {/* Screening Type Pills */}
@@ -219,7 +192,7 @@ const AllScreening = () => {
                     </div>
 
                     {/* Table */}
-                    <div ref={screeningsContainerRef} className="overflow-x-auto">
+                    <div id="all-screenings-table" className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b text-xs md:text-sm">
@@ -228,12 +201,9 @@ const AllScreening = () => {
                                     <th className="text-center py-4 font-semibold text-gray-700">Type</th>
                                     <th className="text-center py-4 font-semibold text-gray-700">Score</th>
                                     {/* <th className="text-center py-4 font-semibold text-gray-700">Interpretation</th> */}
-                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level</th>
-                                    {
-                                        !toPdf
-                                        &&
-                                            <th className="text-center py-4 font-semibold text-gray-700">Actions</th>
-                                    }
+                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level (Score)</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Max Risk % (Answer)</th>
+                                    <th className="text-center py-4 font-semibold text-gray-700">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -242,12 +212,14 @@ const AllScreening = () => {
 
                                         const { 
                                             user_profile, risk_level, test_date, score,
-                                            test_type,
+                                            test_type, answer
                                         } = item
                                         
                                         const { 
                                             name,
                                         } = user_profile
+
+                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })
 
                                         const submissionDate = new Date(test_date).toDateString()
 
@@ -269,23 +241,27 @@ const AllScreening = () => {
                                                     {getInterpretationBadge(item.interpretation)}
                                                 </td> */}
                                                 <td className="text-center py-6">
-                                                    {getRiskLevelBadge(risk_level)}
+                                                    {getRiskLevelBadge(risk_level?.toLowerCase())}
                                                 </td>
+                                                <td className="text-center py-6">
+                                                    { max_risk_percent?.risk_percent }%
+                                                </td>                                                
                                                 {
-                                                    !toPdf
+                                                    handleViewDetails
                                                     &&
                                                         <td className="text-center py-6">
                                                             <Button className="cursor-pointer bg-primary-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold" onClick={() => handleViewDetails(item)}>
                                                                 View Details
                                                             </Button>
-                                                        </td>                                        
+                                                        </td>                                     
                                                 }
                                             </tr>
                                         )})
                                 }
                             </tbody>
                         </table>
-                    </div> 
+                    </div>                     
+                    {/* <DisplayAllScreeningsTable filteredData={filteredData} handleViewDetails={handleViewDetails} /> */}
 
                     {/* Empty state if no data */}
                     {((filteredData.length === 0) || !filteredData) && (

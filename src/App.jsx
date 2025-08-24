@@ -4,15 +4,19 @@ import { ToastContainer } from "react-toastify"
 import AppLoading from "./components/appLoading/AppLoading"
 
 import './App.css'
+import { ErrorBoundary } from "react-error-boundary"
+import AppCrash from "./pages/appCrash/AppCrash"
 
 const App = () => {
   return (
     <HashRouter>
-      <AppLoading />
+      <ErrorBoundary fallback={<AppCrash />}>
+        <AppLoading />
 
-      <AppRoutes />
+        <AppRoutes />
 
-      <ToastContainer />
+        <ToastContainer />
+      </ErrorBoundary>
     </HashRouter>
   )
 }

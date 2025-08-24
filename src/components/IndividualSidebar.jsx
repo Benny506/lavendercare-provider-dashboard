@@ -2,11 +2,15 @@ import { Icon } from '@iconify/react';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearUserDetails, getUserDetailsState } from '@/redux/slices/userDetailsSlice';
 import Image from './ui/image';
 import { Menu } from 'lucide-react';
 import { X } from 'lucide-react';
+import { toast } from 'react-toastify';
+import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
+import supabase from '@/database/dbInit';
+import ProfileImg from './ui/ProfileImg';
 
 const navItems = [
     {
@@ -61,8 +65,27 @@ const navItems = [
 
 
 const IndividualSidebar = ({isOpen, setIsOpen}) => {
+    const dispatch = useDispatch()
 
     const navigate = useNavigate()
+
+    const userLogout = async () => {
+        try {
+
+            dispatch(appLoadStart())
+
+            dispatch(clearUserDetails())
+            await supabase.auth.signOut()
+
+            dispatch(appLoadStop())
+
+            toast.success("Logged out")
+            
+        } catch (error) {
+            console.log(error)
+            toast.error("Error logging you out")
+        }
+    }    
 
     const { pathname } = useLocation()
 
@@ -105,7 +128,7 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
                 </button>
             </div> */}
             <aside
-                className={`fixed top-0 left-0 h-full md:h-max lg:h-screen w-64 bg-white border-r border-[#E9E9E9] flex flex-col justify-between transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static`}
+                className={`fixed top-0 left-0 h-full md:h-screen lg:h-screen w-64 bg-white border-r border-[#E9E9E9] flex flex-col justify-between transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static`}
             >
                 <div className=''>
                     {/* Logo */}
@@ -124,6 +147,8 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
 
                             const handleNavClick = () => {
                                 path && navigate(path)
+                                !path && toast.info("Waiting for UI")
+
                                 setIsOpen(false)
                                 return;
                             }
@@ -159,7 +184,10 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
                             </span>
                             <span className="font-medium text-md">Settings</span>
                         </div>
-                        <div className="flex items-center gap-4 py-3 px-4 rounded-lg cursor-pointer text-[#2D1A4A] hover:bg-[#F3F0FA]">
+                        <div 
+                            onClick={() => toast.info("Working on UI")}
+                            className="flex items-center gap-4 py-3 px-4 rounded-lg cursor-pointer text-[#2D1A4A] hover:bg-[#F3F0FA]"
+                        >
                             <span className="w-6 h-6 flex items-center justify-center">
                                 <Icon icon="material-symbols-light:support-agent-outline-rounded" width="24" height="24" style={{ color: "#000" }} />
                             </span>
@@ -170,15 +198,17 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
 
                 {/* User Profile */}
                 <div className="px-6 py-5 pb-15 flex items-center gap-4 border-t border-[#E9E9E9]">
-                    <Avatar>
-                        <AvatarImage src="/assets/Avatar.svg" />
-                        {/* <AvatarFallback>CN</AvatarFallback> */}
-                    </Avatar>
+                    <ProfileImg 
+                        profile_img={userProfile?.profile_img}
+                    />
                     <div className="flex-1">
                         <div className="font-bold text-md text-[#2D1A4A]">{userProfile?.provider_name}</div>
                         <div className="text-[#7B3FE4] text-sm">{userProfile?.email}</div>
                     </div>
-                    <button className="cursor-pointer">
+                    <button 
+                        onClick={userLogout}
+                        className="cursor-pointer"
+                    >
                         <Icon icon="solar:logout-outline" width="24" height="24" style={{ color: "red" }} />
                     </button>
                 </div>

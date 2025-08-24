@@ -72,6 +72,8 @@ import IndividualProfilePage from "@/pages/individualDashboard/settings/ProfileP
 import AutoLogin from "@/components/AutoLogin";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ActiveConsultation from "@/pages/individualDashboard/consultation/ActiveConsultation";
+import NotFound from "@/pages/notFound/NotFound";
+import AllNotifications from "@/pages/individualDashboard/dashboard/AllNotifications";
 
 const AppRoutes = () => (
   // <AutoLogin>
@@ -166,13 +168,14 @@ const AppRoutes = () => (
       {/* Individual Dashboard  */}
       <Route path="/individual/dashboard" element={/*<ProtectedRoute>*/<IndividualDashboardLayout />/*</ProtectedRoute>}*/ }>
         <Route index element={<Overview />} />
+        <Route path="all-notifications" element={<AllNotifications />} />
         <Route path="availability" element={<AvailabilityFeePage />} />
         {/* <Route path="bookings" element={<AllRequests />} />
         <Route path="bookings/dashboard" element={<BookingDashboard />} />
         <Route path="bookings/dashboard/chat" element={<ChatSection />} /> */}
         <Route path="consultation" element={<AllConsultation />} />
         <Route path="consultation/chat" element={<ActiveConsultation />} />
-        <Route path="consultation/all-chat" element={<Messages />} />
+        {/* <Route path="consultation/all-chat" element={<Messages />} /> */}
         <Route path="caseload" element={<Caseload />} />
         <Route path="caseload/case" element={<CaseDetailsView />} />
         <Route path="screenings" element={<AllScreening />} />
@@ -181,8 +184,11 @@ const AppRoutes = () => (
         <Route path="settings/notifications" element={<NotificationsSettings />} />
         <Route path="settings/integrations" element={<IntegrationsPage />} />
         <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
-        <Route path="profile" element={<IndividualProfilePage />} />
+        <Route path="settings/profile" element={<IndividualProfilePage />} />
       </Route>
+
+
+      <Route path="*" element={<NotFound />} />
 
     </Routes>
   // </AutoLogin>

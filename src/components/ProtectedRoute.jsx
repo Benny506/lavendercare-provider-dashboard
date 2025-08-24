@@ -3,12 +3,21 @@ import { useSelector } from "react-redux"
 import { Button } from "./ui/button"
 import Image from "./ui/image"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
 
 export default function ProtectedRoute({ children }){
     
     const navigate = useNavigate() 
     
     const userProfile = useSelector(state => getUserDetailsState(state).profile)
+
+    useEffect(() => {
+        if(!userProfile?.id){
+            navigate('/', { replace: true })
+        }
+    }, [userProfile])
+
+    if(!userProfile?.id) return <></>
 
     if(!userProfile?.credentials_approved) return (
         <div className="bg-img gap-2 w-screen min-h-screen bg-primary-100 flex flex-col justify-center items-center">

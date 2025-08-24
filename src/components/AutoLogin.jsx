@@ -4,6 +4,7 @@ import AppLoading from "./appLoading/AppLoading"
 import { useDispatch } from "react-redux"
 import { setUserDetails } from "@/redux/slices/userDetailsSlice"
 import supabase, { getIndividualProviderDetails } from "@/database/dbInit"
+import { setNotifications } from "@/redux/slices/notificationSlice"
 
 export default function AutoLogin({ children }){
     const dispatch = useDispatch()
@@ -39,6 +40,8 @@ export default function AutoLogin({ children }){
     useEffect(() => {
         if (!user) return;
 
+        // console.log(user)
+
         async function loadProfile() {
 
             const { data: infoData, error: infoError } = await getIndividualProviderDetails({ id: user.id })
@@ -56,8 +59,14 @@ export default function AutoLogin({ children }){
                     availability: infoData.availability,
                     bookingCostData: infoData.bookingCostData,
                     bookings: infoData.bookings,
-                    screenings: infoData.screenings
+                    screenings: infoData.screenings,
+                    highRiskAlerts: infoData.highRiskAlerts
                 }))
+
+                dispatch(setNotifications({
+                    notifications: infoData?.notifications
+                }))
+
                 setAppLoading(false)
             }
         }

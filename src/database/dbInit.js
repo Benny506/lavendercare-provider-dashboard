@@ -1,4 +1,4 @@
-import { generateNumericCode } from '@/lib/utils'
+import { generateNumericCode, removeDuplicatesFromStringArr } from '@/lib/utils'
 import { createClient } from '@supabase/supabase-js'
 
 export const SUPABASE_URL = 'https://tzsbbbxpdlupybfrgdbs.supabase.co'
@@ -38,7 +38,9 @@ export async function individualProviderLogin({ email, password }) {
         bookingCostData: infoData.bookingCostData,
         bookings: infoData.bookings, 
         screenings: infoData.screenings,
-        session: data.session,        
+        session: data.session,  
+        notifications: infoData.notifications,
+        highRiskAlerts: infoData.highRiskAlerts      
     },
     errorMsg: null 
   }
@@ -69,6 +71,7 @@ export async function getIndividualProviderDetails({ id }){
     .eq("provider_id", id)  
     .order("day", { ascending: true, nullsFirst: false })      
     .order('hour', { ascending: true, nullsFirst: false })
+    .limit(100)
 
 
   if(profileError || availabilityError || providerBookingCostError || bookingsError) {
@@ -79,7 +82,7 @@ export async function getIndividualProviderDetails({ id }){
     return { error: "Error getting provider profile", data: null };
   }
 
-  const bookings_userIds = bookingsData.map(b => b?.user_profile?.id)
+  const bookings_userIds = removeDuplicatesFromStringArr({ arr: bookingsData.map(b => b?.user_profile?.id) })
 
   const { data: screeningsData, error: screeningsError } = await supabase
     .from('mental_health_test_answers')
@@ -88,10 +91,29 @@ export async function getIndividualProviderDetails({ id }){
       user_profile:user_profiles (*)      
     `)
     .in('user_id', bookings_userIds) 
-
+    .order("created_at", { ascending: true, nullsFirst: false }) 
+    .limit(100)
   
-  if(screeningsError){
+  const orString = `to_id.eq.${id}, and(from_id.in.(${bookings_userIds}), type.eq.screening)`
+
+  const { data: notificationsData, error: notificationsError } = await supabase
+    .from('notifications')
+    .select('*')
+    .or(orString)
+    .order("created_at", { ascending: true, nullsFirst: false }) 
+    .limit(100)
+
+  const { data: highRiskAlertsData, error: highRiskAlertsError } = await supabase
+    .from('high_risk_alerts')
+    .select('*')
+    .in('user_id', bookings_userIds)
+    .order("created_at", { ascending: true, nullsFirst: false }) 
+    .limit(100)
+  
+  if(screeningsError || notificationsError || highRiskAlertsError){
     console.log(screeningsError)
+    console.log(notificationsError)
+    console.log(highRiskAlertsError)
     return { error: "Error getting provider profile", data: null };
   }
 
@@ -102,7 +124,9 @@ export async function getIndividualProviderDetails({ id }){
       availability: availabilityData,
       bookingCostData: providerBookingCostData,
       bookings: bookingsData,
-      screenings: screeningsData
+      screenings: screeningsData,
+      notifications: notificationsData,
+      highRiskAlerts: highRiskAlertsData
     },
     error: null
   }
