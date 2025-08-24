@@ -91,7 +91,7 @@ const Overview = () => {
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">High-Risk Alerts</p>
           <div className="flex items-start gap-4 py-4">
-            <p className='flex gap-5 justify-between align-center w-100 text-center m-0 p-0 fw-700 txt-40'>
+            <p className='flex gap-5 justify-between align-center w-full text-center m-0 p-0 fw-700 txt-40'>
               <span>
                 <span className='text-base'>Total: </span>
                 <br />

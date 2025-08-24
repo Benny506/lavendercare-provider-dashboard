@@ -275,41 +275,46 @@ export default function AvailabilityFeePage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto w-full bg-white border rounded-lg p-3">
-            <div className="overflow-x-auto">
-              <table className="table-fixed w-full">
-                <thead>
-                  <tr>
-                    <th className="border-b text-md p-2 font-normal text-left w-24">Time</th>
-                    {days.map(day => (
-                      <th key={day} className="border-b text-md p-2 font-normal text-center">{day}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {timeSlots.map(time => (
-                    <tr key={time}>
-                      <td className="border-b p-2 text-sm text-left">{time}</td>
-                      {days.map(day => {
-                        const key = `${day}_${time}`;
-                        const checked = availability[key];
-                        return (
-                          <td key={key} className="border-b p-2 text-center">
-                            <input
-                              type="checkbox"
-                              checked={!!checked}
-                              onChange={() => toggleAvailability(day, time)}
-                              className="w-4 h-4 cursor-pointer"
-                            />
-                          </td>
-                        );
-                      })}
-                    </tr>
+          <div className="overflow-x-auto bg-white lg:w-full w-[90vw] border rounded-lg p-3">
+            <table className="border-collapse w-[1000px]">
+              <thead>
+                <tr>
+                  <th className="border-b text-md p-2 font-normal text-left w-24">Time</th>
+                  {days.map(day => (
+                    <th
+                      key={day}
+                      className="border-b text-md p-2 font-normal text-center"
+                    >
+                      {day}
+                    </th>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </tr>
+              </thead>
+
+              <tbody>
+                {timeSlots.map(time => (
+                  <tr key={time}>
+                    <td className="border-b p-2 text-sm text-left">{time}</td>
+                    {days.map(day => {
+                      const key = `${day}_${time}`;
+                      const checked = availability[key];
+                      return (
+                        <td key={key} className="border-b p-2 text-center">
+                          <input
+                            type="checkbox"
+                            checked={!!checked}
+                            onChange={() => toggleAvailability(day, time)}
+                            className="w-4 h-4 cursor-pointer"
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+
 
               
           <Formik

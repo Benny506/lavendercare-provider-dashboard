@@ -87,8 +87,8 @@ const AllConsultation = () => {
             <TopDivider />
 
             {/* Tabs and Button */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4 mb-4">
+                <div className="flex flex-wrap gap-4">
                     {[{ type: 'All', title: 'All' }, ...allStatus].map((c_status) => {
 
                         const { type, title } = c_status
@@ -112,7 +112,9 @@ const AllConsultation = () => {
             </div>
 
             {/* Main Table Card */}
-            <div className="rounded-lg lg:max-h-[70vh] lg:overflow-y-auto bg-white p-6 shadow-sm">
+            <div 
+                className="rounded-lg lg:max-h-[70vh] lg:overflow-y-auto bg-white p-6 shadow-sm"
+            >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b pb-4">
                     <div>
                         <h2 className="text-xl font-bold">Consultations</h2>
@@ -143,51 +145,53 @@ const AllConsultation = () => {
                     </div>
                 </div>
 
-                {/* Header */}
-                <div className="grid grid-cols-[2.5fr_2.5fr_2fr_2.5fr_1.5fr] items-center font-semibold text-xs md:text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
-                    <p className="">Opening Date</p>
-                    <p className="">Client Name</p>
-                    <p className="">Service Type</p>
-                    <p className="">Status</p>
-                    <p className="">Actions</p>
-                </div>
-
-                {/* Data Rows */}
-                {filteredConsultations.length > 0 ? (
-                    filteredConsultations.map((consultation, i) => {
-
-                        const { user_profile, service_type, status, day, hour } = consultation
-                        const name = user_profile?.name
-                        
-                        return (
-                            <div
-                                key={i}
-                                className="grid grid-cols-[2.5fr_2.5fr_2fr_2.5fr_1.8fr] items-center gap-5 py-4 border-b text-sm pl-5"
-                            >
-                                <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} { timeToAMPM_FromHour({ hour }) }</p>
-                                <p className="px-3 py-2 text-[#101828] capitalize">{name}</p>
-                                <p className="px-3 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")}</p>
-                                {getStatusBadge(status)}
-                                <div className="px-3 py-2">
-                                    <Button
-                                        className={`rounded-full px-3 py-1 text-sm cursor-pointer ${status === "closed" ? "bg-white border border-[#6941C6] text-[#6941C6]" : "bg-[#6941C6] text-white"}`}
-                                        onClick={() => setCurrentConsultation(consultation)}
-                                    >
-                                        {/* {status === "closed" ? "View Summary" : "Enter Chat"} */}
-
-                                        View Info
-                                    </Button>
-                                </div>
-                            </div>
-                        )
-                    })
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center text-[#667085]">
-                        <Icon icon="uil:calender" className="w-16 h-16 text-[#6941C6] mb-4" />
-                        <p className="font-semibold text-lg">No data to display</p>
-                        <p className="text-sm">Recent appointments will appear here</p>
+                <div className="">
+                    {/* Header */}
+                    <div className="hidden md:grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                        <p className="">Opening Date</p>
+                        <p className="">Client Name</p>
+                        <p className="">Service Type</p>
+                        <p className="">Status</p>
+                        <p className="">Actions</p>
                     </div>
-                )}
+
+                    {/* Data Rows */}
+                    {filteredConsultations.length > 0 ? (
+                        filteredConsultations.map((consultation, i) => {
+
+                            const { user_profile, service_type, status, day, hour } = consultation
+                            const name = user_profile?.name
+                            
+                            return (
+                                <div
+                                    key={i}
+                                    className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
+                                >
+                                    <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} { timeToAMPM_FromHour({ hour }) }</p>
+                                    <p className="px-3 py-2 text-[#101828] capitalize">{name}</p>
+                                    <p className="px-3 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")}</p>
+                                    {getStatusBadge(status)}
+                                    <div className="px-3 py-2">
+                                        <Button
+                                            className={`rounded-full px-3 py-1 text-sm cursor-pointer ${status === "closed" ? "bg-white border border-[#6941C6] text-[#6941C6]" : "bg-[#6941C6] text-white"}`}
+                                            onClick={() => setCurrentConsultation(consultation)}
+                                        >
+                                            {/* {status === "closed" ? "View Summary" : "Enter Chat"} */}
+
+                                            View Info
+                                        </Button>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-20 text-center text-[#667085]">
+                            <Icon icon="uil:calender" className="w-16 h-16 text-[#6941C6] mb-4" />
+                            <p className="font-semibold text-lg">No data to display</p>
+                            <p className="text-sm">Recent appointments will appear here</p>
+                        </div>
+                    )}                    
+                </div>
             </div>
 
             <Modal 

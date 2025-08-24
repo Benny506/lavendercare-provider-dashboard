@@ -128,7 +128,7 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
                 </button>
             </div> */}
             <aside
-                className={`fixed top-0 left-0 h-full md:h-max lg:h-screen w-64 bg-white border-r border-[#E9E9E9] flex flex-col justify-between transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static`}
+                className={`fixed top-0 left-0 h-full md:h-screen lg:h-screen w-64 bg-white border-r border-[#E9E9E9] flex flex-col justify-between transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static`}
             >
                 <div className=''>
                     {/* Logo */}
