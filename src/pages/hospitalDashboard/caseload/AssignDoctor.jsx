@@ -6,7 +6,7 @@ const AssignDoctor = () => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
             {/* Background Image Container */}
-            <div className="bg-img rounded-xl p-4 w-full max-w-md shadow-xl relative">
+            <div className="bg-img rounded-xl p-4 w-full max-w-md shadow-xl relative mx-4 md:m-0">
 
                 <div className="bg-white rounded-xl p-6 w-full relative flex flex-col gap-1">
 
@@ -27,7 +27,7 @@ const AssignDoctor = () => {
                             <p><span>Postpartum Days: </span>60</p>
                             <div className="flex flex-col gap-2">
                                 <p>Contact</p>
-                                <div className="flex gap-3 text-md">
+                                <div className="flex flex-col md:flex-row gap-3 text-md">
                                     <div className="flex gap-1">
                                         <Icon icon="line-md:phone" width="24" height="24" style={{ color: "black" }} />
                                         <p>+234812345678</p>

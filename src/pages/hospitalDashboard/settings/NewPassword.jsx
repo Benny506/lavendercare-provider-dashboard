@@ -10,8 +10,8 @@ const NewPassword = () => {
         <div>
             <TopDivider />
             <h2 className="font-extrabold text-xl mb-3">Security</h2>
-            <div className="w-full py-20 bg-white rounded-2xl flex items-center justify-center">
-                <div className="w-lg flex flex-col p-6">
+            <div className="w-full py-20 pt-5 bg-white rounded-2xl flex items-center justify-center">
+                <div className="w-full md:w-lg flex flex-col p-6">
                     <Form formName={"Create New Password"} formDescription={"Create a new password"} />
 
                     <form className="w-full flex flex-col gap-4 mt-1">

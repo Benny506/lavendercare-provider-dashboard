@@ -13,7 +13,7 @@ const Security = () => {
 
             <div className="w-full bg-white rounded-2xl p-4">
 
-                <div className='max-w-lg'>
+                <div className='w-full md:max-w-lg'>
                     <div className='flex flex-col w-full p-4 gap-2'>
                         <div className='flex border-b border-gray-300 pb-4 mb-4 items-center justify-between cursor-pointer' onClick={() => navigate('/hospital/dashboard/settings/security/change-password')}>
                             <p className='text-sm'>Change Password</p>

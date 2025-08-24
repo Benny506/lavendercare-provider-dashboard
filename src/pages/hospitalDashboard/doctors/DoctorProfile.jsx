@@ -92,8 +92,8 @@ const DoctorProfile = () => {
                                     : "ph:star"
                         }
                         className={`w-4 h-4 ${i < fullStars || (i === fullStars && hasHalfStar)
-                                ? 'text-orange-400'
-                                : 'text-gray-300'
+                            ? 'text-orange-400'
+                            : 'text-gray-300'
                             }`}
                     />
                 ))}
@@ -106,28 +106,32 @@ const DoctorProfile = () => {
             <TopDivider />
 
 
-            <div className="min-h-screen p-6">
+            <div className="min-h-screen md:p-6">
 
-                <div className="flex max-w-max mx-auto">
+                <div className="flex flex-col md:flex-row w-full md:max-w-max mx-auto gap-4 md:gap-0">
                     {/* Profile Card Component */}
-                    <DoctorProfileSidebar
-                        doctor={doctorData}
-                    />
+                    <div className='w-full md:w-auto'>
+                        <DoctorProfileSidebar
+                            doctor={doctorData}
+                        />
+                    </div>
 
                     {/* Main Content */}
-                    <div className="flex-1 bg-white rounded-r-lg p-6 shadow-sm border border-gray-200">
+                    <div className="w-full md:flex-1 bg-white rounded-lg md:rounded-l-none md:rounded-r-lg p-6 shadow-sm border border-gray-200">
                         {/* Recent Activity Section */}
                         <div className="mb-8 border border-gray-200 rounded-lg p-5 shadow-xs">
-                            <div className="flex items-center justify-between mb-4 border-b w-full pb-5">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b w-full pb-5">
                                 <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-                                <Button className="bg-transaprent shadow-none cursor-pointer text-primary-600 font-extrabold flex items-center gap-1">
+                                <Button className="bg-transparent shadow-none cursor-pointer text-primary-600 font-extrabold flex items-center gap-1 mt-2 sm:mt-0 -ml-3 sm:ml-0">
                                     View all Consultation
                                     <Icon icon="mdi:arrow-right" className="w-4 h-4" />
                                 </Button>
                             </div>
 
+
                             <div className="overflow-hidden">
-                                <table className="w-full">
+                                {/* Table for md+ screens */}
+                                <table className="w-full hidden sm:table">
                                     <thead>
                                         <tr className="text-left text-sm text-gray-500 border-b border-gray-200">
                                             <th className="pb-3 font-medium">Date</th>
@@ -157,7 +161,40 @@ const DoctorProfile = () => {
                                         ))}
                                     </tbody>
                                 </table>
+
+                                {/* Responsive layout for sm screens */}
+                                <div className="flex flex-col sm:hidden">
+                                    {recentActivity.map((activity, index) => (
+                                        <div key={index} className="flex flex-col border-b border-gray-100 py-4 gap-2">
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-500">Date:</span>
+                                                <p>{activity.date}</p>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-500">Mother's name:</span>
+                                                <p>{activity.motherName}</p>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-500">Care Type:</span>
+                                                <p>{activity.careType}</p>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-500">Status:</span>
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${activity.statusColor}`}>
+                                                    {activity.status}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="font-medium text-gray-500">Actions:</span>
+                                                <Button className="bg-primary-600 text-white px-4 py-1 rounded-3xl text-sm font-medium transition-colors">
+                                                    View
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
+
                         </div>
 
                         {/* Patient Review Section */}
@@ -169,8 +206,8 @@ const DoctorProfile = () => {
                             </div>
 
                             {/* Review Controls */}
-                            <div className="flex items-center justify-between mb-6 py-5 px-5 bg-gray-200 rounded-xl">
-                                <div className="flex items-center gap-4">
+                            <div className="flex flex-col lg:flex-row  items-start justify-between gap-4 md:gap-0 mb-6 py-5 px-5 bg-gray-200 rounded-xl">
+                                <div className="flex flex-wrap md:flex-nowrap items-center gap-4">
                                     <div className="flex items-center gap-2">
                                         {/* <span className="text-sm text-gray-600"></span> */}
                                         <select className="text-md font-bold py-3 px-2 rounded-md text-gray-900 bg-gray-50 border border-gray-200 focus:outline-none focus:border-none">

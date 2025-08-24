@@ -76,7 +76,7 @@ import NotFound from "@/pages/notFound/NotFound";
 import AllNotifications from "@/pages/individualDashboard/dashboard/AllNotifications";
 
 const AppRoutes = () => (
-  <AutoLogin>
+  // <AutoLogin>
     <Routes>
       {/* Main provider layout */}
       <Route element={<Layout />}>
@@ -166,7 +166,7 @@ const AppRoutes = () => (
       </Route>
 
       {/* Individual Dashboard  */}
-      <Route path="/individual/dashboard" element={<ProtectedRoute><IndividualDashboardLayout /></ProtectedRoute>}>
+      <Route path="/individual/dashboard" element={/*<ProtectedRoute>*/<IndividualDashboardLayout />/*</ProtectedRoute>}*/ }>
         <Route index element={<Overview />} />
         <Route path="all-notifications" element={<AllNotifications />} />
         <Route path="availability" element={<AvailabilityFeePage />} />
@@ -191,7 +191,7 @@ const AppRoutes = () => (
       <Route path="*" element={<NotFound />} />
 
     </Routes>
-  </AutoLogin>
+  // </AutoLogin>
 );
 
 export default AppRoutes;

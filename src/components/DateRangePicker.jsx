@@ -138,7 +138,7 @@ const DateRangePicker = () => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-4 p-4 rounded-lg">
+    <div className="flex flex-col md:flex-row flex-wrap items-start md:items-center gap-4 md:p-4 rounded-lg">
       <DatePicker startDate={startDate} endDate={endDate} onDateChange={handleDateChange} />
       <PresetDropdown selectedPreset={selectedPreset} onSelect={handlePresetSelect} />
     </div>

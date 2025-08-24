@@ -57,7 +57,7 @@ const Dashboard = () => {
       </div>
 
       {/* Top 3 Summary Cards */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Card 1 */}
         <div className="flex-1 bg-white rounded-xl p-6">
           <p className="text-md font-medium">Total Doctors</p>
@@ -107,7 +107,7 @@ const Dashboard = () => {
       </div>
 
       {/* Second Row Cards */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
         {/* Card 4 */}
         <div className="flex-1 bg-primary-600 text-white rounded-xl p-6">
           <p className="text-md font-medium">Unassigned Caseload</p>
@@ -136,8 +136,8 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity Table */}
-      <div className="w-full bg-white rounded-xl py-6 px-6">
-        <div className="flex justify-between items-start mb-6">
+      <div className="w-full bg-white rounded-xl py-6 px-4 sm:px-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-3">
           <div>
             <p className="text-lg font-bold text-black">Recent Activity</p>
             <p className="text-sm text-gray-600">See your most recent consultation below</p>
@@ -148,7 +148,7 @@ const Dashboard = () => {
         </div>
 
         {/* Table Headers */}
-        <div className="grid grid-cols-6 font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+        <div className="hidden sm:grid grid-cols-6 font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
           <p>Date</p>
           <p>Mother’s name</p>
           <p>Assigned Doctor</p>
@@ -162,20 +162,35 @@ const Dashboard = () => {
           recentConsultations.map((item, index) => (
             <div
               key={index}
-              className="grid grid-cols-6 py-4 text-sm border-b items-center gap-5 pl-5"
+              className="flex flex-col sm:grid sm:grid-cols-6 py-4 text-sm border-b gap-3 sm:gap-5 sm:pl-5"
             >
-              <p>{item.date}</p>
-              <p>{item.mother}</p>
-              <p>{item.doctor}</p>
-              <p>{item.careType}</p>
-              <div>
+              {/* For mobile: stack with labels */}
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Date:</span>
+                <p>{item.date}</p>
+              </div>
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Mother’s name:</span>
+                <p>{item.mother}</p>
+              </div>
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Assigned Doctor:</span>
+                <p>{item.doctor}</p>
+              </div>
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Care Type:</span>
+                <p>{item.careType}</p>
+              </div>
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Status:</span>
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[item.status]}`}
                 >
                   {item.status}
                 </span>
               </div>
-              <div className="">
+              <div className="flex sm:block justify-between">
+                <span className="font-medium text-gray-500 sm:hidden">Actions:</span>
                 <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
                   View
                 </button>
@@ -190,6 +205,7 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
     </div>
   );
 };

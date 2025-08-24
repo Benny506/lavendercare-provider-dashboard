@@ -1,18 +1,28 @@
 import { Icon } from "@iconify/react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "./ui/image";
+import { Menu } from "lucide-react";
 // import { IconifyIcon } from "@iconify/react";
 
-const TopBar = () => {
+const TopBar = ({ setIsOpen }) => {
     return (
-        <header className="w-full px-6 py-2 flex items-center justify-between">
-            {/* Left: Page Title */}
-            <h1 className="text-2xl font-bold text-[#000000]">Overview</h1>
+        <header className="w-full lg:px-6 py-2 flex items-center justify-between relative">
+            <div className="flex items-center gap-2">
+                {/* Hamburger for mobile */}
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="lg:hidden"
+                >
+                    <Menu size={24} />
+                </button>
+                {/* Left: Page Title */}
+                <h1 className="text-2xl font-bold text-[#000000]">Overview</h1>
+            </div>
 
             {/* Right: Search + Notification + Avatar */}
             <div className="flex items-center gap-4">
                 {/* Search Bar */}
-                <div className="flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200 w-[350px]">
+                <div className="hidden sm:flex items-center px-4 py-2 bg-white rounded-lg shadow-sm border border-gray-200 w-full sm:w-[350px]">
                     <Icon icon="iconamoon:search" className="text-lg text-gray-500 mr-2" />
                     <input
                         type="text"

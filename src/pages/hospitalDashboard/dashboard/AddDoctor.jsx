@@ -13,8 +13,8 @@ const AddDoctor = () => {
         <div>
             {/* Top Divider */}
             <hr className="bg-[#D2C3EF] h-1 rounded-full w-full border-none mb-6 mt-3" />
-            <div className="bg-white w-full flex items-start justify-between rounded-2xl">
-                <div className="w-xl bg-white rounded-2xl px-10 pt-6 pb-4 flex flex-col items-center justify-center">
+            <div className="bg-white flex flex-col md:flex-row items-start justify-between rounded-2xl my-4 md:my-0 md:px-10 px-6 ">
+                <div className="w-full md:w-xl bg-white rounded-2xl pt-6 pb-4 flex flex-col items-center justify-center">
                     <h1 className="text-2xl font-bold mb-2 text-left w-full">Add Doctor</h1>
                     <p className="mb-6 text-left text-gray-700 w-full text-sm">
                         Basic Information
@@ -72,7 +72,7 @@ const AddDoctor = () => {
                         </div>
                     </form>
                 </div>
-                <Button onClick={() => setInviteDocModalVisible(true)} className="rounded-3xl px-4 py-6 bg-primary-600 font-extrabold text-white m-6 cursor-pointer">Invite Doctor via email</Button>
+                <Button onClick={() => setInviteDocModalVisible(true)} className="rounded-3xl w-full md:w-auto px-4 py-6 bg-primary-600 font-extrabold text-white my-4 md:my-0 md:m-6 cursor-pointer">Invite Doctor via email</Button>
             </div>
             <InviteDoctorModal 
                 visible={inviteDocModalVisible}

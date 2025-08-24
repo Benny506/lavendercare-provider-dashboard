@@ -7,8 +7,8 @@ const DoctorCredentials = () => {
     return (
         <div>
             <TopDivider />
-            <div className="bg-white w-full flex items-start justify-between rounded-2xl">
-                <div className="w-lg bg-white rounded-2xl px-10 pt-6 pb-4 flex flex-col items-center justify-center">
+            <div className="bg-white w-full flex flex-col md:flex-row items-start justify-between rounded-2xl my-4 md:my-0 px-4 md:px-10">
+                <div className="w-full md:w-lg bg-white rounded-2xl pt-6 pb-4 flex flex-col items-center justify-center">
                     <h1 className="text-2xl font-bold mb-2 text-left w-full">Add Doctor</h1>
                     <p className="mb-6 text-left text-gray-700 w-full text-sm">
                         Credentials </p>
@@ -54,7 +54,7 @@ const DoctorCredentials = () => {
                         </div>
                     </div>
                 </div>
-                <Button className="rounded-3xl px-4 py-6 bg-primary-600 font-extrabold text-white m-6 cursor-pointer">Invite Doctor via email</Button>
+                <Button className="rounded-3xl w-full md:w-auto px-4 py-6 bg-primary-600 font-extrabold text-white my-4 md:my-0 md:m-6 cursor-pointer">Invite Doctor via email</Button>
             </div>
         </div>
     )

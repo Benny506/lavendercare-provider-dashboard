@@ -11,7 +11,7 @@ const ChangePassword = () => {
             <TopDivider />
             <h2 className="font-extrabold text-xl mb-3">Security</h2>
 
-            <div className="w-full py-20 bg-white rounded-2xl flex items-center justify-center">
+            <div className="w-full py-20 pt-5 bg-white rounded-2xl flex items-center justify-center">
                 <div className='max-w-lg flex flex-col p-6'>
                     <Form formName={"Change your Password"} formDescription={"Enter your email to recover your LavenderCare password."} />
                     <form className="w-full flex flex-col gap-4">

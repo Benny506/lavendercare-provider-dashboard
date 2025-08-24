@@ -13,7 +13,7 @@ const Icon = ({ icon, className = "w-4 h-4" }) => {
 
 const DoctorProfileSidebar = ({ doctor, onAssignCaseload, onDelete }) => {
   return (
-    <div className="bg-white max-h-max p-6 rounded-l-lg shadow-sm border border-gray-200 w-64">
+    <div className="bg-white max-h-max p-6 rounded-lg md:rounded-r-none md:rounded-l-lg shadow-sm border border-gray-200 md:w-64 w-full">
       {/* Profile Header */}
       <div className="flex items-center gap-3 mb-4">
         <Avatar>

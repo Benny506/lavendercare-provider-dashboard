@@ -66,10 +66,10 @@ const AllCaseload = () => {
     const [showFilter, setShowFilter] = useState(false);
     const [selectedCareType, setSelectedCareType] = useState("All");
     return (
-        <div>
+        <div className='space-y-4 md:space-y-0'>
             <TopDivider />
 
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
                 <DateRangePicker />
                 <Button className="flex items-center gap-2 px-4 py-2 bg-white border-gray-400 text-black rounded-md focus:outline-none">
                     <Download className="w-4 h-4" />
@@ -85,7 +85,7 @@ const AllCaseload = () => {
                         <h2 className="text-2xl font-bold">All Schedules</h2>
                         <p className="text-gray-500">See all your Schedules below</p>
                     </div>
-                    <div className="flex space-x-4 w-full sm:w-auto">
+                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-4 w-full sm:w-auto">
                         <div className="relative flex-1">
                             <Icon icon="iconamoon:search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
@@ -127,8 +127,8 @@ const AllCaseload = () => {
                                                 key={type}
                                                 onClick={() => setSelectedCareType(type)}
                                                 className={`px-3 py-1 rounded-full border text-sm ${selectedCareType === type
-                                                        ? "bg-primary-600 text-white"
-                                                        : "border-gray-400 text-gray-700"
+                                                    ? "bg-primary-600 text-white"
+                                                    : "border-gray-400 text-gray-700"
                                                     }`}
                                             >
                                                 {type}
@@ -147,45 +147,86 @@ const AllCaseload = () => {
                 </div>
 
                 {/* Table Headers */}
-                <div className="grid grid-cols-[2fr_2fr_2.5fr_2.5fr_2fr_2fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
-                    <p>Mother's Name</p>
-                    <p>Assigned Doctor</p>
-                    <p>Care Type</p>
-                    <p>Last Consult Date</p>
-                    <p>Status</p>
-                    <p>Action</p>
-                </div>
-
-                {/* Table Rows */}
-                {allCaseload.length > 0 ? (
-                    allCaseload.map((caseItem, idx) => (
-                        <div key={idx} className="grid grid-cols-[2fr_2fr_2.5fr_2.5fr_2fr_2fr] items-center gap-5 py-4 border-b text-sm pl-5">
-                            <p className="font-medium">{caseItem.mother}</p>
-                            <p>{caseItem.doctor}</p>
-                            <p className="font-semibold">{caseItem.careType}</p>
-                            <p>{caseItem.lastConsultDate}</p>
-                            {getStatusBadge(caseItem.status)}
-                            <div className="">
-                                <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
-                                    View
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                        <Icon icon="uil:calender" className="w-12 h-12 text-primary-600 mb-4" />
-                        <p className="font-bold text-lg text-center">No data to display</p>
-                        <p className="text-sm text-center">Recent appointments will appear here</p>
+                <div className="overflow-hidden">
+                    {/* md+ grid header */}
+                    <div className="hidden sm:grid grid-cols-[2fr_2fr_2.5fr_2.5fr_2fr_2fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                        <p>Mother's Name</p>
+                        <p>Assigned Doctor</p>
+                        <p>Care Type</p>
+                        <p>Last Consult Date</p>
+                        <p>Status</p>
+                        <p>Action</p>
                     </div>
-                )}
+
+                    {/* md+ rows */}
+                    {allCaseload.length > 0 ? (
+                        <>
+                            {/* Table rows for md+ screens */}
+                            {allCaseload.map((caseItem, idx) => (
+                                <div key={idx} className="hidden sm:grid grid-cols-[2fr_2fr_2.5fr_2.5fr_2fr_2fr] items-center gap-5 py-4 border-b text-sm pl-5">
+                                    <p className="font-medium">{caseItem.mother}</p>
+                                    <p>{caseItem.doctor}</p>
+                                    <p className="font-semibold">{caseItem.careType}</p>
+                                    <p>{caseItem.lastConsultDate}</p>
+                                    {getStatusBadge(caseItem.status)}
+                                    <div>
+                                        <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Stacked layout for sm screens */}
+                            <div className="flex flex-col sm:hidden">
+                                {allCaseload.map((caseItem, idx) => (
+                                    <div key={idx} className="flex flex-col border-b border-gray-100 py-4 gap-2 px-4">
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Mother's Name:</span>
+                                            <p>{caseItem.mother}</p>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Assigned Doctor:</span>
+                                            <p>{caseItem.doctor}</p>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Care Type:</span>
+                                            <p>{caseItem.careType}</p>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Last Consult Date:</span>
+                                            <p>{caseItem.lastConsultDate}</p>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Status:</span>
+                                            {getStatusBadge(caseItem.status)}
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="font-medium text-gray-500">Action:</span>
+                                            <button className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-1.5 rounded-full text-sm font-semibold cursor-pointer">
+                                                View
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                            <Icon icon="uil:calender" className="w-12 h-12 text-primary-600 mb-4" />
+                            <p className="font-bold text-lg text-center">No data to display</p>
+                            <p className="text-sm text-center">Recent appointments will appear here</p>
+                        </div>
+                    )}
+                </div>
 
                 {/* Pagination */}
                 <div className="mt-6 flex items-center justify-between">
                     <button className="flex items-center text-gray-600 hover:text-gray-800 font-bold">
-                        <Icon icon="mdi:arrow-left" className="mr-2" /> Previous
+                        <Icon icon="mdi:arrow-left" className="mr-2" /> 
+                        <span className='hidden md:block'>Previous</span>
                     </button>
-                    <div className="flex space-x-2">
+                    <div className="flex md:space-x-2">
                         {[1, 2, 3, "...", 8, 9, 10].map((p, i) => (
                             <button
                                 key={i}
@@ -196,7 +237,8 @@ const AllCaseload = () => {
                         ))}
                     </div>
                     <button className="flex items-center text-gray-600 hover:text-gray-800 font-bold">
-                        Next <Icon icon="mdi:arrow-right" className="ml-2" />
+                        <span className='hidden md:block'>Next</span>
+                        <Icon icon="mdi:arrow-right" className="ml-2" />
                     </button>
                 </div>
             </div>
@@ -204,7 +246,7 @@ const AllCaseload = () => {
 
 
             {/* <ViewCase/> */}
-            <AssignDoctor />
+            {/* <AssignDoctor /> */}
 
         </div>
     )
