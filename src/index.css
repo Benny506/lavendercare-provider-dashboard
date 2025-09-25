@@ -11,11 +11,6 @@
   font-style: normal;
 }
 
-body{
-  overflow-wrap: break-word; /* modern standard */
-  word-wrap: break-word;     /* older browsers */
-  word-break: break-word;    /* Safari-specific odd case */  
-}
 
 button:enabled{
   cursor: pointer;

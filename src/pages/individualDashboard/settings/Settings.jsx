@@ -24,14 +24,14 @@ const IndividualSettings = () => {
                         <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
                     </div>
 
-                    <div className='flex gap-3 justify-between items-center cursor-pointer' onClick={() => navigate('/individual/dashboard/settings/notifications')}>
+                    {/* <div className='flex gap-3 justify-between items-center cursor-pointer' onClick={() => navigate('/individual/dashboard/settings/notifications')}>
                         <Image src="assets/general-settings-icon.svg" />
                         <div className='flex flex-col flex-1'>
                             <h1 className='text-md font-bold'>Notification</h1>
                             <p className='text-xs text-gray-500'>Email or phone alerts</p>
                         </div>
                         <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
-                    </div>
+                    </div> */}
 
 
                     {/* <div className='flex gap-3 justify-between items-center '>

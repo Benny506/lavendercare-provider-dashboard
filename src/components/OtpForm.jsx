@@ -12,7 +12,7 @@ const initialSeconds = 30
 
 const OtpForm = ({ 
   name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs, backBtnFunc, requiresAuth,
-  credentialsInUseCallback, showBackLink = true
+  credentialsInUseCallback, showBackLink = true,
 }) => {
 
   const navigate = useNavigate();
@@ -75,15 +75,13 @@ const OtpForm = ({
 
       const { token, error, userAlreadyExists } = await createOrUpdateOtp({ email, requiresAuth: requiresAuth ?? false })
 
-      if(userAlreadyExists){
+      if(userAlreadyExists && !requiresAuth){
         toast.error("Credentials in use by another provider")
         setApiReqs({ isLoading: false, errorMsg: null })
-        credentialsInUseCallback ? credentialsInUseCallback() : navigate('/individual')
+        credentialsInUseCallback ? credentialsInUseCallback() : navigate(-1)
         
         return
       }
-
-      console.log(token, error, userAlreadyExists)
 
       if(!token?.otp || !token?.expiresAt || error) throw new Error();
 

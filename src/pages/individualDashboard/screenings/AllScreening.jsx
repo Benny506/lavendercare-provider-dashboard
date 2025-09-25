@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { getRiskLevelBadge } from "@/lib/utilsJsx";
 import ZeroItems from "@/components/ui/ZeroItems";
 import { useReactToPrint } from "react-to-print";
+import { usePagination } from "@/hooks/usePagination";
+import useApiReqs from "@/hooks/useApiReqs";
 
 
 
@@ -21,12 +23,17 @@ const AllScreening = () => {
     const dispatch = useDispatch()
 
     const navigate = useNavigate()
+ 
+    const { loadMoreScreenings } = useApiReqs()
 
     const screenings = useSelector(state => getUserDetailsState(state).screenings)
     const bookings = useSelector(state => getUserDetailsState(state).bookings)
 
     const screeningsContainerRef = useRef(null)
 
+    const [currentPage, setCurrentPage] = useState(0)
+    const [pageListIndex, setPageListIndex] = useState(0)
+    const [canLoadMore, setCanLoadMore] = useState(true)    
     const [searchTerm, setSearchTerm] = useState("");
     const [showFilter, setShowFilter] = useState(false);
     const [showWeekFilter, setShowWeekFilter] = useState(false)
@@ -42,8 +49,8 @@ const AllScreening = () => {
 
     const exportElementToPdf = useReactToPrint({
         contentRef: screeningsContainerRef
-    });   
-    
+    });
+
     const filteredData = screenings.filter(item => {
 
         const { user_profile, test_type, test_date } = item
@@ -64,13 +71,43 @@ const AllScreening = () => {
     const handleExportBtnClick = async () => {
         try {
             exportElementToPdf({ ref: screeningsContainerRef.current })
-            
+
         } catch (error) {
             console.log(error)
             toast.error("Error exporting screenings data")
-        
+
         }
-    }  
+    }
+
+    const { pageItems, totalPages, pageList, totalPageListIndex } = usePagination({
+        arr: filteredData,
+        maxShow: 4,
+        index: currentPage,
+        maxPage: 5,
+        pageListIndex
+    });
+
+    const incrementPageListIndex = () => {
+        if (pageListIndex === totalPageListIndex) {
+            setPageListIndex(0)
+
+        } else {
+            setPageListIndex(prev => prev + 1)
+        }
+
+        return
+    }
+
+    const decrementPageListIndex = () => {
+        if (pageListIndex == 0) {
+            setPageListIndex(totalPageListIndex)
+
+        } else {
+            setPageListIndex(prev => prev - 1)
+        }
+
+        return
+    }
 
     return (
         <div>
@@ -192,75 +229,73 @@ const AllScreening = () => {
                     </div>
 
                     {/* Table */}
-                    <div id="all-screenings-table" className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b text-xs md:text-sm">
-                                    <th className="text-center py-4 font-semibold text-gray-700">Submission Date</th>
-                                    <th className="text-center py-4 font-semibold text-gray-700">Client Name</th>
-                                    <th className="text-center py-4 font-semibold text-gray-700">Type</th>
-                                    <th className="text-center py-4 font-semibold text-gray-700">Score</th>
-                                    {/* <th className="text-center py-4 font-semibold text-gray-700">Interpretation</th> */}
-                                    <th className="text-center py-4 font-semibold text-gray-700">Risk Level (Score)</th>
-                                    <th className="text-center py-4 font-semibold text-gray-700">Max Risk % (Answer)</th>
-                                    <th className="text-center py-4 font-semibold text-gray-700">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    filteredData.map((item, index) => {
+                    <div id="all-screenings-table" className="mt-4">
+                        <div className="w-full">
+                            {/* Table Headers */}
+                            <div className="hidden md:grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                                <p className="text-center py-4 font-semibold text-gray-700">Submission Date</p>
+                                <p className="text-center py-4 font-semibold text-gray-700">Client Name</p>
+                                {/* <p className="text-center py-4 font-semibold text-gray-700">Type</p> */}
+                                <p className="text-center py-4 font-semibold text-gray-700">Score</p>
+                                {/* <th className="text-center py-4 font-semibold text-gray-700">Interpretation</th> */}
+                                <p className="text-center py-4 font-semibold text-gray-700">Risk Level (Score)</p>
+                                <p className="text-center py-4 font-semibold text-gray-700">Max Risk % (Answer)</p>
+                                {/* <p className="text-center py-4 font-semibold text-gray-700">Actions</p> */}
+                            </div>                            
+                            {
+                                filteredData.map((item, index) => {
 
-                                        const { 
-                                            user_profile, risk_level, test_date, score,
-                                            test_type, answer
-                                        } = item
-                                        
-                                        const { 
-                                            name,
-                                        } = user_profile
+                                    const {
+                                        user_profile, risk_level, test_date, score,
+                                        test_type, answer
+                                    } = item
 
-                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })
+                                    const {
+                                        name,
+                                    } = user_profile
 
-                                        const submissionDate = new Date(test_date).toDateString()
+                                    const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })
 
-                                        return (
-                                            <tr key={index} className="border-b">
-                                                <td className="text-center py-6 text-gray-900">
-                                                    {submissionDate}
-                                                </td>
-                                                <td className="text-center py-6 font-medium text-gray-900">
-                                                    {name}
-                                                </td>
-                                                <td className="text-center py-6 text-gray-700 font-semibold">
-                                                    {test_type}
-                                                </td>
-                                                <td className="text-center py-6 text-gray-900 font-semibold">
-                                                    {score}
-                                                </td>
-                                                {/* <td className="text-center py-6">
-                                                    {getInterpretationBadge(item.interpretation)}
-                                                </td> */}
-                                                <td className="text-center py-6">
-                                                    {getRiskLevelBadge(risk_level?.toLowerCase())}
-                                                </td>
-                                                <td className="text-center py-6">
-                                                    { max_risk_percent?.risk_percent }%
-                                                </td>                                                
-                                                {
-                                                    handleViewDetails
-                                                    &&
-                                                        <td className="text-center py-6">
-                                                            <Button className="cursor-pointer bg-primary-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold" onClick={() => handleViewDetails(item)}>
-                                                                View Details
-                                                            </Button>
-                                                        </td>                                     
-                                                }
-                                            </tr>
-                                        )})
-                                }
-                            </tbody>
-                        </table>
-                    </div>                     
+                                    const submissionDate = new Date(test_date).toDateString()
+
+                                    return (
+                                        <div onClick={() => handleViewDetails(item)} key={index} className="hover:bg-gray-100 cursor-pointer md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col">
+                                            <div className="text-center py-2 text-gray-900">
+                                                {submissionDate}
+                                            </div>
+                                            <div className="text-center py-2 font-medium text-gray-900">
+                                                {name}
+                                            </div>
+                                            {/* <div className="text-center py-6 text-gray-700 font-semibold">
+                                                {test_type}
+                                            </div> */}
+                                            <div className="text-center py-2 text-gray-900 font-semibold">
+                                                {score}
+                                            </div>
+                                            {/* <td className="text-center py-6">
+                                                {getInterpretationBadge(item.interpretation)}
+                                            </td> */}
+                                            <div className="text-center py-2">
+                                                {getRiskLevelBadge(risk_level?.toLowerCase())}
+                                            </div>
+                                            <div className="text-center py-2">
+                                                {max_risk_percent?.risk_percent}%
+                                            </div>
+                                            {/* {
+                                                handleViewDetails
+                                                &&
+                                                <div className="text-center py-6">
+                                                    <Button className="cursor-pointer bg-primary-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold" onClick={() => handleViewDetails(item)}>
+                                                        View Details
+                                                    </Button>
+                                                </div>
+                                            } */}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
                     {/* <DisplayAllScreeningsTable filteredData={filteredData} handleViewDetails={handleViewDetails} /> */}
 
                     {/* Empty state if no data */}
@@ -271,6 +306,90 @@ const AllScreening = () => {
                             <p className="text-sm text-center">Recent screening results will appear here</p>
                         </div>
                     )}
+
+                    {/* Pagination */}
+                    {
+                        pageItems.length > 0
+                        &&
+                        <div className="mt-6 flex items-center justify-between">
+                            <button
+                                disabled={pageListIndex > 0 ? false : true}
+                                onClick={decrementPageListIndex}
+                                style={{
+                                    opacity: pageListIndex > 0 ? 1 : 0.5
+                                }}
+                                className="cursor-not-allowed flex items-center text-gray-600 hover:text-gray-800 font-bold"
+                            >
+                                <Icon icon="mdi:arrow-left" className="mr-2" />
+                                <span className="hidden md:inline">Previous</span>
+                            </button>
+
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {pageList?.map((p, i) => {
+
+                                    const isActivePAge = p - 1 === currentPage
+
+                                    const handlePClick = () => {
+                                        if (p === '...') {
+
+                                            if (i == 0) {
+                                                decrementPageListIndex()
+
+                                            } else {
+                                                incrementPageListIndex()
+                                            }
+
+                                            return;
+                                        }
+
+                                        setCurrentPage(p - 1)
+
+                                        return;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={handlePClick}
+                                            className={`w-8 h-8 cursor-pointer rounded-full ${isActivePAge ? "bg-primary-100 text-primary-600" : "text-gray-600"} flex items-center justify-center`}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
+                                }
+                                )}
+                            </div>
+                            <button
+                                disabled={pageListIndex < totalPageListIndex ? false : true}
+                                onClick={incrementPageListIndex}
+                                style={{
+                                    opacity: pageListIndex < totalPageListIndex ? 1 : 0.5
+                                }}
+                                className="cursor-pointer flex items-center text-gray-600 hover:text-gray-800 font-bold"
+                            >
+                                <span className="hidden md:inline">Next</span> <Icon icon="mdi:arrow-right" className="ml-2" />
+                            </button>
+                        </div>
+                    }
+
+                    {
+                        canLoadMore
+                        &&
+                        <div className="w-full flex items-center justify-center my-5">
+                            <Button
+                                onClick={() => {
+                                    loadMoreScreenings({
+                                        callBack: ({ canLoadMore }) => {
+                                            setCanLoadMore(canLoadMore ? true : false)
+                                        }
+                                    })
+                                }}
+                                className={'bg-purple-600 text-white'}
+                            >
+                                Load more
+                            </Button>
+                        </div>
+                    }                     
                 </div>
             </div>
         </div>

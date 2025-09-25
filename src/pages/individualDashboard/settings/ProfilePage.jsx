@@ -40,6 +40,7 @@ const IndividualProfilePage = () => {
     const dispatch = useDispatch()
 
     const profile = useSelector(state => getUserDetailsState(state).profile)
+    const phone_number = useSelector(state => getUserDetailsState(state).phone_number)
 
     const fileInputRef = useRef(null)
 
@@ -59,6 +60,36 @@ const IndividualProfilePage = () => {
 
         return;
     }, [apiReqs])
+
+    const updatePhoneNumber = async ({ requestBody }) => {
+        try {
+
+            const { error } = await supabase
+                .from("unique_phones")
+                .upsert(requestBody, {
+                    onConflict: ['user_id']
+                })
+
+            if(error) {
+                console.log(error)
+                throw new Error();
+            }
+
+            setApiReqs({ isLoading: false, data: null })     
+
+            dispatch(setUserDetails({
+                phone_number: requestBody
+            }))
+
+            toast.success("Phone number updated")
+
+            return;
+        
+        } catch (error) {
+            console.log(error)
+            return updateProfileFailure({ errorMsg: 'Error updating phone number' })
+        }
+    }    
 
     const updateProfile = async ({ requestBody }) => {
         try {
@@ -540,13 +571,12 @@ const IndividualProfilePage = () => {
                                     countryCode: '+234'
                                 }}
                                 onSubmit={values => {
-                                    const phone_number = values.countryCode + values.phone_number
-
-                                    alert(phone_number)
+                                    const phone_number = values.phone_number
+                                    const country_code = values.countryCode
         
                                     setApiReqs({ isLoading: true, errorMsg: null })
 
-                                    updateProfile({ requestBody: { phone_number }})
+                                    updatePhoneNumber({ requestBody: { phone_number, country_code, user_id: profile?.provider_id }})
                                 }}
                         >
                             {({ values, isValid, dirty, handleChange, handleBlur, handleSubmit }) => (
@@ -555,7 +585,7 @@ const IndividualProfilePage = () => {
                                         <p className="mb-3 p-0 text-sm font-light">
                                             Phone number 
                                             <br /> 
-                                            <span className=''>(Current: {profile?.phone_number || "not set"})</span>
+                                            <span className=''>(Current: {phone_number?.phone_number && phone_number?.country_code ? `${phone_number?.country_code} ${phone_number?.phone_number}` : "not set"})</span>
                                         </p>
 
                                         <div className="flex">

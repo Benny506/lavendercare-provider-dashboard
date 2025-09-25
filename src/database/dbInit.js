@@ -69,9 +69,9 @@ export async function getIndividualProviderDetails({ id }){
       user_profile:user_profiles (*)
     `)    
     .eq("provider_id", id)  
-    .order("day", { ascending: true, nullsFirst: false })      
-    .order('hour', { ascending: true, nullsFirst: false })
-    .limit(100)
+    .order("day", { ascending: false, nullsFirst: false })      
+    .order('hour', { ascending: false, nullsFirst: false })
+    .limit(1000)
 
 
   if(profileError || availabilityError || providerBookingCostError || bookingsError) {
@@ -91,8 +91,8 @@ export async function getIndividualProviderDetails({ id }){
       user_profile:user_profiles (*)      
     `)
     .in('user_id', bookings_userIds) 
-    .order("created_at", { ascending: true, nullsFirst: false }) 
-    .limit(100)
+    .order("created_at", { ascending: false, nullsFirst: false }) 
+    .limit(1000)
   
   const orString = `to_id.eq.${id}, and(from_id.in.(${bookings_userIds}), type.eq.screening)`
 
@@ -100,15 +100,15 @@ export async function getIndividualProviderDetails({ id }){
     .from('notifications')
     .select('*')
     .or(orString)
-    .order("created_at", { ascending: true, nullsFirst: false }) 
-    .limit(100)
+    .order("created_at", { ascending: false, nullsFirst: false }) 
+    .limit(1000)
 
   const { data: highRiskAlertsData, error: highRiskAlertsError } = await supabase
     .from('high_risk_alerts')
     .select('*')
     .in('user_id', bookings_userIds)
-    .order("created_at", { ascending: true, nullsFirst: false }) 
-    .limit(100)
+    .order("created_at", { ascending: false, nullsFirst: false }) 
+    .limit(1000)
   
   if(screeningsError || notificationsError || highRiskAlertsError){
     console.log(screeningsError)

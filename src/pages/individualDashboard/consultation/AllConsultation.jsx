@@ -14,9 +14,11 @@ import { allStatus, getStatusBadge } from "@/lib/utilsJsx";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import PatientInfo from "../screenings/auxiliary/PatientInfo";
+import useApiReqs from "@/hooks/useApiReqs";
+import { usePagination } from "@/hooks/usePagination";
 
 // Modal component
 function Modal({ open, onClose, children }) {
@@ -38,7 +40,10 @@ function Modal({ open, onClose, children }) {
     );
 }
 
+const LIMIT = 100
+
 const AllConsultation = () => {
+    const dispatch = useDispatch()
 
     const navigate = useNavigate()
 
@@ -46,18 +51,23 @@ const AllConsultation = () => {
 
     const { state } = useLocation()
 
+    const { loadMoreBookings } = useApiReqs()
+
     const [tab, setTab] = useState("All");
     const [modalType, setModalType] = useState(null);
     const [currentConsultation, setCurrentConsultation] = useState(null);
     const [searchFilter, setSearchFilter] = useState('')
+    const [currentPage, setCurrentPage] = useState(0)
+    const [pageListIndex, setPageListIndex] = useState(0)
+    const [canLoadMore, setCanLoadMore] = useState(true)
 
     useEffect(() => {
         const booking_id = state?.booking_id
 
-        if(booking_id){
+        if (booking_id) {
             const filteredBooking = (bookings || []).filter(b => b.id == booking_id)[0]
 
-            if(filteredBooking){
+            if (filteredBooking) {
                 setCurrentConsultation(filteredBooking)
             }
         }
@@ -78,9 +88,39 @@ const AllConsultation = () => {
 
         const matchesTab = tab == 'All' || status == tab
         const matchesSearch = item?.user_profile?.name?.toLowerCase().includes(searchFilter.toLowerCase());
-        
+
         return matchesSearch && matchesTab
-    });  
+    });
+
+    const { pageItems, totalPages, pageList, totalPageListIndex } = usePagination({
+        arr: filteredConsultations,
+        maxShow: 4,
+        index: currentPage,
+        maxPage: 5,
+        pageListIndex
+    });
+
+    const incrementPageListIndex = () => {
+        if (pageListIndex === totalPageListIndex) {
+            setPageListIndex(0)
+
+        } else {
+            setPageListIndex(prev => prev + 1)
+        }
+
+        return
+    }
+
+    const decrementPageListIndex = () => {
+        if (pageListIndex == 0) {
+            setPageListIndex(totalPageListIndex)
+
+        } else {
+            setPageListIndex(prev => prev - 1)
+        }
+
+        return
+    }
 
     return (
         <div>
@@ -99,9 +139,10 @@ const AllConsultation = () => {
                                 className={`capitalize px-4 py-2 rounded-lg text-sm font-medium cursor-pointer ${tab === type ? "bg-[#6941C6] text-white" : "text-[#667085]"}`}
                                 onClick={() => setTab(type)}
                             >
-                                { title }
+                                {title}
                             </button>
-                        )}
+                        )
+                    }
                     )}
                 </div>
 
@@ -112,7 +153,7 @@ const AllConsultation = () => {
             </div>
 
             {/* Main Table Card */}
-            <div 
+            <div
                 className="rounded-lg lg:max-h-[70vh] lg:overflow-y-auto bg-white p-6 shadow-sm"
             >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4 border-b pb-4">
@@ -156,18 +197,18 @@ const AllConsultation = () => {
                     </div>
 
                     {/* Data Rows */}
-                    {filteredConsultations.length > 0 ? (
-                        filteredConsultations.map((consultation, i) => {
+                    {pageItems.length > 0 ? (
+                        pageItems.map((consultation, i) => {
 
                             const { user_profile, service_type, status, day, hour } = consultation
                             const name = user_profile?.name
-                            
+
                             return (
                                 <div
                                     key={i}
                                     className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
                                 >
-                                    <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} { timeToAMPM_FromHour({ hour }) }</p>
+                                    <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} {timeToAMPM_FromHour({ hour })}</p>
                                     <p className="px-3 py-2 text-[#101828] capitalize">{name}</p>
                                     <p className="px-3 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")}</p>
                                     {getStatusBadge(status)}
@@ -190,12 +231,96 @@ const AllConsultation = () => {
                             <p className="font-semibold text-lg">No data to display</p>
                             <p className="text-sm">Recent appointments will appear here</p>
                         </div>
-                    )}                    
+                    )}
+
+                    {/* Pagination */}
+                    {
+                        pageItems.length > 0
+                        &&
+                        <div className="mt-6 flex items-center justify-between">
+                            <button
+                                disabled={pageListIndex > 0 ? false : true}
+                                onClick={decrementPageListIndex}
+                                style={{
+                                    opacity: pageListIndex > 0 ? 1 : 0.5
+                                }}
+                                className="cursor-not-allowed flex items-center text-gray-600 hover:text-gray-800 font-bold"
+                            >
+                                <Icon icon="mdi:arrow-left" className="mr-2" />
+                                <span className="hidden md:inline">Previous</span>
+                            </button>
+
+                            <div className="flex flex-wrap justify-center gap-2">
+                                {pageList?.map((p, i) => {
+
+                                    const isActivePAge = p - 1 === currentPage
+
+                                    const handlePClick = () => {
+                                        if (p === '...') {
+
+                                            if (i == 0) {
+                                                decrementPageListIndex()
+
+                                            } else {
+                                                incrementPageListIndex()
+                                            }
+
+                                            return;
+                                        }
+
+                                        setCurrentPage(p - 1)
+
+                                        return;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={i}
+                                            onClick={handlePClick}
+                                            className={`w-8 h-8 cursor-pointer rounded-full ${isActivePAge ? "bg-primary-100 text-primary-600" : "text-gray-600"} flex items-center justify-center`}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
+                                }
+                                )}
+                            </div>
+                            <button
+                                disabled={pageListIndex < totalPageListIndex ? false : true}
+                                onClick={incrementPageListIndex}
+                                style={{
+                                    opacity: pageListIndex < totalPageListIndex ? 1 : 0.5
+                                }}
+                                className="cursor-pointer flex items-center text-gray-600 hover:text-gray-800 font-bold"
+                            >
+                                <span className="hidden md:inline">Next</span> <Icon icon="mdi:arrow-right" className="ml-2" />
+                            </button>
+                        </div>
+                    }
+
+                    {
+                        canLoadMore
+                        &&
+                        <div className="w-full flex items-center justify-center my-5">
+                            <Button
+                                onClick={() => {
+                                    loadMoreBookings({
+                                        callBack: ({ canLoadMore }) => {
+                                            setCanLoadMore(canLoadMore ? true : false)
+                                        }
+                                    })
+                                }}
+                                className={'bg-purple-600 text-white'}
+                            >
+                                Load more
+                            </Button>
+                        </div>
+                    }
                 </div>
             </div>
 
-            <Modal 
-                open={currentConsultation} 
+            <Modal
+                open={currentConsultation}
                 onClose={closeModal}
             >
                 <div
@@ -208,7 +333,7 @@ const AllConsultation = () => {
 
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-3">
-                        <ProfileImg 
+                        <ProfileImg
                             profile_img={currentConsultation?.user_profile?.profile_img}
                             containerClass={"w-12 h-12"}
                             name={currentConsultation?.user_profile?.name}
@@ -217,7 +342,7 @@ const AllConsultation = () => {
                     {getStatusBadge(currentConsultation?.status)}
                 </div>
 
-                <PatientInfo 
+                <PatientInfo
                     patient={currentConsultation?.user_profile}
                 />
 
@@ -225,15 +350,15 @@ const AllConsultation = () => {
                     {
                         currentConsultation?.status == 'ongoing'
                         &&
-                            <button
-                                onClick={() => {
-                                    closeModal()
-                                    navigate('/individual/dashboard/consultation/chat', { state: { user_id: currentConsultation?.user_profile?.id } })
-                                }}
-                                className="bg-primary-600 text-white font-semibold text-sm w-full py-3 rounded-full cursor-pointer"
-                            >
-                                Enter chat
-                            </button>                        
+                        <button
+                            onClick={() => {
+                                closeModal()
+                                navigate('/individual/dashboard/consultation/chat', { state: { user_id: currentConsultation?.user_profile?.id } })
+                            }}
+                            className="bg-primary-600 text-white font-semibold text-sm w-full py-3 rounded-full cursor-pointer"
+                        >
+                            Enter chat
+                        </button>
                     }
                     <button
                         onClick={() => {
@@ -243,7 +368,7 @@ const AllConsultation = () => {
                         className="bg-[#F4F4F5] text-black font-semibold text-sm w-full py-3 rounded-full cursor-pointer"
                     >
                         More Info
-                    </button>                
+                    </button>
                 </div>
             </Modal>
 

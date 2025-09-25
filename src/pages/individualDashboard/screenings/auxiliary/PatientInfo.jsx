@@ -5,7 +5,7 @@ export default function PatientInfo({ patient }){
     const { 
         name, email, age, is_pregnant, postpartumDay,
         pregnant_months_count, weight, height, country, state: mothersState, profile_img,
-        is_first_child, num_kids, is_home_mum, registered_antenatal,
+        is_first_child, num_kids, is_home_mum, registered_antenatal, city,
     } = patient    
 
     return(
@@ -19,8 +19,9 @@ export default function PatientInfo({ patient }){
                             { title: "Weight", value: weight ? `${weight}kg` : "not set" },
                             { title: "Height", value: height ? `${height}ft` : "not set" },
                             { title: "Contact", value: email },
-                            { title: "Country", value: country },
-                            { title: "State", value: mothersState },
+                            { title: "Country", value: country.replaceAll("_", " ") },
+                            { title: "State", value: mothersState.replaceAll("_", " ") },
+                            { title: "City", value: city?.replaceAll("_", " ") },
                             { title: "Works from home", value: is_home_mum ? 'YES' : "NO" },
                         ].map((info, i) => {
                             const { title, value } = info

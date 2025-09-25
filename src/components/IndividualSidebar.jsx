@@ -80,6 +80,8 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
             dispatch(appLoadStop())
 
             toast.success("Logged out")
+
+            navigate('/', { replace: true })
             
         } catch (error) {
             console.log(error)
@@ -114,6 +116,9 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
         } else if (pathname.toLowerCase().includes('settings')) {
             setActiveNav('settings')
 
+        } else if(pathname.toLowerCase().includes('support')) {
+            setActiveNav('support')
+           
         } else {
             setActiveNav('dashboard')
         }
@@ -132,7 +137,7 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
             >
                 <div className=''>
                     {/* Logo */}
-                    <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer  gap-2" onClick={() => navigate('/individual/dashboard')}>
+                    <div className="flex items-center px-8 pt-8 pb-6 cursor-pointer  gap-2">
                         <Image src="/assets/lavendercare-logo.svg" alt="LavenderCare Logo" className="w-50" z/>
                         <X size={30} onClick={() => { setIsOpen(false) }} className='block lg:hidden' />
                     </div>
@@ -185,11 +190,11 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
                             <span className="font-medium text-md">Settings</span>
                         </div>
                         <div 
-                            onClick={() => toast.info("Working on UI")}
-                            className="flex items-center gap-4 py-3 px-4 rounded-lg cursor-pointer text-[#2D1A4A] hover:bg-[#F3F0FA]"
+                            onClick={() => navigate('/individual/dashboard/support')}
+                            className={`flex items-center gap-4 py-3 px-4 rounded-lg cursor-pointer transition-colors ${activeNav == 'support' ? 'bg-[#7B3FE4] text-white' : 'text-[#2D1A4A] hover:bg-[#F3F0FA]'}`}
                         >
                             <span className="w-6 h-6 flex items-center justify-center">
-                                <Icon icon="material-symbols-light:support-agent-outline-rounded" width="24" height="24" style={{ color: "#000" }} />
+                                <Icon icon="material-symbols-light:support-agent-outline-rounded" width="24" height="24" style={{ color: activeNav == 'support' ? "#FFF" : "#000" }} />
                             </span>
                             <span className="font-medium text-md">Contact support</span>
                         </div>

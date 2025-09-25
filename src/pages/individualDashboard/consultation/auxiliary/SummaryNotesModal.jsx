@@ -84,7 +84,7 @@ export default function SummaryNotesModal({ closeModal, visible, booking }){
                     <AppLoading tempLoading={true} />
             } */}
 
-            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] max-w-[60vw]  shadow-xl relative">
+            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] lg:w-[60vw] w-[95vw]  shadow-xl relative">
                 <div className="bg-white rounded-2xl shadow-xl w-full h-full flex flex-col">
                     {/* Header */}
                     <div className="flex items-start justify-between p-6 pb-4">

@@ -27,9 +27,6 @@ const IndividualSignUp = () => {
     provider_name: Yup.string()
       .required("Full name is required"),
 
-    countryCode: Yup.string()
-      .required("Country code is required"),
-
     email: Yup.string()
       .required('Email is required')
       .email('Must be a valid email address'),
@@ -45,10 +42,6 @@ const IndividualSignUp = () => {
     confirmPassword: Yup.string()
       .required('Please confirm your password')
       .oneOf([Yup.ref('password'), null], 'Passwords must match'),
-
-    phone_number: Yup.string()
-      .required('Phone number is required')
-      .matches(/^[0-9]{10,15}$/, 'Phone number must be between 10 and 15 digits'),
   });
 
 
@@ -69,12 +62,10 @@ const IndividualSignUp = () => {
           validationSchema={validationSchema}
           initialValues={{
             provider_name: '', email: '', password: '', confirmPassword: '',
-            phone_number: '', countryCode: '+234'
           }}
           onSubmit={(values) => {
             const stateData = { ...values }
             delete stateData.confirmPassword
-            stateData.phone_number = stateData.countryCode + stateData.phone_number
 
             navigate('/individual/verification', { state: { ...stateData } })
           }}
@@ -110,39 +101,6 @@ const IndividualSignUp = () => {
                   className="border border-[#B1B1B0] focus:outline-none rounded px-3 py-2 w-full text-base"
                 />
                 <ErrorMessage name="email">
-                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
-                </ErrorMessage>
-              </div>
-              {/* Official Phone Number */}
-              <div>
-                <div className="font-semibold mb-1">Official Phone Number</div>
-                <div className="flex">
-                  <select
-                    className="border border-[#B1B1B0] focus:outline-none rounded-l px-3 py-2 text-base bg-white"
-                    value={values.countryCode}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    name="countryCode"
-                  >
-                    <option className="text-gray-700" disabled>Select one</option>
-                    {countryCodes.map((code, i) => (
-                      <option key={i} value={code.type}>{code.label}</option>
-                    ))}
-                  </select>
-                  <input
-                    value={values.phone_number}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    name="phone_number"
-                    type="text"
-                    placeholder="Type your phone number"
-                    className="border-t border-b border-r border-[#B1B1B0] focus:outline-none rounded-r px-3 py-2 w-full text-base"
-                  />
-                </div>
-                <ErrorMessage name="countryCode">
-                  {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
-                </ErrorMessage>
-                <ErrorMessage name="phone_number">
                   {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
                 </ErrorMessage>
               </div>

@@ -24,7 +24,11 @@ const userDetailsSlice = createSlice({
         bookingCostData: [],
         bookings: [],
         screenings: [],
-        highRiskAlerts: []
+        highRiskAlerts: [],
+        phone_number: {
+            phone_number: null,
+            country_code: null
+        }        
     },
     reducers: {
         setUserDetails: (state, action) => {
@@ -54,9 +58,9 @@ const userDetailsSlice = createSlice({
                     }
                 })
 
-                const sortedWithPriority = sortByStatusPriority(bookingsWithCorrectStatus)
+                // const sortedWithPriority = sortByStatusPriority(bookingsWithCorrectStatus)
 
-                state.bookings = sortedWithPriority
+                state.bookings = bookingsWithCorrectStatus
             } 
             
             if(action.payload?.screenings){
@@ -66,6 +70,15 @@ const userDetailsSlice = createSlice({
             if(action?.payload?.highRiskAlerts){
                 state.highRiskAlerts = action.payload?.highRiskAlerts
             }
+
+            if(action?.payload?.phone_number){
+                const number = action?.payload?.phone_number 
+
+                if(number?.phone_number && number?.country_code){
+                    state.phone_number.country_code = number?.country_code
+                    state.phone_number.phone_number = number?.phone_number
+                }
+            }            
         },
 
         clearUserDetails: (state, action) => {
@@ -76,7 +89,11 @@ const userDetailsSlice = createSlice({
             state.bookingCostData = []
             state.bookings = []
             state.screenings = []
-            state.highRiskAlerts = []
+            state.highRiskAlerts = [],
+            state.phone_number = {
+                phone_number: null,
+                country_code: null                
+            }
         }
     }
 })

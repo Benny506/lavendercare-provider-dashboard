@@ -10,6 +10,7 @@ import ErrorMsg2 from '@/components/ui/ErrorMsg2';
 import { getAlertLevelBadge, getRiskLevelBadge } from '@/lib/utilsJsx';
 import ZeroItems from '@/components/ui/ZeroItems';
 import { useReactToPrint } from 'react-to-print';
+import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
 
 const TestInfoModal = ({ show, onClose, data }) => {
     const dispatch = useDispatch()
@@ -18,8 +19,28 @@ const TestInfoModal = ({ show, onClose, data }) => {
 
     const highRiskAlerts = useSelector(state => getUserDetailsState(state).highRiskAlerts)
 
-    const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
+    const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null, data: null })
     const [testQuestions, setTestQuestions] = useState([])
+
+    useEffect(() => {
+        const { isLoading, data } = apiReqs
+
+        if(isLoading) dispatch(appLoadStart());
+        else dispatch(appLoadStop())
+
+        if(isLoading && data){
+            const { type, requestInfo } = data
+
+            if(type === 'markAsViewed'){
+                markAsViewed({ requestInfo })
+            }
+
+            if(type === 'fetchTestResults'){
+                fetchTestResults({ requestInfo })
+            }
+        }
+
+    }, [apiReqs])
 
     const exportElementToPdf = useReactToPrint({
         contentRef: containerRef
@@ -27,21 +48,27 @@ const TestInfoModal = ({ show, onClose, data }) => {
 
     useEffect(() => {
         if(data){
-            fetchTestResults({ answer: data?.answer })
+            // fetchTestResults({ answer: data?.answer })
+            setApiReqs({
+                isLoading: true,
+                errorMsg: null,
+                data: {
+                    type: 'fetchTestResults',
+                    requestInfo: {
+                        answer: data?.answer
+                    }
+                }
+            })            
         }
     }, [data])
 
     const screening_id = data?.id
     const highRiskAlertNotViewed = (highRiskAlerts || [])?.filter(risk_alert => (risk_alert?.screening_id === screening_id) && (risk_alert?.viewed === false))[0]
 
-    const markAsViewed = async () => {
+    const markAsViewed = async ({ requestInfo }) => {
         try {
 
-            console.log(screening_id)
-
-            if(!highRiskAlertNotViewed) return;
-
-            setApiReqs({ isLoading: true, errorMsg: null })         
+            if(!highRiskAlertNotViewed) return;      
 
             const { data, error } = await supabase
                 .from('high_risk_alerts')
@@ -84,10 +111,10 @@ const TestInfoModal = ({ show, onClose, data }) => {
         return;
     }
 
-    const fetchTestResults = async ({ answer }) => {
+    const fetchTestResults = async ({ requestInfo }) => {
         try {
-            
-            setApiReqs({ isLoading: true, errorMsg: null })
+
+            const { answer } = requestInfo        
 
             const questionIds = answer?.map(ans => ans.question_id)
 
@@ -133,6 +160,17 @@ const TestInfoModal = ({ show, onClose, data }) => {
         return;
     }
 
+    const handleViewed = () => {
+        return setApiReqs({
+            isLoading: true,
+            errorMsg: null,
+            data: {
+                type: 'markAsViewed',
+                requestInfo: {}
+            }
+        })
+    }
+
     if (!show || !data) return null;
     
     const { test_date, user_id, score, risk_level } = data
@@ -148,7 +186,7 @@ const TestInfoModal = ({ show, onClose, data }) => {
                     <AppLoading tempLoading={true} />
             }
 
-            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] max-w-[60vw]  shadow-xl relative">
+            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] lg:max-w-[60vw] max-w-[98vw]  shadow-xl relative">
                 <div className="bg-white rounded-2xl shadow-xl w-full h-full flex flex-col">
                     {/* Header */}
                     <div className="flex items-start justify-between p-6 pb-4">
@@ -169,7 +207,7 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                 {
                                     highRiskAlertNotViewed
                                     &&
-                                        <button onClick={markAsViewed} className="cursor-pointer bg-purple-600 text-white px-6 py-2 rounded-lg font-medium">
+                                        <button onClick={handleViewed} className="cursor-pointer bg-purple-600 text-white px-6 py-2 rounded-lg font-medium">
                                             Mark as viewed
                                         </button>                                                                                            
                                 }
@@ -214,7 +252,7 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                                             key={i}
                                                             className='mb-6'
                                                         >
-                                                            <div className='flex items-start gap-1 mb-3'>
+                                                            <div className='flex flex-col items-start gap-1 mb-3'>
                                                                 <p className='m-0 p-0 text-xl txt-000 fw-900 txt-15'>
                                                                     {i+1}.
                                                                 </p>
@@ -234,16 +272,16 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                                                         return(
                                                                             <div
                                                                                 key={optIndex}
-                                                                                className='mb-1 flex items-center gap-4'
+                                                                                className='mb-2 flex flex-wrap items-center gap-2'
                                                                             >
-                                                                                <p className='max:w-3/5 m-0 p-0 text-sm txt-000 fw-500 txt-15'>
+                                                                                <p className='lg:w-2/5 w-full m-0 p-0 text-sm txt-000 fw-500 txt-15'>
                                                                                     {label}
                                                                                 </p>
 
                                                                                 {
                                                                                     isAnswer
                                                                                     &&
-                                                                                        <>
+                                                                                        <div className='mb-3 flex items-center gap-2'>
                                                                                             <CheckCircle 
                                                                                                 size={20}
                                                                                                 color='#6F3DCB'
@@ -258,13 +296,13 @@ const TestInfoModal = ({ show, onClose, data }) => {
                                                                                                         {
                                                                                                             answerInfoForQues?.risk_percent >= 0
                                                                                                             && 
-                                                                                                                <p className='px-3 py-1 rounded-full text-sm font-medium'>
-                                                                                                                    Answer risk - { answerInfoForQues?.risk_percent } %
+                                                                                                                <p className='py-1 rounded-full text-sm font-medium'>
+                                                                                                                    risk - { answerInfoForQues?.risk_percent } %
                                                                                                                 </p>                                                                                                    
                                                                                                         }                                                                                                             
                                                                                                     </>
                                                                                             }                                                                                       
-                                                                                        </>
+                                                                                        </div>
                                                                                 }
                                                                             </div>
                                                                         )

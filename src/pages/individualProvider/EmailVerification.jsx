@@ -68,7 +68,7 @@ const EmailVerification = () => {
 
   if(!state?.email || !state?.password) return <></>
 
-  const { email, password, provider_name, phone_number } = state  
+  const { email, password, provider_name } = state  
 
   const onOtpVerified = () => {
     setApiReqs({
@@ -80,7 +80,7 @@ const EmailVerification = () => {
           url: 'https://tzsbbbxpdlupybfrgdbs.supabase.co/functions/v1/register-individual-provider',
           method: "POST",
           data: {
-            email, password, provider_name, phone_number
+            email, password, provider_name
           }
         }
       }
@@ -96,6 +96,7 @@ const EmailVerification = () => {
       btnName={"Verify email"} 
       onOtpVerified={onOtpVerified}
       setApiReqs={setApiReqs}
+      isForgotPassword={true}
       // changeEmailNavigation={"/individual"}
     />
   )

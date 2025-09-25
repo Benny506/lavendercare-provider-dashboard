@@ -74,9 +74,10 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import ActiveConsultation from "@/pages/individualDashboard/consultation/ActiveConsultation";
 import NotFound from "@/pages/notFound/NotFound";
 import AllNotifications from "@/pages/individualDashboard/dashboard/AllNotifications";
+import Support from "@/pages/support/Support";
 
 const AppRoutes = () => (
-  // <AutoLogin>
+  <AutoLogin>
     <Routes>
       {/* Main provider layout */}
       <Route element={<Layout />}>
@@ -168,7 +169,7 @@ const AppRoutes = () => (
       {/* Individual Dashboard  */}
       <Route path="/individual/dashboard" element={/*<ProtectedRoute>*/<IndividualDashboardLayout />/*</ProtectedRoute>}*/ }>
         <Route index element={<Overview />} />
-        <Route path="all-notifications" element={<AllNotifications />} />
+        {/* <Route path="all-notifications" element={<AllNotifications />} /> */}
         <Route path="availability" element={<AvailabilityFeePage />} />
         {/* <Route path="bookings" element={<AllRequests />} />
         <Route path="bookings/dashboard" element={<BookingDashboard />} />
@@ -181,17 +182,18 @@ const AppRoutes = () => (
         <Route path="screenings" element={<AllScreening />} />
         <Route path="screenings/case-report" element={<CaseReport />} />
         <Route path="settings" element={<IndividualSettings />} />
-        <Route path="settings/notifications" element={<NotificationsSettings />} />
+        {/* <Route path="settings/notifications" element={<NotificationsSettings />} /> */}
         <Route path="settings/integrations" element={<IntegrationsPage />} />
         <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
         <Route path="settings/profile" element={<IndividualProfilePage />} />
+        <Route path="support" element={<Support />} />
       </Route>
 
 
       <Route path="*" element={<NotFound />} />
 
     </Routes>
-  // </AutoLogin>
+  </AutoLogin>
 );
 
 export default AppRoutes;

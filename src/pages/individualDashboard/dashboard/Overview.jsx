@@ -114,7 +114,7 @@ const Overview = () => {
       </div>
 
       {/* Notifications Section */}
-      <div>
+      {/* <div>
         <p className='font-bold text-lg'>Notifications</p>
 
         <div className="bg-white rounded-xl p-6 mt-4">
@@ -137,7 +137,7 @@ const Overview = () => {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Upcoming Sessions Section */}
       <div className="mt-6">

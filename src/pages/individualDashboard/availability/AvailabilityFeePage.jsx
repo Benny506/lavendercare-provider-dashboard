@@ -175,7 +175,7 @@ export default function AvailabilityFeePage() {
         .upsert(
           requestBody,
           {
-            onConflict: ['provider_id', 'duration_secs', "price"]
+            onConflict: ['provider_id', 'duration_secs']
           }
         )
         .select('*')
@@ -320,7 +320,10 @@ export default function AvailabilityFeePage() {
           <Formik
             validationSchema={validationSchema}
             initialValues={{
-              _15_min_price: null, _30_min_price: null, _45_min_price: null, _60_min_price: null,
+              _15_min_price: null, 
+              _30_min_price: null, 
+              _45_min_price: null, 
+              _60_min_price: null,
               currency: ''
             }}
             onSubmit={values => {
@@ -340,7 +343,7 @@ export default function AvailabilityFeePage() {
               [
                 { price: _15_min_price, min: 15 }, { price: _30_min_price, min: 30 }, 
                 { price: _45_min_price, min: 45 }, { price: _60_min_price, min: 60 }
-              ]
+              ].filter(p => p?.price !== null)
               .map(opt => {
                 return {
                   provider_id: userProfile?.id,

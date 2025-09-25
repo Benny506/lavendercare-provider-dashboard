@@ -103,9 +103,10 @@ const CaseReport = () => {
     return (
         <div>
             <TopDivider />
-            <div ref={containerRef} className="min-h-screen bg-white flex rounded-lg">
+
+            <div ref={containerRef} className="min-h-screen bg-white flex flex-wrap rounded-lg">
                 {/* Left Sidebar */}
-                <div className="w-1/3 p-6 border-r border-gray-200">
+                <div className="lg:w-1/3 w-full lg:mb-0 mb-4 p-6 border-r border-gray-200">
                     {/* Patient Header */}
                     <div className='mb-6 flex items-start justify-between gap-3 w-full'>
                         <div className="flex items-start">
@@ -150,7 +151,7 @@ const CaseReport = () => {
                 {/* Right Content */}
                 <div className="flex-1 p-6">
                     <h2 className="text-xl font-bold mb-6">Latest Result Summary</h2>
-                    <div className="bg-white rounded-lg p-6 mb-8">
+                    <div className="bg-white rounded-lg lg:p-6 p-2 mb-8">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-gray-200">
@@ -194,52 +195,49 @@ const CaseReport = () => {
                     </div>
                     <h2 className="text-xl font-bold mb-6">Full Screening History Table</h2>
                     <div className="bg-white rounded-lg p-6">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="text-left py-3 text-gray-600 font-medium">Date</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Type</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Score</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Risk Level (Score)</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Max Risk % (Answer)</th>
-                                    <th className="text-left py-3 text-gray-600 font-medium">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    patientScreeningHistory.map((history, i) => {
+                        <div className="w-full">
+                            {/* Table Headers */}
+                            <div className="hidden md:grid grid-cols-[2fr_1fr_1.5fr_2fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                                <p className="text-center py-4 font-semibold text-gray-700">Date</p>
+                                {/* <p className="text-center py-4 font-semibold text-gray-700">Type</p> */}
+                                <p className="text-center py-4 font-semibold text-gray-700">Score</p>
+                                <p className="text-center py-4 font-semibold text-gray-700">Risk Level (Score)</p>
+                                <p className="text-center py-4 font-semibold text-gray-700">Max Risk % (Answer)</p>
+                                {/* <p className="text-center py-4 font-semibold text-gray-700">Actions</p> */}
+                            </div> 
 
-                                        const { test_type, score, created_at, answer, risk_level } = history
+                            {
+                                patientScreeningHistory.map((history, i) => {
 
-                                        const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })                                        
+                                    const { test_type, score, created_at, answer, risk_level } = history
 
-                                        return (
-                                            <tr key={i} className="border-b border-gray-100">
-                                                <td className="py-3">{isoToDateTime({ isoString: created_at })}</td>
-                                                <td className="py-3">{test_type}</td>
-                                                <td className="py-3">{score}</td>
-                                                <td className="py-3">
-                                                    <span className={`${getRiskLevelBadgeClass(risk_level?.toLowerCase())} px-2 py-1 rounded text-sm`}>
-                                                        { risk_level }
-                                                    </span>
-                                                </td>
-                                                <td className="py-3 text-center">
-                                                    { max_risk_percent?.risk_percent }%
-                                                </td>                                                  
-                                                <td className="py-3">
-                                                    <button
-                                                        onClick={() => openTestInfoModal({ data: history })}
-                                                        className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium"
-                                                    >
-                                                        View
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </table>
+                                    const max_risk_percent = getMaxByKey({ arr: answer?.filter(ans => ans.alert_level == 'high' || ans?.alert_level == 'severe'), key: 'risk_level' })                                        
+
+                                    return (
+                                        <div key={i} onClick={() => openTestInfoModal({ data: history })} className="hover:bg-gray-100 cursor-pointer md:grid md:grid-cols-[2fr_1fr_1.5fr_2fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col">
+                                            <div className="flex items-center justify-center py-3">{isoToDateTime({ isoString: created_at })}</div>
+                                            <div className="flex items-center justify-center py-3">{score}</div>
+                                            <div className="flex items-center justify-center py-3">
+                                                <span className={`${getRiskLevelBadgeClass(risk_level?.toLowerCase())} px-2 py-1 rounded text-sm`}>
+                                                    { risk_level }
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-center py-3 text-center">
+                                                { max_risk_percent?.risk_percent }%
+                                            </div>                                                  
+                                            {/* <div className="py-3">
+                                                <button
+                                                    onClick={() => openTestInfoModal({ data: history })}
+                                                    className="cursor-pointer bg-purple-100 text-purple-600 px-6 py-2 rounded-lg font-medium"
+                                                >
+                                                    View
+                                                </button>
+                                            </div> */}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
                     </div>
                 </div>
             </div>

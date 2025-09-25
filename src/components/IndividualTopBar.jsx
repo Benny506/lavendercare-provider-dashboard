@@ -82,7 +82,7 @@ const IndividualTopBar = ({ setIsOpen }) => {
                 </div> */}
 
                 {/* Notification Icon with Badge */}
-                <div
+                {/* <div
                     onClick={() => navigate('/individual/dashboard/all-notifications')}
                     className="relative cursor-pointer"
                 >
@@ -98,7 +98,7 @@ const IndividualTopBar = ({ setIsOpen }) => {
                                 }
                             </span>                        
                     }
-                </div>
+                </div> */}
 
                 {/* Avatar with Dropdown */}
                 <div className="relative cursor-pointer" ref={dropdownRef}>

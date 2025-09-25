@@ -89,11 +89,19 @@ export function timeToAMPM_FromHour({ hour }) {
 export function timeToAMPM_FromHour_Duration({ startHour, durationInSeconds }) {
   const date = new Date();
   date.setHours(startHour, 0, 0, 0);
+
   const endDate = new Date(date.getTime() + durationInSeconds * 1000);
-  const hours = endDate.getHours();
-  const suffix = hours >= 12 ? 'PM' : 'AM';
-  return `${hours.toString().padStart(2, '0')}:00 ${suffix}`;
+
+  let hours = endDate.getHours();
+  const minutes = endDate.getMinutes();
+
+  const suffix = hours >= 12 ? "PM" : "AM";
+
+  // convert to 12-hour format
+
+  return `${hours}:${minutes.toString().padStart(2, "0")} ${suffix}`;
 }
+
 
 export const isoToDateTime = ({ isoString }) => {
   return DateTime.fromISO(isoString)

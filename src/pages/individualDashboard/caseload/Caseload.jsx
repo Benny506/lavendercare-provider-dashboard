@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import useApiReqs from "@/hooks/useApiReqs";
 import { usePagination } from "@/hooks/usePagination";
 import { formatDate1, isDateInRange, weekFilters } from "@/lib/utils";
 import { allStatus, getStatusBadge } from "@/lib/utilsJsx";
@@ -26,6 +27,8 @@ const Caseload = () => {
 
     const specialties = profile?.provider_specialties || []
 
+    const { loadMoreBookings } = useApiReqs()
+
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState({
         statusFilterVisible: false, activeStatusFilter: 'All',
@@ -35,6 +38,7 @@ const Caseload = () => {
     });
     const [currentPage, setCurrentPage] = useState(0)
     const [pageListIndex, setPageListIndex] = useState(0)
+    const [canLoadMore, setCanLoadMore] = useState(true)
 
     useEffect(() => {
         setCurrentPage(0)
@@ -372,6 +376,25 @@ const Caseload = () => {
                             </button>                        
                         </div>                    
                 }
+
+                {
+                    canLoadMore
+                    &&
+                    <div className="w-full flex items-center justify-center my-5">
+                        <Button
+                            onClick={() => {
+                                loadMoreBookings({
+                                    callBack: ({ canLoadMore }) => {
+                                        setCanLoadMore(canLoadMore ? true : false)
+                                    }
+                                })
+                            }}
+                            className={'bg-purple-600 text-white'}
+                        >
+                            Load more
+                        </Button>
+                    </div>
+                }                
             </div>
         </div>
     );
