@@ -48,12 +48,12 @@ export default function ActiveConsultation() {
 
     const { 
         status, messages, sendMessage, onlineUsers, insertSubStatus, updateSubStatus,
-        canLoadMoreMsgs, loadMessages, bulkMsgsRead
+        canLoadMoreMsgs, loadMessages, bulkMsgsRead, refreshConnection
     } = useDirectChat({ topic: selectedChat?.id, meId, peerId });
 
     const {
         remaining
-    } = useCountdown({ startHour: selectedChat?.hour, durationInSeconds: selectedChat?.duration })
+    } = useCountdown({ startHour: selectedChat?.hour, durationInSeconds: selectedChat?.duration, day: new Date(selectedChat?.day) })
 
     const peerOnline = onlineUsers.includes(peerId)
 
@@ -367,43 +367,54 @@ export default function ActiveConsultation() {
 
                             {/* Message Input */}
                             {
-                                ((status == 'subscribed' && insertSubStatus == 'subscribed' && updateSubStatus == 'subscribed')
-                                &&
-                                (remaining > 0))
-                                &&
-                                    <div className="p-4 border-t border-gray-200 bg-white">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex-1 relative">
-                                                <textarea
-                                                    value={input}
-                                                    onChange={(e) => setInput(e.target.value)}
-                                                    placeholder="Type a message..."
-                                                    className="w-full px-3 py-1 rounded-md bg-gray-50 border-gray-200"
-                                                />
+                                (remaining > 0)
+                                ?
+                                    (status == 'subscribed' && insertSubStatus == 'subscribed' && updateSubStatus == 'subscribed')
+                                    ?
+                                        <div className="p-4 border-t border-gray-200 bg-white">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex-1 relative">
+                                                    <textarea
+                                                        value={input}
+                                                        onChange={(e) => setInput(e.target.value)}
+                                                        placeholder="Type a message..."
+                                                        className="w-full px-3 py-1 rounded-md bg-gray-50 border-gray-200"
+                                                    />
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 rounded-full hover:bg-gray-200"
+                                                    >
+                                                        <Smile className="w-4 h-4 text-gray-500" />
+                                                    </Button>
+                                                </div>
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 rounded-full hover:bg-gray-200"
+                                                    className="h-10 w-10 p-0 rounded-full hover:bg-gray-100"
                                                 >
-                                                    <Smile className="w-4 h-4 text-gray-500" />
+                                                    <Paperclip className="w-4 h-4 text-gray-500" />
+                                                </Button>
+                                                <Button
+                                                    onClick={sendNow}
+                                                    size="sm"
+                                                    className="h-10 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
+                                                >
+                                                    Send
                                                 </Button>
                                             </div>
-                                            <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-10 w-10 p-0 rounded-full hover:bg-gray-100"
-                                            >
-                                                <Paperclip className="w-4 h-4 text-gray-500" />
-                                            </Button>
-                                            <Button
-                                                onClick={sendNow}
-                                                size="sm"
-                                                className="h-10 px-6 bg-purple-600 hover:bg-purple-700 text-white rounded-full"
-                                            >
-                                                Send
-                                            </Button>
                                         </div>
-                                    </div>
+                                    :
+                                        <div className="flex items-center justify-center">
+                                            <div
+                                                onClick={refreshConnection}
+                                                className="text-center font-medium bg-purple-600 text-white m-3 py-3 px-7 cursor-pointer rounded-lg"
+                                            >
+                                                Want to send a msg?
+                                            </div>
+                                        </div>
+                                :
+                                    <div />
                             }
                         </>
                     :

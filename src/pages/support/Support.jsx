@@ -311,8 +311,8 @@ export default function Support(){
                             {
                                 pageItems.length > 0
                                 &&
-                                    <div className="mt-6 w-full flex-1 flex items-center justify-between">
-                                        <button 
+                                    <div className="mt-6 w-full flex-1 flex items-center justify-center">
+                                        {/* <button 
                                             disabled={pageListIndex > 0 ? false : true}
                                             onClick={decrementPageListIndex} 
                                             style={{
@@ -322,7 +322,7 @@ export default function Support(){
                                         >
                                             <Icon icon="mdi:arrow-left" className="mr-2" /> 
                                             <span className="hidden md:inline">Previous</span>
-                                        </button>                        
+                                        </button>                         */}
 
                                         <div className="flex flex-wrap justify-center gap-2">
                                             {pageList?.map((p, i) => {
@@ -358,7 +358,7 @@ export default function Support(){
                                                 )}
                                             )}
                                         </div>
-                                        <button 
+                                        {/* <button 
                                             disabled={pageListIndex < totalPageListIndex ? false : true}
                                             onClick={incrementPageListIndex} 
                                             style={{
@@ -367,7 +367,7 @@ export default function Support(){
                                             className="cursor-pointer flex items-center text-gray-600 hover:text-gray-800 font-bold"
                                         >
                                             <span className="hidden md:inline">Next</span> <Icon icon="mdi:arrow-right" className="ml-2" />
-                                        </button>                        
+                                        </button>                         */}
                                     </div>                    
                             }
                         </>                        

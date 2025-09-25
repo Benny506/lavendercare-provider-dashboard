@@ -259,10 +259,10 @@ export default function AvailabilityFeePage() {
 
 
   return (
-    <div className="w-full h-screen overflow-hidden">
+    <div className="w-full h-screen">
       <TopDivider />
       <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto md:px-10 md:py-8">
+        <div className="flex-1 md:px-10 md:py-8">
           <div className="flex items-center justify-between mb-6">
             <div className="text-xl md:text-2xl font-semibold">Availability & Fee</div>
             <div className="flex justify-end">
@@ -275,7 +275,7 @@ export default function AvailabilityFeePage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto bg-white lg:w-full w-[90vw] border rounded-lg p-3">
+          <div className="bg-white lg:w-full w-[90vw] border rounded-lg p-3">
             <table className="border-collapse w-[1000px]">
               <thead>
                 <tr>

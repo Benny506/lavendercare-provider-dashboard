@@ -690,7 +690,7 @@ export function useDirectChat({ topic, meId }) {
         [isCommunity ? 'c_user_id' : isAdmin ? 'ad_user_id' : 'p_user_id']: meId,
         [isCommunity ? 'c_timestamp' : isAdmin ? 'ad_timestamp' : 'p_timestamp']: msgLoadedTimeStamp,
         last_loaded_at,
-        _limit: 5
+        _limit: 100
       });
 
     if (!error) {
