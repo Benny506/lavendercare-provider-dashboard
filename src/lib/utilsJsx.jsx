@@ -115,55 +115,40 @@ export function getStatusBadge(status) {
     );
 }
 
-export function getAppointmentStatus({ status, date_ISO, startHour, duration_secs }) {
+export function getAppointmentStatus({ status, start_time, duration_secs }) {
   const now = DateTime.now();
-
-  // Build the start time at the given hour on the given date
-  const bookingStartTime = DateTime.fromISO(date_ISO).set({
-    hour: startHour,
-    minute: 0,
-    second: 0,
-    millisecond: 0,
-  });
-
-  // Calculate end time by adding duration
+  const bookingStartTime = DateTime.fromISO(start_time);
   const bookingEndTime = bookingStartTime.plus({ seconds: duration_secs });
 
-  // Helper flags
   const hasStarted = now >= bookingStartTime;
-  const hasEnded   = now > bookingEndTime;
+  const hasEnded = now > bookingEndTime;
 
-  // 1) If the appointment is new and is currently in progress
-  if ((status === 'new' || status == 'awaiting_completion') && hasStarted && !hasEnded) {
-    return 'ongoing';
+  // 1) If the appointment is new/awaiting_completion and ongoing
+  if ((status === "new" || status === "awaiting_completion") && hasStarted && !hasEnded) {
+    return "ongoing";
   }
 
   // 2) new → either still new or missed
-  if (status === 'new') {
-    return hasStarted ? 'missed' : 'new';
+  if (status === "new") {
+    return hasStarted ? "missed" : "new";
   }
 
-  // 3) New but not ongoing → still new
-  if (status === 'new') {
-    return 'new';
+  // 3) cancelled → as is
+  if (status === "cancelled") {
+    return "cancelled";
   }
 
-  // 4) Cancelled → as is
-  if (status === 'cancelled') {
-    return 'cancelled';
+  // 4) completed → as is
+  if (status === "completed") {
+    return "completed";
   }
 
-  // 5) Completed → as is
-  if (status === 'completed') {
-    return 'completed';
+  // 5) awaiting_completion → as is
+  if (status === "awaiting_completion") {
+    return "awaiting_completion";
   }
 
-  // 6) Awating completion → as is
-  if (status === 'awaiting_completion') {
-    return 'awaiting_completion';
-  }  
-
-  // Fallback to the raw status
+  // fallback
   return status;
 }
 

@@ -2,7 +2,7 @@ import Notifications from '@/components/Notifications';
 import TopDivider from '@/components/TopDivider'
 import { Button } from '@/components/ui/button'
 import ZeroItems from '@/components/ui/ZeroItems';
-import { formatDate1, getMaxByKey, timeToAMPM } from '@/lib/utils';
+import { formatDate1, formatTo12Hour, getMaxByKey, secondsToLabel, timeToAMPM } from '@/lib/utils';
 import { getNotificationState } from '@/redux/slices/notificationSlice';
 import { getUserDetailsState } from '@/redux/slices/userDetailsSlice';
 import { Icon } from '@iconify/react'
@@ -153,7 +153,7 @@ const Overview = () => {
               <>
                 {newConsultations.map((booking, index) => {
 
-                  const { user_profile, service_type, day, hour } = booking
+                  const { user_profile, service_type, day, start_time, duration } = booking
 
                   const dateISO = new Date(day).toISOString()
 
@@ -164,7 +164,7 @@ const Overview = () => {
                     >
                       <div className="flex flex-col gap-2">
                         <p className="text-sm font-semibold">
-                          {`${formatDate1({ dateISO })} --- ${timeToAMPM({ hour, minutes: 0 })}`} <span className="font-normal">{user_profile?.name}</span>
+                          <span className="font-bold">{user_profile?.name}</span> --- {`${formatDate1({ dateISO })} --- Starting at ${formatTo12Hour({ time: start_time })} --- Duration: ${secondsToLabel({ seconds: duration })}`}
                         </p>
                         <p className="text-xs text-gray-500">{service_type?.type?.replaceAll("_", " ")}</p>
                       </div>

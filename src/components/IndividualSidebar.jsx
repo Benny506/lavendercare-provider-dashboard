@@ -61,6 +61,14 @@ const navItems = [
             <Icon icon="material-symbols:note-outline" width="24" height="24" style={{ color }} />
         )
     },
+    {
+        path: '/individual/dashboard/wallet',
+        id: 'wallet',
+        label: 'Wallet',
+        Icon: ({ color = "#000" }) => (
+            <Icon icon="ic:outline-account-balance-wallet" width="24" height="24" style={{ color }} />
+        )
+    },    
 ];
 
 
@@ -112,6 +120,9 @@ const IndividualSidebar = ({isOpen, setIsOpen}) => {
 
         } else if (pathname.toLowerCase().includes('screenings')) {
             setActiveNav('screenings')
+
+        } else if (pathname.toLowerCase().includes('wallet')) {
+            setActiveNav('wallet')        
 
         } else if (pathname.toLowerCase().includes('settings')) {
             setActiveNav('settings')

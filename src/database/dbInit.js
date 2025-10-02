@@ -30,17 +30,9 @@ export async function individualProviderLogin({ email, password }) {
 
   return {
     data: {
-        user: {
-          ...data.user,
-          ...infoData.profile,
-        },
-        availability: infoData.availability,
-        bookingCostData: infoData.bookingCostData,
-        bookings: infoData.bookings, 
-        screenings: infoData.screenings,
-        session: data.session,  
-        notifications: infoData.notifications,
-        highRiskAlerts: infoData.highRiskAlerts      
+        user: data?.user,
+        session: data?.session,
+        ...infoData,    
     },
     errorMsg: null 
   }
@@ -50,34 +42,21 @@ export async function getIndividualProviderDetails({ id }){
     .from("provider_profiles")
     .select('*')
     .eq('provider_id', id) 
-    .single(); 
-
-  const { data: availabilityData, error: availabilityError } = await supabase
-    .from('provider_availability')
-    .select("*")
-    .eq("provider_id", id)
-
-  const { data: providerBookingCostData, error: providerBookingCostError } = await supabase
-    .from('provider_booking_cost_options')
-    .select("*")
-    .eq("provider_id", id)    
+    .single();  
 
   const { data: bookingsData, error: bookingsError } = await supabase
-    .from('bookings')
+    .from('all_bookings')
     .select(`
       *,
       user_profile:user_profiles (*)
     `)    
     .eq("provider_id", id)  
     .order("day", { ascending: false, nullsFirst: false })      
-    .order('hour', { ascending: false, nullsFirst: false })
+    .order('start_time', { ascending: false, nullsFirst: false })
     .limit(1000)
 
-
-  if(profileError || availabilityError || providerBookingCostError || bookingsError) {
+  if(profileError || bookingsError) {
     console.log(profileError)
-    console.log(availabilityError)
-    console.log(providerBookingCostError)
     console.log(bookingsError)
     return { error: "Error getting provider profile", data: null };
   }
@@ -121,8 +100,6 @@ export async function getIndividualProviderDetails({ id }){
   return{
     data: {
       profile: profileData,
-      availability: availabilityData,
-      bookingCostData: providerBookingCostData,
       bookings: bookingsData,
       screenings: screeningsData,
       notifications: notificationsData,

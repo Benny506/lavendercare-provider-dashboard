@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import PatientInfo from "../screenings/auxiliary/PatientInfo";
 import { useReactToPrint } from "react-to-print";
-import { formatDate1, isoToDateTime, timeToAMPM_FromHour } from "@/lib/utils";
+import { formatDate1, formatTo12Hour, isoToDateTime, secondsToLabel, timeToAMPM_FromHour } from "@/lib/utils";
 
 const CaseDetailsView = () => {
 
@@ -87,7 +87,13 @@ const CaseDetailsView = () => {
         },
         {
             icon: <Bookmark className="w-5 h-5 text-green-500" />,
-            title: `Booking made - ${formatDate1({ dateISO: new Date(singleBooking?.day).toISOString() })}, ${timeToAMPM_FromHour({ hour: singleBooking?.hour })}`,
+            title: `Booking created on - ${isoToDateTime({ isoString: singleBooking?.created_at })}`,
+            description: "",
+            type: "booking"
+        },        
+        {
+            icon: <Bookmark className="w-5 h-5 text-green-500" />,
+            title: `Booking set for: ${formatDate1({ dateISO: new Date(singleBooking?.day).toISOString() })} by ${formatTo12Hour({ time: singleBooking?.start_time })}. Duration: ${secondsToLabel({ seconds: singleBooking?.duration })}`,
             description: "",
             type: "booking"
         },

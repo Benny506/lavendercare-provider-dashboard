@@ -75,6 +75,8 @@ import ActiveConsultation from "@/pages/individualDashboard/consultation/ActiveC
 import NotFound from "@/pages/notFound/NotFound";
 import AllNotifications from "@/pages/individualDashboard/dashboard/AllNotifications";
 import Support from "@/pages/support/Support";
+import Wallet from "@/pages/wallet/Wallet";
+import BankAccounts from "@/pages/individualDashboard/settings/bank/BankAccounts";
 
 const AppRoutes = () => (
   <AutoLogin>
@@ -186,7 +188,9 @@ const AppRoutes = () => (
         <Route path="settings/integrations" element={<IntegrationsPage />} />
         <Route path="settings/general-settings" element={<IndividualGeneralSettings />} />
         <Route path="settings/profile" element={<IndividualProfilePage />} />
+        <Route path="settings/bankAccount" element={<BankAccounts />} />
         <Route path="support" element={<Support />} />
+        <Route path="wallet" element={<Wallet />} />
       </Route>
 
 

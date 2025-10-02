@@ -33,8 +33,12 @@ const Login = () => {
           icon="ph:hospital-light"
           title="Are you a Hospital Admin"
           providerOption={providerOption}
-          setProviderOption={setProviderOption}
+          setProviderOption={() => {}}
           type="hospital"
+          extraStyles={{
+            opacity: 0.5,
+            cursor: 'default'
+          }}
         />
         <ProfileCard
           icon="ph:hand-heart-light"

@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-const ProfileCard = ({ title, icon, type, providerOption, setProviderOption }) => {
+const ProfileCard = ({ title, icon, type, providerOption, setProviderOption, extraStyles={} }) => {
 
     const selected = providerOption == type ? true : false
 
@@ -8,6 +8,9 @@ const ProfileCard = ({ title, icon, type, providerOption, setProviderOption }) =
         <div
             onClick={() => setProviderOption && setProviderOption(type)}
             className="flex flex-col justify-between w-[22rem] h-[11rem] p-6 border border-gray-300 rounded-lg cursor-pointer bg-transparent"
+            style={{
+                ...extraStyles
+            }}
         >
             <div className="flex justify-between items-start mt-2">
                 <Icon icon={icon} width={24} height={24} className="text-gray-800" />

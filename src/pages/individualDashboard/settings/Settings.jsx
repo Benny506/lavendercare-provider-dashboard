@@ -51,7 +51,7 @@ const IndividualSettings = () => {
                         className='flex gap-3 justify-between items-center cursor-pointer' 
                         onClick={() => 
                             // navigate('/individual/dashboard/settings/integrations')
-                            toast.info("Working on it...")
+                            toast.info("Not available yet...")
                         }
                     >
                         <Image src="assets/general-settings-icon.svg" />
@@ -75,6 +75,20 @@ const IndividualSettings = () => {
                         </div>
                         <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
                     </div>
+
+                    <div 
+                        onClick={() => {
+                            navigate('/individual/dashboard/settings/bankAccount')
+                        }}
+                        className='cursor-pointer flex gap-3 justify-between items-center'
+                    >
+                        <Image src="assets/general-settings-icon.svg" />
+                        <div className='flex flex-col flex-1'>
+                            <h1 className='text-md font-bold'>Bank account</h1>
+                            <p className='text-xs text-gray-500'>Manage the account you receive money into</p>
+                        </div>
+                        <Icon icon="oui:arrow-right" width="16" height="16" style={{ color: "gray" }} />
+                    </div>                    
 
                 </div>
 

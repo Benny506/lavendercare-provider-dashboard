@@ -92,6 +92,11 @@ const ProfileDetails = () => {
                                         className="border border-gray-300 rounded px-3 py-2 w-4/5 text-base focus:outline-none focus:ring-2 focus:ring-primary-200"
                                         onChange={e => {
                                             const file = e.currentTarget.files?.[0] ?? null
+
+                                            if(!file){
+                                                setProfileImgPreview(null)
+                                            }
+
                                             setFieldValue("profile_img", file)
 
                                             if (file) {

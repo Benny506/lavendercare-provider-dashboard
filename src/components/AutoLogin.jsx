@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux"
 import { setUserDetails } from "@/redux/slices/userDetailsSlice"
 import supabase, { getIndividualProviderDetails } from "@/database/dbInit"
 import { setNotifications } from "@/redux/slices/notificationSlice"
+import { toast } from "react-toastify"
 
 export default function AutoLogin({ children }){
     const dispatch = useDispatch()
@@ -20,6 +21,7 @@ export default function AutoLogin({ children }){
         supabase.auth.getSession().then(({ data: { session } }) => {
             if(session?.user){
                 setUser(session?.user)
+                setSession(session)
             
             } else{
                 autoLoginError()
@@ -38,7 +40,7 @@ export default function AutoLogin({ children }){
 
     // 2. Fetch related data once we have the user
     useEffect(() => {
-        if (!user) return;
+        if (!user || !session) return;
 
         // console.log(user)
 
@@ -51,13 +53,19 @@ export default function AutoLogin({ children }){
                 console.error('Error loading profile:', infoError)
 
             } else {
+                if(!infoData?.profile?.credentials_approved){
+                    toast.info("Credentials submitted and are awaiting approval. We will reach out to you via email soon")
+                    autoLoginError()
+
+                    return;
+                }
+
                 dispatch(setUserDetails({
+                    user,
+                    session,
                     profile: {
-                        ...user,
                         ...infoData.profile
                     },
-                    availability: infoData.availability,
-                    bookingCostData: infoData.bookingCostData,
                     bookings: infoData.bookings,
                     screenings: infoData.screenings,
                     highRiskAlerts: infoData.highRiskAlerts
@@ -72,7 +80,7 @@ export default function AutoLogin({ children }){
         }
 
         loadProfile()
-    }, [user]) 
+    }, [user, session]) 
     
     const autoLoginError = () => {
         navigate('/')

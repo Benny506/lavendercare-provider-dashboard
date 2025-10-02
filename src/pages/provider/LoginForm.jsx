@@ -47,26 +47,26 @@ const LoginForm = () => {
 
       if(!data) throw new Error();
 
-      const { user, availability, bookingCostData, bookings, screenings, notifications, highRiskAlerts, session } = data
+      const { user, profile, availability, bookingCostData, bookings, screenings, notifications, highRiskAlerts, session } = data
 
-      dispatch(setUserDetails({ profile: user, availability, bookingCostData, bookings, screenings, highRiskAlerts }))
+      dispatch(setUserDetails({ user, session, profile, availability, bookingCostData, bookings, screenings, highRiskAlerts }))
 
       dispatch(setNotifications({ notifications }))
 
       setApiReqs({ isLoading: false, errorMsg: null })      
 
-      if(!user?.credentials_approved){
-        if(!user?.certification_number){
+      if(!profile?.credentials_approved){
+        if(!profile?.certification_number){
           toast.info("Next step -> complete your registration")
 
           navigate('/individual/profile-details');
-
-          return;
         }
 
-        if(user?.certification_number){
+        if(profile?.certification_number){
           toast.info("Credentials submitted and are awaiting approval. We will reach out to you via email soon")
         }
+
+        return;
       }
 
       navigate('/individual/dashboard')

@@ -9,86 +9,36 @@ import { getUserDetailsState, setUserDetails } from '@/redux/slices/userDetailsS
 import { ErrorMessage, Formik } from 'formik';
 import * as yup from 'yup'
 import ErrorMsg1 from '@/components/ErrorMsg1';
-import { currencies, formatNumberWithCommas } from '@/lib/utils';
+import { currencies, formatNumberWithCommas, secondsToLabel, timeToAMPM_FromHour } from '@/lib/utils';
+import HourSelect from '@/components/HourSelect';
+import { Button } from '@/components/ui/button';
 
-const timeSlots = [
-  '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM',
-  '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM',
-  '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM', '11:00 PM'
+const defaultAvailability = {
+  monday: { opening: '', closing: '' },
+  tuesday: { opening: '', closing: '' },
+  wednesday: { opening: '', closing: '' },
+  thursday: { opening: '', closing: '' },
+  friday: { opening: '', closing: '' },
+  saturday: { opening: '', closing: '' },
+  sunday: { opening: '', closing: '' }
+}
+
+const durationsOptions = [
+    { title: '15 mins', value: 15 * 60 },     // 900
+    { title: '30 mins', value: 30 * 60 },     // 1800
+    { title: '1 hour', value: 60 * 60 },      // 3600
 ];
-
-const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-
-function parseScheduleKey(key) {
-  const idx = key.indexOf('_')
-  if (idx === -1) throw new Error(`Invalid key format: "${key}"`)
-
-  const weekday = key.slice(0, idx).toLowerCase()
-  const timePart = key.slice(idx + 1)   // e.g. "8:00 AM"
-
-  const match = timePart.match(/^(\d{1,2}):\d{2}\s*(AM|PM)$/i)
-  if (!match) throw new Error(`Invalid time format: "${timePart}"`)
-
-  let hour = parseInt(match[1], 10)
-  const period = match[2].toUpperCase()
-  if (period === 'PM' && hour < 12) hour += 12
-  if (period === 'AM' && hour === 12) hour = 0
-
-  return { weekday, hour }
-}
-
-function groupSchedule(schedule) {
-  const groups = {}
-
-  // 1) Parse each key, collect hours per day
-  Object.keys(schedule).forEach(key => {
-    if (!schedule[key]) return
-    const { weekday, hour } = parseScheduleKey(key)
-    if (!groups[weekday]) groups[weekday] = []
-    groups[weekday].push(hour)
-  })
-
-  // 2) Build final array, sorting hours and filtering out empty
-  return Object.entries(groups)
-    .map(([weekday, hours]) => ({
-      weekday,
-      hours: Array.from(new Set(hours))  // remove duplicates
-        .sort((a, b) => a - b)
-    }))
-    .filter(group => group.hours.length > 0)
-}
-
-function flattenAvailability(availabilityArray = []) {
-  const result = {}
-
-  availabilityArray.forEach(({ weekday, hours }) => {
-    hours.forEach(hour => {
-      const isPM = hour >= 12
-      const hour12 = hour === 0 ? 12 : (hour > 12 ? hour - 12 : hour)
-      const suffix = isPM ? 'PM' : 'AM'
-      const timeString = `${hour12}:00 ${suffix}`
-
-      const key = `${weekday}_${timeString}`
-      result[key] = true
-    })
-  })
-
-  return result
-}
-
-
 
 
 export default function AvailabilityFeePage() {
   const dispatch = useDispatch()
 
   const userProfile = useSelector(state => getUserDetailsState(state).profile)
-  const userAvailability = useSelector(state => getUserDetailsState(state).availability)
   const bookingCostData = useSelector(state => getUserDetailsState(state).bookingCostData)
 
-  const [availability, setAvailability] = useState(flattenAvailability(userAvailability));
+  const [days, setDays] = useState(userProfile?.availability || defaultAvailability)
+  const [selectedDay, setSelectedDay] = useState('monday')
   const [success, setSuccess] = useState(false);
-  const [groupedAvailability, setGroupedAvailability] = useState([])
   const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
   const [bookingCostOpts, setBookingCostOpts] = useState({
     '15': null, '30': null, '45': null, '60': null, currency: ''
@@ -97,107 +47,82 @@ export default function AvailabilityFeePage() {
   useEffect(() => {
     const { isLoading, errorMsg } = apiReqs
 
-    if(isLoading) dispatch(appLoadStart());
+    if (isLoading) dispatch(appLoadStart());
     else dispatch(appLoadStop())
 
   }, [apiReqs])
 
   useEffect(() => {
-    if(availability){
-      setGroupedAvailability(groupSchedule(availability))
-    }
-  }, [availability])
+    if (bookingCostData) {
+      const opts = { ...bookingCostOpts }
 
-  useEffect(() => {
-    if(bookingCostData){
-      const opts = {...bookingCostOpts}
-
-      for(let i = 0; i < bookingCostData.length; i++){
+      for (let i = 0; i < bookingCostData.length; i++) {
         const { price, duration_secs, currency } = bookingCostData[i]
 
         const durationMin = duration_secs / 60
 
         opts[durationMin] = price
         opts.currency = currency
-      }       
+      }
 
       setBookingCostOpts(opts)
     }
   }, [bookingCostData])
 
-  const toggleAvailability = (day, time) => {
-    const key = `${day}_${time}`;
-    setAvailability(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
+  const handleSave = async ({ requestInfo }) => {
 
-  const handleSave = async () => {
     try {
+
+      const { availability } = requestInfo
+
+      if(availability){
+        let oneSlotChosen = false
+
+        const availableDays = Object.keys(availability)
+
+        for (let i = 0; i < availableDays.length; i++) {
+          const { opening, closing } = availability[availableDays[i]]
+          if (opening && closing) {
+            oneSlotChosen = true
+            break
+          }
+        }
+
+        if (!oneSlotChosen) return toast.info("Select at least one available slot")
+      }
+
       setApiReqs({ isLoading: true, errorMsg: null })
 
       const { data, error } = await supabase
-        .from('provider_availability')
-        .upsert(
-          groupedAvailability.map(a => ({ ...a, provider_id: userProfile.id })),
-          {
-            onConflict: ['provider_id', 'weekday']
-          }
-        )
+        .from('provider_profiles')
+        .update({
+          ...requestInfo
+        })
+        .eq("provider_id", userProfile?.provider_id)
         .select('*')
-      
-      if(!data || error){
+        .single()
+
+      if (!data || error) {
         console.log(error, error.message)
         throw new Error()
       }
 
       dispatch(setUserDetails({
-        availability: data
+        profile: {
+          ...userProfile,
+          ...requestInfo
+        }
       }))
 
       setApiReqs({ isLoading: false, errorMsg: null })
       setSuccess(true);
       toast.success("Availability settings saved")
-            
+
     } catch (error) {
       console.log(error)
-      return saveError({ errorMsg: 'Error saving availability settings!' })  
+      return saveError({ errorMsg: 'Error saving availability settings!' })
     }
   };
-
-  const handlePriceSave = async ({ requestBody }) => {
-    try {
-      setApiReqs({ isLoading: true, errorMsg: null })
-
-      const { data, error } = await supabase
-        .from('provider_booking_cost_options')
-        .upsert(
-          requestBody,
-          {
-            onConflict: ['provider_id', 'duration_secs']
-          }
-        )
-        .select('*')
-      
-      if(!data || error){
-        console.log(error, error.message)
-        throw new Error()
-      }
-
-      dispatch(setUserDetails({
-        bookingCostData: data
-      }))
-
-      setApiReqs({ isLoading: false, errorMsg: null })
-      setSuccess(true);
-      toast.success("Fees settings saved")
-            
-    } catch (error) {
-      console.log(error)
-      return saveError({ errorMsg: 'Error saving fees settings!' })  
-    }
-  }
 
   const saveError = ({ errorMsg }) => {
     setApiReqs({ isLoading: false, errorMsg })
@@ -212,50 +137,15 @@ export default function AvailabilityFeePage() {
       currency: yup
         .string()
         .required("Currency is required"),
-
-      _15_min_price: yup
+      base_price: yup
         .number()
         .min(1, "Cannot be less than 1")
         .typeError("Must contain only digits")
-        .nullable(),
-
-      _30_min_price: yup
-        .number()
-        .min(1, "Cannot be less than 1")
-        .typeError("Must contain only digits")
-        .nullable(),
-
-      _45_min_price: yup
-        .number()
-        .min(1, "Cannot be less than 1")
-        .typeError("Must contain only digits")
-        .nullable(),
-
-      _60_min_price: yup
-        .number()
-        .min(1, "Cannot be less than 1")
-        .typeError("Must contain only digits")
-        .nullable(),
+        .required("Base price is required"),
+      base_duration: yup
+        .string()
+        .required("Base duration is required")
     })
-    .test(
-      'at-least-one-price',
-      'At least one price option is required',
-      function (value) {
-        const {
-          _15_min_price,
-          _30_min_price,
-          _45_min_price,
-          _60_min_price,
-        } = value || {};
-
-        // Check if at least one is a valid number
-        const hasOne = [_15_min_price, _30_min_price, _45_min_price, _60_min_price].some(
-          val => typeof val === 'number' && !isNaN(val)
-        );
-
-        return hasOne;
-      }
-    );
 
 
   return (
@@ -267,8 +157,8 @@ export default function AvailabilityFeePage() {
             <div className="text-xl md:text-2xl font-semibold">Availability & Fee</div>
             <div className="flex justify-end">
               <button
-                onClick={handleSave}
-                className="cursor-pointer bg-primary-600 text-white px-4 py-2 rounded-3xl text-sm font-medium"
+                onClick={() => handleSave({ requestInfo: { availability: days } })}
+                className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-3xl text-sm font-medium"
               >
                 Save Changes
               </button>
@@ -276,84 +166,131 @@ export default function AvailabilityFeePage() {
           </div>
 
           <div className="bg-white lg:w-full w-[90vw] border rounded-lg p-3">
-            <table className="border-collapse w-[1000px]">
-              <thead>
-                <tr>
-                  <th className="border-b text-md p-2 font-normal text-left w-24">Time</th>
-                  {days.map(day => (
-                    <th
-                      key={day}
-                      className="border-b text-md p-2 font-normal text-center"
-                    >
-                      {day}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+            <div className='border border-grey-100 rounded-md lg:flex block w-full'>
+              <div className='border-r border-grey-100 py-4 pb-2 px-2  space-y-4 flex flex-row flex-wrap lg:flex-col items-center lg:w-[20%] w-full lg:mb-0 mb-4 font-semibold text-sm'>
+                {Object.keys(days).map((day, index) => {
 
-              <tbody>
-                {timeSlots.map(time => (
-                  <tr key={time}>
-                    <td className="border-b p-2 text-sm text-left">{time}</td>
-                    {days.map(day => {
-                      const key = `${day}_${time}`;
-                      const checked = availability[key];
-                      return (
-                        <td key={key} className="border-b p-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={!!checked}
-                            onChange={() => toggleAvailability(day, time)}
-                            className="w-4 h-4 cursor-pointer"
-                          />
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  const active = day === selectedDay ? true : false
+
+                  const handleDayClick = () => setSelectedDay(day)
+
+                  return (
+                    <div key={day} onClick={handleDayClick} className={`lg:w-full w-1/2 text-center py-3 ${active ? "text-white bg-purple-500" : "cursor-pointer hover:bg-gray-100"} p-2 rounded-lg`}>
+                      <p>{day}</p>
+                    </div>
+                  )
+                }
+                )}
+              </div>
+
+              <div>
+                <Formik
+                  validationSchema={yup.object().shape({
+                    start_hour: yup.string()
+                      .required("Start hour is required"),
+                    end_hour: yup.string()
+                      .required("End hour is required")
+                      .test("is-greater", "End hour must be later than start hour", function (value) {
+                        const { start_hour } = this.parent;
+                        if (!start_hour || !value) return false;
+
+                        // Convert to minutes for easy comparison
+                        const [sh, sm] = start_hour.split(":").map(Number);
+                        const [eh, em] = value.split(":").map(Number);
+
+                        const startTotal = sh * 60 + sm;
+                        const endTotal = eh * 60 + em;
+
+                        return endTotal > startTotal;
+                      })
+                  })}
+                  initialValues={{
+                    start_hour: '', end_hour: ''
+                  }}
+                  onSubmit={(values, { resetForm }) => {
+                    const { start_hour, end_hour } = values
+
+                    const [sh, sm] = start_hour.split(":").map(Number);
+                    const [eh, em] = end_hour.split(":").map(Number);
+
+                    setDays(prev => ({
+                      ...prev,
+                      [selectedDay]: { opening: sh, closing: eh }
+                    }))
+
+                    resetForm()
+                  }}
+                >
+                  {({ handleBlur, handleChange, handleSubmit, isValid, dirty, values }) => (
+                    <div className='m-7 flex flex-col items-start justify-center px-2 gap-4'>
+                      <div className=''>
+                        {
+                          days[selectedDay]?.opening
+                            ?
+                            <p className=''>
+                              {timeToAMPM_FromHour({ hour: days[selectedDay]?.opening })} - {timeToAMPM_FromHour({ hour: days[selectedDay]?.closing })}
+                            </p>
+                            :
+                            <p className=''>
+                              Not set
+                            </p>
+                        }
+                      </div>
+
+                      <div className=''>
+                        <label className=''>Opening at</label>
+                        <br />
+                        <HourSelect
+                          name="start_hour"
+                          value={values.start_hour}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          required
+                        />
+                        <ErrorMessage name='start_hour'>
+                          {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                        </ErrorMessage>
+                      </div>
+
+                      <div className=''>
+                        <label className=''>Closing at</label>
+                        <br />
+                        <HourSelect
+                          name="end_hour"
+                          value={values.end_hour}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          required
+                        />
+                        <ErrorMessage name='end_hour'>
+                          {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                        </ErrorMessage>
+                      </div>
+
+                      <Button
+                        onClick={handleSubmit}
+                        className={'bg-purple-600'}
+                      >
+                        Set
+                      </Button>
+                    </div>
+                  )}
+                </Formik>
+              </div>
+            </div>
           </div>
 
 
-              
+
           <Formik
             validationSchema={validationSchema}
             initialValues={{
-              _15_min_price: null, 
-              _30_min_price: null, 
-              _45_min_price: null, 
-              _60_min_price: null,
+              base_duration: '',
+              base_price: '',
               currency: ''
             }}
             onSubmit={values => {
-              const { _15_min_price, _30_min_price, _45_min_price, _60_min_price, currency } = values
-
-              if(!_15_min_price && !_30_min_price && !_45_min_price && !_60_min_price){
-                toast.info("Set at least one price for a given duration")
-                return
-              }
-
-              if(!currency){
-                toast.info("Set a currency")
-                return
-              }
-
-              const requestBody = 
-              [
-                { price: _15_min_price, min: 15 }, { price: _30_min_price, min: 30 }, 
-                { price: _45_min_price, min: 45 }, { price: _60_min_price, min: 60 }
-              ].filter(p => p?.price !== null)
-              .map(opt => {
-                return {
-                  provider_id: userProfile?.id,
-                  price: opt.price,
-                  duration_secs: opt.min * 60,
-                  currency
-                }
-              })
-
-              handlePriceSave({ requestBody })
+              handleSave({ requestInfo: values })
             }}
           >
             {({ handleBlur, handleChange, handleSubmit, values, isValid, dirty }) => (
@@ -367,7 +304,7 @@ export default function AvailabilityFeePage() {
                       style={{
                         opacity: !(isValid && dirty) ? 0.5 : 1
                       }}
-                      className="cursor-pointer bg-primary-600 text-white px-4 py-2 rounded-3xl text-sm font-medium"
+                      className="cursor-pointer bg-purple-600 text-white px-4 py-2 rounded-3xl text-sm font-medium"
                     >
                       Save Changes
                     </button>
@@ -380,7 +317,7 @@ export default function AvailabilityFeePage() {
                       <div>
                         <label className="text-sm mr-2">Currency</label>
                         <p className='m-0 p-0 text-xs text-gray-600 italic fw-500'>
-                          { bookingCostOpts.currency || 'Not set'}
+                          {bookingCostOpts.currency || 'Not set'}
                         </p>
                       </div>
                     </div>
@@ -402,93 +339,53 @@ export default function AvailabilityFeePage() {
                         }
                       </select>
                       <ErrorMessage name='currency'>
-                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
-                      </ErrorMessage>                                          
-                    </div>                      
-                    <div className="flex items-center gap-2 w-full mb-4">
-                      <label className="text-sm mr-2">Session Duration</label>
+                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
+                      </ErrorMessage>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full mb-4">
-                      <div>
-                        <label className="text-sm w-20">15 mins</label>
-                        <p className='m-0 p-0 text-xs text-gray-600 italic fw-500'>
-                          { formatNumberWithCommas(bookingCostOpts[15]) || 'Not set'}
-                        </p>                        
-                      </div>
+                    <div className="flex flex-col w-full mb-4">
+                      <label className="text-sm mb-1">Base price: {userProfile?.base_price || 'Not set'}</label>
                       <input
-                        type="text"
+                        type="number"
                         className="flex-1 border border-gray-200 rounded-lg p-2 text-sm bg-white"
                         placeholder="-"
-                        value={values._15_min_price}
+                        value={values.base_price}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        name={"_15_min_price"}
-                      />  
-                      <ErrorMessage name='_15_min_price'>
-                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
-                      </ErrorMessage>                                          
-                    </div>
-                                         
-                    <div className="flex items-center gap-2 w-full mb-4">
-                      <div>
-                        <label className="text-sm w-20">30 mins</label>
-                        <p className='m-0 p-0 text-xs text-gray-600 italic fw-500'>
-                          { formatNumberWithCommas(bookingCostOpts[30]) || 'Not set'}
-                        </p>                            
-                      </div>
-                      <input
-                        type="text"
-                        className="flex-1 border border-gray-200 rounded-lg p-2 text-sm bg-white"
-                        placeholder="-"
-                        value={values._30_min_price}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        name={"_30_min_price"}
+                        name={"base_price"}
                       />
-                      <ErrorMessage name='_30_min_price'>
-                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
-                      </ErrorMessage>                       
+                      <ErrorMessage name='base_price'>
+                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
+                      </ErrorMessage>
                     </div>
-                    <div className="flex items-center gap-2 w-full mb-4">
-                      <div>
-                        <label className="text-sm w-20">45 mins</label>
-                        <p className='m-0 p-0 text-xs text-gray-600 italic fw-500'>
-                          { formatNumberWithCommas(bookingCostOpts[45]) || 'Not set'}
-                        </p>                            
-                      </div>
-                      <input
-                        type="text"
-                        className="flex-1 border border-gray-200 rounded-lg p-2 text-sm bg-white"
-                        placeholder="-"
-                        value={values._45_min_price}
+
+                    <div className="flex flex-col w-full mb-4">
+                      <label className="text-sm mb-1">Base Duration: {userProfile?.base_duration ? secondsToLabel({ seconds: userProfile?.base_duration }) : 'Not set'}. {'('}This is the smallest time duration that you can be booked for{')'}</label>
+                      <select
+                        name="base_duration"
+                        value={values.base_duration}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        name={"_45_min_price"}
-                      />
-                      <ErrorMessage name='_45_min_price'>
-                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
-                      </ErrorMessage>   
-                    </div>
-                    <div className="flex items-center gap-2 w-full">
-                      <div>
-                        <label className="text-sm w-20">1 hour</label>
-                        <p className='m-0 p-0 text-xs text-gray-600 italic fw-500'>
-                          { formatNumberWithCommas(bookingCostOpts[60]) || 'Not set'}
-                        </p>                            
-                      </div>
-                      <input
-                        type="text"
+                        type="number"
+                        placeholder="Set a duration"
                         className="flex-1 border border-gray-200 rounded-lg p-2 text-sm bg-white"
-                        placeholder="-"
-                        value={values._60_min_price}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        name={"_60_min_price"}
-                      />
-                      <ErrorMessage name='_60_min_price'>
-                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
-                      </ErrorMessage> 
+                      >
+                        <option value={''} selected disabled>Set a duration</option>
+                        {
+                          durationsOptions.map((d, i) => {
+                            const { title, value } = d
+
+                            return (
+                              <option value={value}>
+                                {title}
+                              </option>
+                            )
+                          })
+                        }
+                      </select>
+                      <ErrorMessage name="base_duration">
+                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} />}
+                      </ErrorMessage>
                     </div>
                   </div>
                 </div>
@@ -510,7 +407,7 @@ export default function AvailabilityFeePage() {
                 </p>
                 <button
                   onClick={() => setSuccess(false)}
-                  className="cursor-pointer bg-primary-600 text-white px-5 py-2 rounded-md text-sm"
+                  className="cursor-pointer bg-purple-600 text-white px-5 py-2 rounded-md text-sm"
                 >
                   Done
                 </button>

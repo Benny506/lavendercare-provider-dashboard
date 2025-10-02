@@ -9,7 +9,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { formatDate1, timeToAMPM_FromHour } from "@/lib/utils";
+import { formatDate1, formatTo12Hour, secondsToLabel, timeToAMPM_FromHour } from "@/lib/utils";
 import { allStatus, getStatusBadge } from "@/lib/utilsJsx";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import { Icon } from "@iconify/react";
@@ -54,7 +54,6 @@ const AllConsultation = () => {
     const { loadMoreBookings } = useApiReqs()
 
     const [tab, setTab] = useState("All");
-    const [modalType, setModalType] = useState(null);
     const [currentConsultation, setCurrentConsultation] = useState(null);
     const [searchFilter, setSearchFilter] = useState('')
     const [currentPage, setCurrentPage] = useState(0)
@@ -188,7 +187,7 @@ const AllConsultation = () => {
 
                 <div className="">
                     {/* Header */}
-                    <div className="hidden md:grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
+                    <div className="hidden md:grid grid-cols-[2fr_2fr_2.5fr_1fr_1fr] items-center font-semibold text-sm text-gray-600 border-b pb-3 gap-5 pl-5">
                         <p className="">Opening Date</p>
                         <p className="">Client Name</p>
                         <p className="">Service Type</p>
@@ -200,19 +199,19 @@ const AllConsultation = () => {
                     {pageItems.length > 0 ? (
                         pageItems.map((consultation, i) => {
 
-                            const { user_profile, service_type, status, day, hour } = consultation
+                            const { user_profile, service_type, status, day, start_time, duration } = consultation
                             const name = user_profile?.name
 
                             return (
                                 <div
                                     key={i}
-                                    className="md:grid md:grid-cols-[2fr_2fr_1.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
+                                    className="md:grid md:grid-cols-[2fr_2fr_2.5fr_1fr_1fr] md:items-center gap-5 py-4 border-b text-sm pl-5 flex flex-col"
                                 >
-                                    <p className="px-3 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} {timeToAMPM_FromHour({ hour })}</p>
-                                    <p className="px-3 py-2 text-[#101828] capitalize">{name}</p>
-                                    <p className="px-3 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")}</p>
+                                    <p className="px-0 py-2 font-medium text-[#101828]">{formatDate1({ dateISO: new Date(day).toISOString() })} by {formatTo12Hour({ time: start_time })}</p>
+                                    <p className="px-0 py-2 text-[#101828] capitalize">{name}</p>
+                                    <p className="px-0 py-2 text-[#101828] capitalize">{service_type.replaceAll("_", " ")} for {secondsToLabel({seconds: duration})}</p>
                                     {getStatusBadge(status)}
-                                    <div className="px-3 py-2">
+                                    <div className="px-0 py-2">
                                         <Button
                                             className={`rounded-full px-3 py-1 text-sm cursor-pointer ${status === "closed" ? "bg-white border border-[#6941C6] text-[#6941C6]" : "bg-[#6941C6] text-white"}`}
                                             onClick={() => setCurrentConsultation(consultation)}
@@ -353,7 +352,7 @@ const AllConsultation = () => {
                         <button
                             onClick={() => {
                                 closeModal()
-                                navigate('/individual/dashboard/consultation/chat', { state: { user_id: currentConsultation?.user_profile?.id } })
+                                navigate('/individual/dashboard/consultation/chat', { state: { user_id: currentConsultation?.user_profile?.id, booking_id: currentConsultation?.id } })
                             }}
                             className="bg-primary-600 text-white font-semibold text-sm w-full py-3 rounded-full cursor-pointer"
                         >

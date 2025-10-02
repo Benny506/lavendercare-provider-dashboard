@@ -13,7 +13,7 @@ export const countryCodes = [
 ]
 
 export const currencies = [
-  { type: 'NGN', label: 'NGN'}
+  { type: 'NGN', label: 'NGN' }
 ]
 
 export function maskEmail({ email }) {
@@ -105,19 +105,19 @@ export function timeToAMPM_FromHour_Duration({ startHour, durationInSeconds }) {
 
 export const isoToDateTime = ({ isoString }) => {
   return DateTime.fromISO(isoString)
-    .toFormat("ccc LLL dd. hh:mma"); 
+    .toFormat("ccc LLL dd. hh:mma");
 };
 
 export function formatNumberAddCommas({ num }) {
   const abs = Math.abs(num);
-  
+
   // For numbers below 1,000: just add commas
   if (abs < 1000) {
     return num
       .toString()
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
-  
+
   // Define suffixes for 10^3, 10^6, 10^9, ...
   const suffixes = ["", "k", "M", "B", "T"];
   const tier = Math.floor(Math.log10(abs) / 3);  // 1 for thousands, 2 for millions, etc.
@@ -159,6 +159,46 @@ export function formatDate1({ dateISO }) {
   }
 }
 
+export function formatTo12Hour({ time }) {
+  const date = typeof time === "string" ? new Date(time) : time;
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // hour '0' should be '12'
+
+  const minutesStr = minutes < 10 ? "0" + minutes : minutes;
+
+  return `${hours}:${minutesStr} ${ampm}`;
+}
+
+export function formatSlot(slot, userZone = "local") {
+  // slot is in UTC from Supabase
+  const dt = DateTime.fromISO(slot, { zone: "utc" });
+
+  // convert to user zone
+  const local = userZone === "local" ? dt.toLocal() : dt.setZone(userZone);
+
+  // format in 12hr style e.g. 8:15 AM
+  return local.toFormat("h:mm a");
+}
+
+export function secondsToLabel({ seconds }) {
+  const mins = Math.floor(seconds / 60);
+  const hours = Math.floor(mins / 60);
+  const remainingMins = mins % 60;
+
+  if (hours > 0 && remainingMins > 0) {
+    return `${hours} hour${hours > 1 ? 's' : ''} ${remainingMins} min${remainingMins > 1 ? 's' : ''}`;
+  } else if (hours > 0) {
+    return `${hours} hour${hours > 1 ? 's' : ''}`;
+  } else {
+    return `${remainingMins} min${remainingMins > 1 ? 's' : ''}`;
+  }
+}
+
 export function getWeekdayName({ dateISO }) {
   return DateTime.fromISO(dateISO).toFormat('cccc').toLowerCase();
 }
@@ -182,8 +222,8 @@ export function isAfter({ date1_ISO, date2_ISO, unit = 'day' }) {
 }
 
 export function isSame({ date1_ISO, date2_ISO, unit = 'day' }) {
-   if (!date1_ISO || typeof date1_ISO !== 'string') return null;
-   if (!date2_ISO || typeof date2_ISO !== 'string') return null;
+  if (!date1_ISO || typeof date1_ISO !== 'string') return null;
+  if (!date2_ISO || typeof date2_ISO !== 'string') return null;
 
   const d1 = DateTime.fromISO(date1_ISO);
   const d2 = DateTime.fromISO(date2_ISO);
@@ -260,7 +300,7 @@ export function isoToTimeAgo({ isoString }) {
 }
 
 export const MENTAL_HEALTH_TEST_TYPES = [
-    "EPDS"
+  "EPDS"
 ]
 
 export const sortByTimeStamp = ({ arr, key, ascending = false }) => {
@@ -315,7 +355,7 @@ export const sortByHour = ({ arr, key, ascending = false }) => {
 
     return ascending ? millisA - millisB : millisB - millisA;
   });
-}; 
+};
 
 
 export function getPastDate(daysAgo) {
@@ -350,32 +390,32 @@ export function isDateInRange({ dateToCheck, range }) {
   if (range === "this_week") {
     startDate = today.startOf("week");
     endDate = today; // or .endOf("week") if you want whole week
-  } 
+  }
   else if (range === "last_week") {
     startDate = today.startOf("week").minus({ weeks: 1 });
     endDate = startDate.endOf("week");
-  } 
+  }
   else if (range === "next_week") {
     startDate = today.startOf("week").plus({ weeks: 1 });
     endDate = startDate.endOf("week");
-  } 
+  }
   else if (range === "this_month") {
     startDate = today.startOf("month");
     endDate = today.endOf('month');
-  } 
+  }
   else if (range === "last_month") {
     startDate = today.startOf("month").minus({ months: 1 });
     endDate = startDate.endOf("month");
-  } 
+  }
   else if (range === "next_month") {
     startDate = today.startOf("month").plus({ months: 1 });
     endDate = startDate.endOf("month");
-  } 
+  }
   else if (/^last_\d+_days$/.test(range)) {
     const days = parseInt(range.match(/\d+/)[0], 10);
     startDate = today.minus({ days });
     endDate = today;
-  } 
+  }
   else {
     throw new Error("Invalid range type");
   }

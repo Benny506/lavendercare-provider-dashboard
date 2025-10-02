@@ -33,10 +33,11 @@ export default function ActiveConsultation() {
 
     const topRef = useRef()
     const bottomRef = useRef(null)
+    const isAwaitingCompletion = useRef(false)
 
     const { state } = useLocation()
 
-    const selectedChat = bookings.filter(b => b.user_profile?.id == state?.user_id)[0]
+    const selectedChat = bookings.filter(b => b?.id == state?.booking_id)[0]
     const meId = profile?.id
     const peerId = selectedChat?.user_profile?.id    
 
@@ -52,8 +53,8 @@ export default function ActiveConsultation() {
     } = useDirectChat({ topic: selectedChat?.id, meId, peerId });
 
     const {
-        remaining
-    } = useCountdown({ startHour: selectedChat?.hour, durationInSeconds: selectedChat?.duration, day: new Date(selectedChat?.day) })
+        remaining, formatted
+    } = useCountdown({ startTime: selectedChat?.start_time, durationInSeconds: selectedChat?.duration })
 
     const peerOnline = onlineUsers.includes(peerId)
 
@@ -98,13 +99,16 @@ export default function ActiveConsultation() {
     const { 
         user_profile, duration, 
         hour, 
+        start_time,
         day 
     } = selectedChat
 
     const handleReadUnreadMsgs = () => {
         const unReadMsgsIds = (messages || [])?.filter(msg => (!msg?.read_at && msg?.to_user === meId)).map(msg => msg?.id)
 
-        bulkMsgsRead(unReadMsgsIds)        
+        if(unReadMsgsIds?.length > 0){
+            bulkMsgsRead(unReadMsgsIds)        
+        }
     }  
     
     const loadMoreMessages = async () => {
@@ -134,8 +138,21 @@ export default function ActiveConsultation() {
     const updateStatusToAwaitingCompletion = async () => {
         try {
 
+            const { data: statusData, error } = await supabase
+                .from('all_bookings')
+                .select('*')
+                .single()
+                .eq("id", selectedChat?.id)
+            
+            if(statusData){
+                if(statusData?.status === 'awaiting_completion'){
+                    isAwaitingCompletion.current = true
+                    return;
+                }
+            }
+
             await supabase
-                .from('bookings')
+                .from('all_bookings')
                 .update({
                     status: 'awaiting_completion'
                 })
@@ -150,7 +167,9 @@ export default function ActiveConsultation() {
     const sendNow = () => {
         const myMessagesCount = (messages || []).filter(msg => msg.from_user == meId).length 
 
-        if(myMessagesCount === 1){
+        console.log(myMessagesCount)
+
+        if(myMessagesCount > 1 && !isAwaitingCompletion.current){
             // On first msg, update the booking status to awaiting_completion
             updateStatusToAwaitingCompletion()
         }
@@ -214,11 +233,11 @@ export default function ActiveConsultation() {
                                     <p className="text-center txt-13 text-gray-600">
                                         { formatDate1({ dateISO: new Date(day).toISOString() })}
                                     </p>
-                                    <p className="text-center txt-15 text-gray-600">
+                                    {/*<p className="text-center txt-15 text-gray-600">
                                         { timeToAMPM_FromHour({ hour }) } - { timeToAMPM_FromHour_Duration({ startHour: hour, durationInSeconds: duration }) }
-                                    </p>
+                                    </p> */}
                                     <p className="text-center txt-16 text-gray-600">
-                                        { formatTimeToHHMMSS({ secs: remaining }) }
+                                        { formatted }
                                     </p>                                    
                                 </div>
 

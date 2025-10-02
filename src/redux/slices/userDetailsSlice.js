@@ -18,13 +18,13 @@ const userDetailsSlice = createSlice({
     name: 'userDetailsSlice',
     initialState: {
         dailyLogs: [],
+        user: null,
         profile: null,
         session: null,
-        availability: [],
-        bookingCostData: [],
         bookings: [],
         screenings: [],
         highRiskAlerts: [],
+        bank: null,
         phone_number: {
             phone_number: null,
             country_code: null
@@ -32,25 +32,23 @@ const userDetailsSlice = createSlice({
     },
     reducers: {
         setUserDetails: (state, action) => {
+            if(action.payload?.user){
+                state.user = action.payload.user
+            } 
+
+            if(action.payload?.session){
+                state.session = action.payload.session
+            }             
+
             if(action.payload?.profile){
                 state.profile = action.payload.profile
             }
 
-            if(action.payload?.availability){
-                state.availability = action.payload.availability
-            }
-
-            if(action.payload?.bookingCostData){
-                state.bookingCostData = action.payload.bookingCostData
-            }
-
             if(action.payload?.bookings){
                 const bookingsWithCorrectStatus = (action.payload?.bookings || []).map(b => {
-                    const { status, hour, duration, day } = b
+                    const { status, start_time, duration, day } = b
 
-                    const date_ISO = new Date(day).toISOString()
-
-                    const computedStatus = getAppointmentStatus({ status, date_ISO, startHour: hour, duration_secs: duration })
+                    const computedStatus = getAppointmentStatus({ status, start_time, duration_secs: duration })
 
                     return {
                         ...b,
@@ -71,6 +69,10 @@ const userDetailsSlice = createSlice({
                 state.highRiskAlerts = action.payload?.highRiskAlerts
             }
 
+            if(action?.payload?.bank){
+                state.bank = action.payload?.bank
+            }            
+
             if(action?.payload?.phone_number){
                 const number = action?.payload?.phone_number 
 
@@ -78,11 +80,12 @@ const userDetailsSlice = createSlice({
                     state.phone_number.country_code = number?.country_code
                     state.phone_number.phone_number = number?.phone_number
                 }
-            }            
+            }              
         },
 
         clearUserDetails: (state, action) => {
             state.dailyLogs = []
+            state.user = null
             state.profile = null
             state.session = null
             state.availability = []
@@ -94,6 +97,7 @@ const userDetailsSlice = createSlice({
                 phone_number: null,
                 country_code: null                
             }
+            state.bank = null
         }
     }
 })

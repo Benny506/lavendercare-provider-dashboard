@@ -1,138 +1,138 @@
 import { useEffect, useRef, useState } from "react";
 
-function weekdayNameToNumber(name) {
-  if (!name) return null;
-  const map = {
-    sunday: 0, sun: 0,
-    monday: 1, mon: 1,
-    tuesday: 2, tue: 2, tues: 2,
-    wednesday: 3, wed: 3,
-    thursday: 4, thu: 4, thur: 4, thurs: 4,
-    friday: 5, fri: 5,
-    saturday: 6, sat: 6,
-  };
-  return map[name.toLowerCase()] ?? null;
-}
-
-function getDateForWeekday(targetWeekday, startHour) {
-  // Returns the next date (could be today) whose weekday == targetWeekday,
-  // but if today is the target and time already passed for startHour, it returns next week's day.
-  const now = new Date();
-  const todayWeekday = now.getDay(); // 0..6
-  let daysUntil = (targetWeekday - todayWeekday + 7) % 7;
-
-  const candidate = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + daysUntil,
-    startHour,
-    0,
-    0,
-    0
-  );
-
-  // If candidate is in the past (i.e., today and hour passed), move to next week
-  if (candidate <= now) {
-    // If candidate is still equal to now but within the same second, we still accept it.
-    // Move to next week only if candidate < now
-    if (candidate < now) {
-      candidate.setDate(candidate.getDate() + 7);
-    }
-  }
-
-  return candidate;
-}
-
-export function useCountdown({ startHour, durationInSeconds, day }) {
-  const [remaining, setRemaining] = useState(durationInSeconds);
+/**
+ * useCountdown Hook
+ *
+ * Modes:
+ *  - If `endDate` is passed: counts down until that exact date/time.
+ *  - If `startHour` and `durationInSeconds` are passed: counts down from startHour for durationInSeconds.
+ *  - If `startTime` and `durationInSeconds` are passed: counts down until startTime + durationInSeconds.
+ *  - If nothing is passed: returns null and does not run.
+ *
+ * @param {number} [startHour] - Hour of the day to start (0–23).
+ * @param {number} [durationInSeconds] - Duration of the countdown in seconds.
+ * @param {string} [endDate] - ISO string of the target end date/time.
+ * @param {string} [startTime] - ISO string of the start date/time.
+ */
+export function useCountdown({
+  startHour,
+  durationInSeconds,
+  endDate,
+  startTime,
+}) {
+  const [remaining, setRemaining] = useState(null);
+  const [status, setStatus] = useState("running");
   const intervalRef = useRef(null);
 
-  // compute startDate based on `day`
-  const computeStartTime = () => {
-    const now = new Date();
-
-    // 1) If day is a Date or date-string, try to use it
-    if (day instanceof Date && !isNaN(day.getTime())) {
-      // normalize to startHour
-      const d = new Date(day);
-      d.setHours(startHour, 0, 0, 0);
-      return d;
-    }
-    const maybeDate = new Date(day);
-    if (typeof day === "string" && !isNaN(maybeDate.getTime())) {
-      const d = new Date(maybeDate);
-      d.setHours(startHour, 0, 0, 0);
-      return d;
-    }
-
-    // 2) special keywords
-    if (typeof day === "string") {
-      const lower = day.trim().toLowerCase();
-      if (lower === "today") {
-        return new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, 0, 0, 0);
-      }
-      if (lower === "tomorrow") {
-        const t = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, startHour, 0, 0, 0);
-        return t;
-      }
-    }
-
-    // 3) weekday name or numeric weekday
-    if (typeof day === "number" && day >= 0 && day <= 6) {
-      return getDateForWeekday(day, startHour);
-    }
-
-    if (typeof day === "string") {
-      const weekdayNum = weekdayNameToNumber(day.trim().toLowerCase());
-      if (weekdayNum !== null) {
-        return getDateForWeekday(weekdayNum, startHour);
-      }
-    }
-
-    // 4) default: use today at startHour
-    return new Date(now.getFullYear(), now.getMonth(), now.getDate(), startHour, 0, 0, 0);
-  };
-
   useEffect(() => {
-    // clear previous interval if any
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
+    if (
+      !endDate &&
+      (startHour == null || durationInSeconds == null) &&
+      (startTime == null || durationInSeconds == null)
+    ) {
+      return;
     }
 
-    // compute start & end
-    const startTime = computeStartTime();
-    const endTime = new Date(startTime.getTime() + durationInSeconds * 1000);
-
-    const tick = () => {
+    const getStartTimeFromHour = () => {
       const now = new Date();
-      const diffSec = Math.ceil((endTime - now) / 1000); // seconds until end
-      const newRemaining = Math.max(diffSec, 0);
+      return new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        startHour,
+        0,
+        0,
+        0
+      );
+    };
+
+    intervalRef.current = setInterval(() => {
+      const now = new Date();
+      let newRemaining = 0;
+
+      if (endDate) {
+        // Mode 1: Countdown until exact endDate
+        const target = new Date(endDate);
+        const diff = Math.floor((target.getTime() - now.getTime()) / 1000);
+        newRemaining = Math.max(diff, 0);
+        setStatus(diff > 0 ? "running" : "ended");
+      } else if (startTime) {
+        // Mode 2: Countdown until (startTime + duration)
+        const start = new Date(startTime);
+
+        if (now < start) {
+          // Not started yet
+          newRemaining = 0;
+          setStatus("not_started");
+        } else {
+          const target = new Date(start.getTime() + durationInSeconds * 1000);
+          const diff = Math.floor((target.getTime() - now.getTime()) / 1000);
+          newRemaining = Math.max(diff, 0);
+          setStatus(diff > 0 ? "running" : "ended");
+        }
+      } else {
+        // Mode 3: Countdown until (startHour + duration)
+        const start = getStartTimeFromHour();
+        const elapsed = Math.floor((now.getTime() - start.getTime()) / 1000);
+
+        if (now < start) {
+          newRemaining = 0;
+          setStatus("not_started");
+        } else {
+          newRemaining = Math.max(durationInSeconds - elapsed, 0);
+          setStatus(newRemaining > 0 ? "running" : "ended");
+        }
+      }
+
       setRemaining(newRemaining);
 
-      if (newRemaining === 0 && intervalRef.current) {
+      if (newRemaining === 0 && status === "ended" && intervalRef.current) {
         clearInterval(intervalRef.current);
-        intervalRef.current = null;
       }
-    };
-
-    // Do initial tick immediately
-    tick();
-
-    // then start interval
-    intervalRef.current = setInterval(tick, 1000);
+    }, 1000);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startHour, durationInSeconds, // re-run when these change
-      // We include a stable serialization of `day` so hook reruns when `day` changes.
-      typeof day === "object" ? (day ? day.toString() : "") : String(day)
-  ]);
+  }, [startHour, durationInSeconds, endDate, startTime]);
 
-  return { remaining };
+  // --- Formatter: convert seconds into yrs, months, days, hrs, mins, secs
+  const formatTime = (seconds) => {
+    if (seconds == null) return null;
+
+    if (status === "not_started") return "Not started yet";
+    if (status === "ended") return "Ended";
+
+    let s = seconds;
+
+    const years = Math.floor(s / (365 * 24 * 60 * 60));
+    s -= years * 365 * 24 * 60 * 60;
+
+    const months = Math.floor(s / (30 * 24 * 60 * 60));
+    s -= months * 30 * 24 * 60 * 60;
+
+    const days = Math.floor(s / (24 * 60 * 60));
+    s -= days * 24 * 60 * 60;
+
+    const hours = Math.floor(s / (60 * 60));
+    s -= hours * 60 * 60;
+
+    const mins = Math.floor(s / 60);
+    s -= mins * 60;
+
+    const secs = s;
+
+    const parts = [];
+    if (years) parts.push(`${years}yr${years > 1 ? "s" : ""}`);
+    if (months) parts.push(`${months}month${months > 1 ? "s" : ""}`);
+    if (days) parts.push(`${days}day${days > 1 ? "s" : ""}`);
+    if (hours) parts.push(`${hours}hour${hours > 1 ? "s" : ""}`);
+    if (mins) parts.push(`${mins}min${mins > 1 ? "s" : ""}`);
+    if (secs || parts.length === 0)
+      parts.push(`${secs}sec${secs > 1 ? "s" : ""}`);
+
+    return parts.join(" ");
+  };
+
+  return { remaining, formatted: formatTime(remaining), status };
 }

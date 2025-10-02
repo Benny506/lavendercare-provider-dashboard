@@ -14,6 +14,7 @@ import { allStatus, getStatusBadge } from "@/lib/utilsJsx";
 import { getUserDetailsState } from "@/redux/slices/userDetailsSlice";
 import { Icon } from "@iconify/react";
 import { Download } from "lucide-react";
+import { useRef } from "react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,8 @@ const Caseload = () => {
 
     const { loadMoreBookings } = useApiReqs()
 
+    const filterVisibleRef = useRef(false)
+
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState({
         statusFilterVisible: false, activeStatusFilter: 'All',
@@ -41,9 +44,30 @@ const Caseload = () => {
     const [canLoadMore, setCanLoadMore] = useState(true)
 
     useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (filterVisibleRef.current) {
+                setFilters(prev => ({
+                    ...prev,
+                    statusFilterVisible: false,
+                    dateRangeFilterVisible: false,
+                    careTypeFilterVisible: false
+                }))
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);    
+
+    useEffect(() => {
         setCurrentPage(0)
         setPageListIndex(0)
     }, [filters.activeStatusFilter, filters.activeCareTypeFilter, filters.activeDateRangeFilter])
+
+    useEffect(() => {
+        filterVisibleRef.current = filters.statusFilterVisible || filters.careTypeFilterVisible || filters.dateRangeFilterVisible
+    }, [filters])
 
     const toggleStatusFilter = () => setFilters(prev => ({ ...prev, statusFilterVisible: !prev.statusFilterVisible, careTypeFilterVisible: false, dateRangeFilterVisible: false }))
     const toggleCareTypeFilter = () => setFilters(prev => ({ ...prev, careTypeFilterVisible: !prev.careTypeFilterVisible, statusFilterVisible: false, dateRangeFilterVisible: false }))
@@ -118,7 +142,7 @@ const Caseload = () => {
                         </div>                        
 
                         {filters.statusFilterVisible && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
+                            <div className="absolute left-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 <label className="block text-sm text-gray-600 mb-2">Status</label>
@@ -196,7 +220,7 @@ const Caseload = () => {
                         </div>                        
 
                         {filters.dateRangeFilterVisible && (
-                            <div className="absolute right-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
+                            <div className="absolute left-0 mt-2 w-72 bg-white border rounded-lg shadow-lg p-4 z-50">
                                 <h4 className="font-semibold mb-2">Filter</h4>
 
                                 <label className="block text-sm text-gray-600 mb-2">Date Range</label>
