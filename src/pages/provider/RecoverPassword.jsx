@@ -5,9 +5,56 @@ import { Button } from "@/components/ui/button";
 import * as yup from 'yup'
 import { ErrorMessage, Formik } from "formik";
 import ErrorMsg1 from "@/components/ErrorMsg1";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { appLoadStart, appLoadStop } from "@/redux/slices/appLoadingSlice";
+import { toast } from "react-toastify";
+import supabase from "@/database/dbInit";
 
 const RecoverPassword = () => {
+    const dispatch = useDispatch()
+
     const navigate = useNavigate();
+
+    const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null, data: null })
+
+    useEffect(() => {
+        const { isLoading, data } = apiReqs
+
+        if(isLoading) dispatch(appLoadStart());
+        else dispatch(appLoadStop());
+
+        if(isLoading && data){
+            const { type } = apiReqs
+            if(type === 'confirmEmail'){
+                confirmEmail()
+            }
+        }
+    }, [apiReqs])
+
+    const confirmEmail = async ({ requestInfo }) => {
+        try {
+
+            const { email } = requestInfo
+
+            if(!email) throw new Error();
+
+            const {} = await supabase
+                .from("provider_profiles")
+            
+        } catch (error) {
+            console.log(error)
+            return confirmEmailFailure({ errorMsg: 'Something went wrong! Try again.' })
+        }
+    }
+    const confirmEmailFailure = ({ errorMsg }) => {
+        setApiReqs({ isLoading: false, errorMsg, data: null })
+        toast.error(errorMsg)
+
+        return;
+    }
+
     return (
         <Formik
             validationSchema={yup.object().shape({

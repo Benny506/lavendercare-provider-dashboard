@@ -7,6 +7,7 @@ import { formatTimeToMMSS, maskEmail } from "@/lib/utils";
 import OTPInput from "./OtpInput";
 import { toast } from "react-toastify";
 import { createOrUpdateOtp, validateOtp } from "@/database/dbInit";
+import { sendEmail } from "@/database/email/email";
 
 const initialSeconds = 30
 
@@ -83,9 +84,21 @@ const OtpForm = ({
         return
       }
 
-      if(!token?.otp || !token?.expiresAt || error) throw new Error();
+      if(!token?.otp || !token?.expiresAt || error) {
+        console.log(token)
+        throw new Error();
+      }
 
-      alert("Still working on email validation! For now, enter this token! You only get to see this once! " + token.otp)
+      const { sent } = await sendEmail({
+        subject: 'Email verification',
+        to_email: email,
+        data: {
+          code: token?.otp
+        },
+        template_id: '3vz9dle7wpn4kj50'
+      })
+
+      if(!sent) throw new Error()
 
       setApiReqs({ isLoading: false, errorMsg: null })
 

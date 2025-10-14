@@ -27,8 +27,8 @@ export default function CreateTicket({
                 handleCreateTicket({
                     requestInfo: {
                         ...values,
-                        user_id: profile?.id,
-                        usertype: 'vendor'
+                        user_id: profile?.provider_id,
+                        usertype: 'provider'
                     }
                 })
             }}

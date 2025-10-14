@@ -20,19 +20,19 @@ import FormInput from '@/components/FormInput';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 function validateImageFile(file) {
-  if (!(file instanceof File)) {
-    return { valid: false, error: "You must select a file" };
-  }
+    if (!(file instanceof File)) {
+        return { valid: false, error: "You must select a file" };
+    }
 
-  if (!file.type.startsWith("image/")) {
-    return { valid: false, error: "Only image files are allowed" };
-  }
+    if (!file.type.startsWith("image/")) {
+        return { valid: false, error: "Only image files are allowed" };
+    }
 
-  if (file.size > MAX_FILE_SIZE) {
-    return { valid: false, error: "File must be smaller than 5 MB" };
-  }
+    if (file.size > MAX_FILE_SIZE) {
+        return { valid: false, error: "File must be smaller than 5 MB" };
+    }
 
-  return { valid: true, error: null };
+    return { valid: true, error: null };
 }
 
 
@@ -40,12 +40,13 @@ const IndividualProfilePage = () => {
     const dispatch = useDispatch()
 
     const profile = useSelector(state => getUserDetailsState(state).profile)
+    const user = useSelector(state => getUserDetailsState(state).user)
     const phone_number = useSelector(state => getUserDetailsState(state).phone_number)
 
     const fileInputRef = useRef(null)
 
     const [profileImgPreview, setProfileImgPreview] = useState({
-        file: null, preview: null 
+        file: null, preview: null
     })
     const [apiReqs, setApiReqs] = useState({ isLoading: false, errorMsg: null })
     const [validateEmailModal, setValidateEmailModal] = useState({ visible: false, hide: null, data: null })
@@ -55,7 +56,7 @@ const IndividualProfilePage = () => {
     useEffect(() => {
         const { isLoading } = apiReqs
 
-        if(isLoading) dispatch(appLoadStart());
+        if (isLoading) dispatch(appLoadStart());
         else dispatch(appLoadStop())
 
         return;
@@ -70,12 +71,12 @@ const IndividualProfilePage = () => {
                     onConflict: ['user_id']
                 })
 
-            if(error) {
+            if (error) {
                 console.log(error)
                 throw new Error();
             }
 
-            setApiReqs({ isLoading: false, data: null })     
+            setApiReqs({ isLoading: false, data: null })
 
             dispatch(setUserDetails({
                 phone_number: requestBody
@@ -84,12 +85,12 @@ const IndividualProfilePage = () => {
             toast.success("Phone number updated")
 
             return;
-        
+
         } catch (error) {
             console.log(error)
             return updateProfileFailure({ errorMsg: 'Error updating phone number' })
         }
-    }    
+    }
 
     const updateProfile = async ({ requestBody }) => {
         try {
@@ -101,13 +102,13 @@ const IndividualProfilePage = () => {
                 .select('*')
                 .single()
 
-            if(!data || error) {
+            if (!data || error) {
                 console.log(error)
                 throw new Error();
             }
 
-            setApiReqs({ isLoading: false, data: null })  
-            setProfileImgPreview({ file: null, preview: null })      
+            setApiReqs({ isLoading: false, data: null })
+            setProfileImgPreview({ file: null, preview: null })
 
             dispatch(setUserDetails({
                 profile: {
@@ -119,12 +120,12 @@ const IndividualProfilePage = () => {
             toast.success("Profile updated")
 
             return;
-        
+
         } catch (error) {
             console.log(error)
             return updateProfileFailure({ errorMsg: 'Error updating profile' })
         }
-    }    
+    }
     const updateProfileFailure = ({ errorMsg }) => {
         setApiReqs({ isLoading: false, errorMsg })
         toast.error(errorMsg)
@@ -135,31 +136,31 @@ const IndividualProfilePage = () => {
     const uploadFiles = async ({ files, requestBody }) => {
         try {
 
-        const { result } = await cloudinaryUpload({ files })
+            const { result } = await cloudinaryUpload({ files })
 
-        if(!result) throw new Error();
+            if (!result) throw new Error();
 
-        const profile_img = result[0]?.secure_url
+            const profile_img = result[0]?.secure_url
 
-        if(!profile_img) throw new Error();
+            if (!profile_img) throw new Error();
 
-        toast.success("Image uploaded")
+            toast.success("Image uploaded")
 
-        await updateProfile({
-            requestBody: {
-                ...requestBody,
-                profile_img
-            }
-        })
+            await updateProfile({
+                requestBody: {
+                    ...requestBody,
+                    profile_img
+                }
+            })
 
-        return;
-        
+            return;
+
         } catch (error) {
             console.log(error)
             return updateProfileFailure({ errorMsg: 'Error uploading image' })
         }
-    } 
-    
+    }
+
     const updatePassword = async ({ new_password, old_password }) => {
         try {
 
@@ -167,7 +168,7 @@ const IndividualProfilePage = () => {
 
             console.log(profile?.email)
 
-            const { result, errorMsg, responseStatus } = await requestApi({ 
+            const { result, errorMsg, responseStatus } = await requestApi({
                 url: 'https://tzsbbbxpdlupybfrgdbs.supabase.co/functions/v1/update-user-password',
                 method: 'POST',
                 data: {
@@ -177,7 +178,7 @@ const IndividualProfilePage = () => {
                 },
             })
 
-            if(errorMsg || !result || !responseStatus){
+            if (errorMsg || !result || !responseStatus) {
                 console.log(errorMsg)
                 throw new Error()
             }
@@ -187,7 +188,7 @@ const IndividualProfilePage = () => {
             toast.success("Password updated")
 
             return;
-            
+
         } catch (error) {
             console.log(error)
             return updateProfileFailure({ errorMsg: 'Error updating password! You sure that is the right password?' })
@@ -195,7 +196,7 @@ const IndividualProfilePage = () => {
     }
 
     const openValidateEmailModal = ({ data }) => setValidateEmailModal({ visible: true, hide: hideValidateEmailModal, data })
-    const hideValidateEmailModal = () => setValidateEmailModal({ visible: false, hide: null, data: null  })
+    const hideValidateEmailModal = () => setValidateEmailModal({ visible: false, hide: null, data: null })
 
     const toggleOldPasswordVisibility = () => setOldPasswordVisible(prev => !prev)
     const toggleNewPasswordVisibility = () => setNewPasswordVisible(prev => !prev)
@@ -225,7 +226,7 @@ const IndividualProfilePage = () => {
             .max(100, "It doesn't make sense that you have 100+ years of experience")
             .required('Years of experience is required'),
         gender: yup
-            .string()               
+            .string()
             .required("Gender is required")
 
         // countryCode: yup.string()
@@ -250,7 +251,7 @@ const IndividualProfilePage = () => {
         // phone_number: yup.string()
         //     .required('Phone number is required')
         //     .matches(/^[0-9]{10,15}$/, 'Phone number must be between 10 and 15 digits'),
-    });    
+    });
 
     return (
         <div>
@@ -270,7 +271,7 @@ const IndividualProfilePage = () => {
 
                         setApiReqs({ isLoading: true, errorMsg: null })
 
-                        if(profileImgPreview?.file){
+                        if (profileImgPreview?.file) {
                             return uploadFiles({ files: [profileImgPreview?.file], requestBody: values })
                         }
 
@@ -282,7 +283,7 @@ const IndividualProfilePage = () => {
                             <div className="flex flex-col md:flex-row gap-6 md:gap-0 items-start justify-between mb-8 w-full">
                                 <div className="flex items-start space-x-4">
                                     <div className="relative">
-                                        <ProfileImg 
+                                        <ProfileImg
                                             profile_img={profileImgPreview?.preview || profile?.profile_img}
                                             containerClass={"w-20 h-20"}
                                             width={'75px'} height={'75px'}
@@ -291,14 +292,14 @@ const IndividualProfilePage = () => {
                                         {
                                             profileImgPreview?.preview
                                             &&
-                                                <div onClick={() => setProfileImgPreview({ file: null, preview: null })} className="cursor-pointer absolute -bottom-1 -left-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">                                            
-                                                    <X className="w-4 h-4 text-white" />
-                                                </div>                                            
+                                            <div onClick={() => setProfileImgPreview({ file: null, preview: null })} className="cursor-pointer absolute -bottom-1 -left-1 w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                                                <X className="w-4 h-4 text-white" />
+                                            </div>
                                         }
 
                                         <div onClick={() => fileInputRef.current?.click()} className="cursor-pointer absolute -bottom-1 -right-1 w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
                                             <Icon icon="material-symbols:photo-camera" className="w-3 h-3 text-white" />
-                                        </div>                                        
+                                        </div>
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -307,16 +308,16 @@ const IndividualProfilePage = () => {
                                             onChange={e => {
                                                 const file = e.currentTarget.files?.[0] ?? null
 
-                                                if(!file) return;
+                                                if (!file) return;
 
                                                 const { valid, error } = validateImageFile(file)
 
-                                                if(!valid){
+                                                if (!valid) {
                                                     const errorMsg = error || 'Invalid file'
                                                     toast.error(errorMsg)
 
                                                     return;
-                                                }                                            
+                                                }
 
                                                 if (file) {
                                                     const reader = new FileReader()
@@ -326,16 +327,16 @@ const IndividualProfilePage = () => {
                                                     }
                                                     reader.readAsDataURL(file)
 
-                                                }                                 
-                                            }}                                            
-                                        />                                        
+                                                }
+                                            }}
+                                        />
                                     </div>
                                     <div>
                                         <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Hello, {profile?.provider_name}!</h1>
                                         {
                                             profile?.provider_specialties?.map((s, i) => (
                                                 <p key={i} className="text-gray-600 capitalize">
-                                                    { s?.replaceAll("_", " ") }
+                                                    {s?.replaceAll("_", " ")}
                                                 </p>
                                             ))
                                         }
@@ -343,7 +344,7 @@ const IndividualProfilePage = () => {
                                 </div>
 
                                 <ErrorMessage name='profile_img'>
-                                    { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
+                                    {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                 </ErrorMessage>
                             </div>
 
@@ -354,7 +355,7 @@ const IndividualProfilePage = () => {
                                         Professional Title
                                     </label>
                                     <div className="w-full px-4 py-3 bg-gray-200 text-gray-500 rounded-lg">
-                                        { profile?.professional_title }
+                                        {profile?.professional_title}
                                     </div>
                                 </div>
 
@@ -362,7 +363,7 @@ const IndividualProfilePage = () => {
                                 <div>
                                     <label className="block text-sm font-medium text-gray-900 mb-3">
                                         Specializations (Multi-select)
-                                    </label>                                
+                                    </label>
                                     <div className="flex flex-col gap-2 mt-1">
                                         {specializations.map((item) => {
 
@@ -394,9 +395,9 @@ const IndividualProfilePage = () => {
                                                 >
                                                     {
                                                         isSelected
-                                                        ?
+                                                            ?
                                                             <SquareCheckBig size={18} color="#6F3DCB" />
-                                                        :
+                                                            :
                                                             <Square size={18} color="#000" />
                                                     }
                                                     <span className="text-base">{item}</span>
@@ -408,7 +409,7 @@ const IndividualProfilePage = () => {
                                         </ErrorMessage>
                                         {/* <div className="text-xs text-gray-500 mt-1 mb-2">Others</div> */}
                                     </div>
-                                </div>                            
+                                </div>
 
                                 {/* Bio */}
                                 <div>
@@ -424,7 +425,7 @@ const IndividualProfilePage = () => {
                                         onBlur={handleBlur}
                                     />
                                     <ErrorMessage name='provider_bio'>
-                                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
+                                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                     </ErrorMessage>
                                 </div>
 
@@ -443,7 +444,7 @@ const IndividualProfilePage = () => {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     />
                                     <ErrorMessage name='provider_name'>
-                                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
+                                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                     </ErrorMessage>
                                 </div>
 
@@ -467,9 +468,9 @@ const IndividualProfilePage = () => {
                                     </select>
 
                                     <ErrorMessage name='gender'>
-                                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
+                                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                     </ErrorMessage>
-                                </div>   
+                                </div>
 
                                 {/* Years of experience */}
                                 <div>
@@ -486,13 +487,13 @@ const IndividualProfilePage = () => {
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                     />
                                     <ErrorMessage name='years_of_experience'>
-                                        { errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} /> }
+                                        {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                     </ErrorMessage>
-                                </div>                                                     
+                                </div>
 
-                                <button 
+                                <button
                                     // disabled={!(isValid && dirty)}
-                                    onClick={handleSubmit} 
+                                    onClick={handleSubmit}
                                     style={{
                                         // opacity: !(isValid && dirty) ? 0.5 : 1
                                     }}
@@ -501,15 +502,15 @@ const IndividualProfilePage = () => {
                                 >
                                     <span className='text-white'>Save changes</span>
                                     <Icon icon="material-symbols:edit" className="w-4 h-4 text-white" />
-                                </button>                            
+                                </button>
                             </div>
                         </>
                     )}
                 </Formik>
-                
+
                 <div className='flex flex-col gap-6 w-full max-w-2xl'>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Sensitive information</h1>                    
-                   
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Sensitive information</h1>
+
                     {/* Email */}
                     <Formik
                         validationSchema={yup.object().shape({
@@ -525,9 +526,11 @@ const IndividualProfilePage = () => {
                         {({ isValid, dirty, values, handleBlur, handleChange, handleSubmit }) => (
                             <div>
                                 <div className='mb-3'>
-                                    <label className="block text-sm font-medium text-gray-900 mb-3">
+                                    <p className="mb-3 p-0 text-sm font-light">
                                         Email
-                                    </label>
+                                        <br />
+                                        <span className=''>Current: {user?.email || 'not set'}</span>
+                                    </p>
                                     <input
                                         name='email'
                                         type="email"
@@ -536,15 +539,15 @@ const IndividualProfilePage = () => {
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />     
+                                    />
                                     <ErrorMessage name='email'>
                                         {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
-                                    </ErrorMessage>                    
+                                    </ErrorMessage>
                                 </div>
 
-                                <button 
+                                <button
                                     disabled={!(isValid && dirty) ? true : false}
-                                    onClick={handleSubmit} 
+                                    onClick={handleSubmit}
                                     style={{
                                         opacity: !(isValid && dirty) ? 0.5 : 1
                                     }}
@@ -553,7 +556,7 @@ const IndividualProfilePage = () => {
                                 >
                                     <span className='text-white'>Verify</span>
                                     <Icon icon="material-symbols:edit" className="w-4 h-4 text-white" />
-                                </button>                                   
+                                </button>
                             </div>
                         )}
                     </Formik>
@@ -564,27 +567,27 @@ const IndividualProfilePage = () => {
                             validationSchema={yup.object().shape({
                                 phone_number: yup.string()
                                     .required('Phone number is required')
-                                    .matches(/^[0-9]{10,15}$/, 'Phone number must be between 10 and 15 digits'),                                
-                                })}
-                                initialValues={{
-                                    phone_number: '',
-                                    countryCode: '+234'
-                                }}
-                                onSubmit={values => {
-                                    const phone_number = values.phone_number
-                                    const country_code = values.countryCode
-        
-                                    setApiReqs({ isLoading: true, errorMsg: null })
+                                    .matches(/^[0-9]{10,15}$/, 'Phone number must be between 10 and 15 digits'),
+                            })}
+                            initialValues={{
+                                phone_number: '',
+                                countryCode: '+234'
+                            }}
+                            onSubmit={values => {
+                                const phone_number = values.phone_number
+                                const country_code = values.countryCode
 
-                                    updatePhoneNumber({ requestBody: { phone_number, country_code, user_id: profile?.provider_id }})
-                                }}
+                                setApiReqs({ isLoading: true, errorMsg: null })
+
+                                updatePhoneNumber({ requestBody: { phone_number, country_code, user_id: profile?.provider_id } })
+                            }}
                         >
                             {({ values, isValid, dirty, handleChange, handleBlur, handleSubmit }) => (
                                 <div>
                                     <div className='mb-3'>
                                         <p className="mb-3 p-0 text-sm font-light">
-                                            Phone number 
-                                            <br /> 
+                                            Phone number
+                                            <br />
                                             <span className=''>(Current: {phone_number?.phone_number && phone_number?.country_code ? `${phone_number?.country_code} ${phone_number?.phone_number}` : "not set"})</span>
                                         </p>
 
@@ -600,18 +603,18 @@ const IndividualProfilePage = () => {
                                                 value={values.phone_number}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
-                                                type={"tel"} 
-                                                // label={"Phone number"} 
-                                            />                                        
-                                        </div> 
+                                                type={"tel"}
+                                            // label={"Phone number"} 
+                                            />
+                                        </div>
                                         <ErrorMessage name='phone_number'>
                                             {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
-                                        </ErrorMessage>                                                                                    
+                                        </ErrorMessage>
                                     </div>
 
-                                    <button 
+                                    <button
                                         disabled={!(isValid && dirty)}
-                                        onClick={handleSubmit} 
+                                        onClick={handleSubmit}
                                         style={{
                                             opacity: !(isValid && dirty) ? 0.5 : 1
                                         }}
@@ -620,7 +623,7 @@ const IndividualProfilePage = () => {
                                     >
                                         <span className='text-white'>Update phone number</span>
                                         <Icon icon="material-symbols:edit" className="w-4 h-4 text-white" />
-                                    </button>                                                                            
+                                    </button>
                                 </div>
                             )}
                         </Formik>
@@ -645,7 +648,7 @@ const IndividualProfilePage = () => {
                                     .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
                                     .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
                                     .matches(/\d/, 'Password must contain at least one number')
-                                    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one symbol'),                                    
+                                    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one symbol'),
                             })}
                             initialValues={{
                                 old_password: '',
@@ -667,15 +670,15 @@ const IndividualProfilePage = () => {
                                             value={values.old_password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            type={oldPasswordVisible ? "text" : "password"} 
-                                            placeholder={"Your old password"} 
-                                            label={"Old Password"} 
+                                            type={oldPasswordVisible ? "text" : "password"}
+                                            placeholder={"Your old password"}
+                                            label={"Old Password"}
                                             icon={
                                                 oldPasswordVisible
-                                                ?
+                                                    ?
                                                     <Eye className="cursor-pointer" onClick={toggleOldPasswordVisibility} size={20} color="#6F3DCB" />
-                                                :
-                                                    <EyeOff className="cursor-pointer" onClick={toggleOldPasswordVisibility} size={20} color="#6F3DCB" />              
+                                                    :
+                                                    <EyeOff className="cursor-pointer" onClick={toggleOldPasswordVisibility} size={20} color="#6F3DCB" />
                                             }
                                         />
                                         <ErrorMessage name='old_password'>
@@ -690,25 +693,25 @@ const IndividualProfilePage = () => {
                                             value={values.new_password}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
-                                            type={newPasswordVisible ? "text" : "password"} 
-                                            placeholder={"Type a new password"} 
-                                            label={"New Password"} 
+                                            type={newPasswordVisible ? "text" : "password"}
+                                            placeholder={"Type a new password"}
+                                            label={"New Password"}
                                             icon={
                                                 newPasswordVisible
-                                                ?
+                                                    ?
                                                     <Eye className="cursor-pointer" onClick={toggleNewPasswordVisibility} size={20} color="#6F3DCB" />
-                                                :
-                                                    <EyeOff className="cursor-pointer" onClick={toggleNewPasswordVisibility} size={20} color="#6F3DCB" />              
+                                                    :
+                                                    <EyeOff className="cursor-pointer" onClick={toggleNewPasswordVisibility} size={20} color="#6F3DCB" />
                                             }
                                         />
                                         <ErrorMessage name='new_password'>
                                             {errorMsg => <ErrorMsg1 errorMsg={errorMsg} position={'left'} />}
                                         </ErrorMessage>
-                                    </div>  
+                                    </div>
 
-                                    <button 
+                                    <button
                                         disabled={!(isValid && dirty)}
-                                        onClick={handleSubmit} 
+                                        onClick={handleSubmit}
                                         style={{
                                             opacity: !(isValid && dirty) ? 0.5 : 1
                                         }}
@@ -717,19 +720,19 @@ const IndividualProfilePage = () => {
                                     >
                                         <span className='text-white'>Update password</span>
                                         <Icon icon="material-symbols:edit" className="w-4 h-4 text-white" />
-                                    </button>                                                                       
-                                </div>                
+                                    </button>
+                                </div>
                             )}
-                        </Formik>                                       
-                    </div> 
-                </div>               
+                        </Formik>
+                    </div>
+                </div>
             </div>
 
-            <ValidateEmailModal 
+            <ValidateEmailModal
                 modalProps={validateEmailModal}
                 apiReqs={apiReqs}
                 setApiReqs={setApiReqs}
-            />    
+            />
         </div>
     );
 };

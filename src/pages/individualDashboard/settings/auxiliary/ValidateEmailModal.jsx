@@ -18,6 +18,7 @@ export default function ValidateEmailModal({ modalProps, apiReqs, setApiReqs }){
     const dispatch = useDispatch()
 
     const profile = useSelector(state => getUserDetailsState(state).profile)
+    const user = useSelector(state => getUserDetailsState(state).user)
 
     const [otpVerified, setOtpVerified] = useState(false)
     const [oldPasswordVisible, setOldPasswordVisible] = useState(false)
@@ -49,7 +50,7 @@ export default function ValidateEmailModal({ modalProps, apiReqs, setApiReqs }){
                 method: 'POST',
                 data: {
                     new_email: email, 
-                    current_email: profile?.email,
+                    current_email: user?.email,
                     current_password: old_password
                 }
             })
@@ -64,8 +65,8 @@ export default function ValidateEmailModal({ modalProps, apiReqs, setApiReqs }){
             await supabase.auth.setSession(newSession)            
 
             dispatch(setUserDetails({
-                profile: {
-                    ...profile,
+                user: {
+                    ...user,
                     email
                 }
             }))
@@ -99,7 +100,7 @@ export default function ValidateEmailModal({ modalProps, apiReqs, setApiReqs }){
                     <AppLoading tempLoading={true} />
             } */}
 
-            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] max-w-[60vw] shadow-xl relative">
+            <div className="bg-img rounded-xl p-4 w-full h-full max-h-[80vh] lg:max-w-[60vw] w-full shadow-xl relative">
                 <div className="bg-white rounded-2xl shadow-xl w-full h-full flex flex-col">
                     {
                         otpVerified

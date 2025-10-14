@@ -96,7 +96,7 @@ export default function Support(){
             const { data, error } = await supabase
                 .from('support_tickets')
                 .select('*')
-                .eq("user_id", profile?.id)
+                .eq("user_id", profile?.provider_id)
                 .order('created_at', { ascending: false })
 
             if(error){

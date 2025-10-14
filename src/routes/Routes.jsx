@@ -96,7 +96,7 @@ const AppRoutes = () => (
 
 
       {/* HospitalProvider layout */}
-      <Route path="/hospital-provider" element={<HospitalLayout />}>
+      {/* <Route path="/hospital-provider" element={<HospitalLayout />}>
         <Route index element={<SignUp />} />
         <Route path="verification" element={<EmailVerification />} />
         <Route path="verification-success" element={<EmailVerificationSuccess />} />
@@ -104,14 +104,14 @@ const AppRoutes = () => (
         <Route path="hospital-services" element={<HospitalServices />} />
         <Route path="hospital-documents" element={<HospitalDocuments />} />
         <Route path="account-created" element={<AccountCreated />} />
-      </Route>
+      </Route> */}
 
 
 
 
 
       { /* Hospital Dashboard */ }
-      <Route path="/hospital/dashboard" element={<DashboardLayout />}>
+      {/* <Route path="/hospital/dashboard" element={<DashboardLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="add-doctor" element={<AddDoctor />} />
         <Route path="doctor-credential" element={<DoctorCredentials />} />
@@ -151,7 +151,7 @@ const AppRoutes = () => (
         <Route path="security/otp" element={<Otp />} />
         <Route path="security/new-password" element={<NewPassword />} />
         <Route path="profile" element={<ProfilePage />} />
-      </Route>
+      </Route> */}
 
 
 
