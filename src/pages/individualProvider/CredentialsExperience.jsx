@@ -58,7 +58,7 @@ const CredentialsExperience = () => {
       const { data, error } = await supabase
         .from("provider_profiles")
         .update(updateData)
-        .eq("provider_id", userProfile.id)
+        .eq("provider_id", userProfile.provider_id)
         .select('*')
 
       if(!data || error) {
