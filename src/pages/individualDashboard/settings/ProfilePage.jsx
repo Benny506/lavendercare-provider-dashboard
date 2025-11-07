@@ -16,6 +16,7 @@ import OtpForm from '@/components/OtpForm';
 import ValidateEmailModal from './auxiliary/ValidateEmailModal';
 import { cloudinaryUpload, requestApi } from '@/lib/requestApi';
 import FormInput from '@/components/FormInput';
+import useApiReqs from '@/hooks/useApiReqs';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -39,6 +40,8 @@ function validateImageFile(file) {
 const IndividualProfilePage = () => {
     const dispatch = useDispatch()
 
+    const { fetchSpecialties } = useApiReqs()
+
     const profile = useSelector(state => getUserDetailsState(state).profile)
     const user = useSelector(state => getUserDetailsState(state).user)
     const phone_number = useSelector(state => getUserDetailsState(state).phone_number)
@@ -52,6 +55,14 @@ const IndividualProfilePage = () => {
     const [validateEmailModal, setValidateEmailModal] = useState({ visible: false, hide: null, data: null })
     const [oldPasswordVisible, setOldPasswordVisible] = useState(false)
     const [newPasswordVisible, setNewPasswordVisible] = useState(false)
+    const [providerSpecialties, setProviderSpecialties] = useState([])
+
+    useEffect(() => {
+        setApiReqs({ isLoading: true, errorMsg: null })
+        fetchSpecialties({ 
+            callBack: ({ specialties }) => setProviderSpecialties(specialties)
+        })
+    }, [])
 
     useEffect(() => {
         const { isLoading } = apiReqs
@@ -98,7 +109,7 @@ const IndividualProfilePage = () => {
             const { data, error } = await supabase
                 .from("provider_profiles")
                 .update(requestBody)
-                .eq("provider_id", profile?.id)
+                .eq("provider_id", user?.id)
                 .select('*')
                 .single()
 
@@ -365,7 +376,9 @@ const IndividualProfilePage = () => {
                                         Specializations (Multi-select)
                                     </label>
                                     <div className="flex flex-col gap-2 mt-1">
-                                        {specializations.map((item) => {
+                                        {providerSpecialties.map((pSpecialty, i) => {
+
+                                            const { specialty: item } = pSpecialty 
 
                                             const sp = item.toLowerCase().replaceAll(" ", "_")
                                             const currentSpecializations = values?.provider_specialties || []
@@ -389,7 +402,7 @@ const IndividualProfilePage = () => {
 
                                             return (
                                                 <label
-                                                    key={item}
+                                                    key={i}
                                                     onClick={handleItemClick}
                                                     className={`flex items-center justify-start ${'cursor-pointer'} gap-2 select-none`}
                                                 >

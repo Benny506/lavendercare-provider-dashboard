@@ -111,8 +111,55 @@ export default function useApiReqs() {
     }
 
 
+
+
+
+    //specialties
+    const fetchSpecialties = async ({ callBack=() => {} }) => {
+        try {
+
+            dispatch(appLoadStart())
+
+            const { data, error } = await supabase
+                .from('provider_specialties')
+                .select("*")
+
+            if(error){
+                console.log(error)
+                throw new Error()
+            }
+
+            callBack && callBack({ specialties: data })            
+            
+        } catch (error) {
+            console.error(error)
+            toast.error("Error fetching specialties")
+        
+        } finally {
+            dispatch(appLoadStop())
+        }
+    }
+
+
+
+
+
     return {
+        //bookings
         loadMoreBookings,
-        loadMoreScreenings
+
+
+
+
+        
+        //screening
+        loadMoreScreenings,
+
+
+
+
+
+        //specialties
+        fetchSpecialties
     }
 }

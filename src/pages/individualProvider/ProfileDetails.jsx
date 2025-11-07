@@ -10,6 +10,8 @@ import { Square, SquareCheckBig } from "lucide-react";
 import { toast } from "react-toastify";
 import { specializations } from "@/redux/slices/userDetailsSlice";
 import OtpForm from "@/components/OtpForm";
+import useApiReqs from "@/hooks/useApiReqs";
+import { useEffect } from "react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 
@@ -17,7 +19,18 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024
 const ProfileDetails = () => {
     const navigate = useNavigate()
 
+    const { fetchSpecialties } = useApiReqs()
+
     const [profileImgPreview, setProfileImgPreview] = useState(null)
+    const [providerSpecialties, setProviderSpecialties] = useState([])
+
+    useEffect(() => {
+        fetchSpecialties({
+            callBack: ({ specialties }) => {
+                setProviderSpecialties(specialties)
+            }
+        })
+    }, [])
 
     const validationSchema = yup.object().shape({
         professional_title: yup
@@ -170,7 +183,9 @@ const ProfileDetails = () => {
                             <div>
                                 <div className="font-semibold mb-1">Specializations (Multi-select)</div>
                                 <div className="flex flex-col gap-2 mt-1">
-                                    {specializations.map((item) => {
+                                    {providerSpecialties.map((pSpecialties, i) => {
+
+                                        const { specialty: item } = pSpecialties
 
                                         const sp = item.toLowerCase().replaceAll(" ", "_")
                                         const currentSpecializations = values?.provider_specialties || []
@@ -194,7 +209,7 @@ const ProfileDetails = () => {
 
                                         return (
                                             <label
-                                                key={item}
+                                                key={i}
                                                 onClick={handleItemClick}
                                                 className="flex items-center justify-start cursor-pointer gap-2 select-none"
                                             >
