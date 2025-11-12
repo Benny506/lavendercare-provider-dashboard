@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-const ProfileCard = ({ title, icon, type, providerOption, setProviderOption, extraStyles={} }) => {
+const ProfileCard = ({ title, subTitle, icon, type, providerOption, setProviderOption, extraStyles = {} }) => {
 
     const selected = providerOption == type ? true : false
 

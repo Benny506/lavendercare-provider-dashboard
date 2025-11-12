@@ -4,6 +4,7 @@ import ProviderAccount from "../../components/ProviderAccount";
 import { Icon } from '@iconify/react';
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Navbar from "@/components/Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,19 +20,21 @@ const Login = () => {
   };
 
   return (
+    <div className="bg-img min-h-screen">
+    <Navbar />
     <div className="w-full max-w-2xl mx-auto flex flex-col gap-8 py-16">
       <div className="hidden md:block absolute top-8 right-10">
         <ProviderAccount />
       </div>
       <div className="flex flex-col items-center justify-center gap-2 -mt-16 md:mt-0">
-        <h1 className="font-bold mb-2 text-4xl text-center gray-text-800">Create your Provider Profile</h1>
-        <p className="text-center gray-text-500">Become a lavendercare Provider account, First</p>
-        <p className="text-center gray-text-500 -mt-2">Choose your option</p>
+        <h1 className="font-bold mb-2 text-4xl text-center gray-text-800">LavenderCare For Providers</h1>
+        <p className="text-center gray-text-500">Select the option that best describe you</p>
+        <p className="text-center gray-text-500 mt-2">Join a network that’s bridging the gap in postpartum care. Earn, work flexibly, and bring structure to your practice</p>
       </div>
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
         <ProfileCard
           icon="ph:hospital-light"
-          title="Are you a Hospital Admin"
+          title="I am an Organization/Hospital"
           providerOption={providerOption}
           setProviderOption={() => {}}
           type="hospital"
@@ -42,7 +45,7 @@ const Login = () => {
         />
         <ProfileCard
           icon="ph:hand-heart-light"
-          title="Are you an Individual Provider"
+          title="I am an Individual Provider"
           providerOption={providerOption}
           setProviderOption={setProviderOption}
           type="individual"
@@ -59,6 +62,7 @@ const Login = () => {
           Continue
         </Button>
       </div>
+    </div>
     </div>
   );
 };

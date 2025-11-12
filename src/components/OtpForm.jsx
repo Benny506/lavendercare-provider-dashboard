@@ -13,7 +13,7 @@ const initialSeconds = 30
 
 const OtpForm = ({ 
   name, email = "janedoe@gmail.com", btnName, onOtpVerified, setApiReqs, backBtnFunc, requiresAuth,
-  credentialsInUseCallback, showBackLink = true,
+  credentialsInUseCallback, showBackLink = true, backBtnAbsolute=true, backBtnText="Back"
 }) => {
 
   const navigate = useNavigate();
@@ -127,14 +127,14 @@ const OtpForm = ({
 
         {/* Back link */}
         {showBackLink && (
-          <div className="absolute top-16 md:top-20 left-2 md:left-10 flex items-center gap-2">
+          <div className={backBtnAbsolute ? "absolute top-16 md:top-20 left-2 md:left-10 flex items-center gap-2" : 'w-full'}>
             <button
               type="button"
               onClick={() => backBtnFunc ? backBtnFunc () : navigate(-1)}
               className="cursor-pointer relative text-primary-600 text-base flex items-center gap-1 font-extrabold"
             >
               <Icon icon="mdi-light:arrow-left" className="text-[30px]" />
-              <span>Back</span>
+              <span>{backBtnText}</span>
             </button>
           </div>
         )}
