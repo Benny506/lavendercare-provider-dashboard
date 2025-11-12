@@ -28,13 +28,14 @@ const Login = () => {
       </div>
       <div className="flex flex-col items-center justify-center gap-2 -mt-16 md:mt-0">
         <h1 className="font-bold mb-2 text-4xl text-center gray-text-800">LavenderCare For Providers</h1>
-        <p className="text-center gray-text-500">Select the option that best describe you</p>
-        <p className="text-center gray-text-500 mt-2">Join a network that’s bridging the gap in postpartum care. Earn, work flexibly, and bring structure to your practice</p>
+        <p className="text-center gray-text-500">Join a network that’s bridging the gap in postpartum care. Earn, work flexibly, and bring structure to your practice</p>
+        <p className="text-center gray-text-500 mt-2">Select the option that best describe you</p>
       </div>
       <div className="flex flex-col md:flex-row items-center justify-center gap-6">
         <ProfileCard
           icon="ph:hospital-light"
-          title="I am an Organization/Hospital"
+          title="I am an"
+          subTitle="Organization/Hospital"
           providerOption={providerOption}
           setProviderOption={() => {}}
           type="hospital"
@@ -45,7 +46,8 @@ const Login = () => {
         />
         <ProfileCard
           icon="ph:hand-heart-light"
-          title="I am an Individual Provider"
+          title="I am an"
+          subTitle="Individal Provider"
           providerOption={providerOption}
           setProviderOption={setProviderOption}
           type="individual"

@@ -23,6 +23,8 @@ const ProfileCard = ({ title, subTitle, icon, type, providerOption, setProviderO
             </div>
             <p className="text-[21px] font-semibold gray-text-800 mb-14 lg:text-start text-center mt-6 md:mt-2">
                 {title}
+                <br />
+                {subTitle}
             </p>
         </div>
     )
