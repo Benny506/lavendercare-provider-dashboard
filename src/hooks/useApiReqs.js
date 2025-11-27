@@ -17,7 +17,7 @@ export default function useApiReqs() {
 
 
     //bookings
-    const loadMoreBookings = async ({ callBack=()=>{} }) => {
+    const loadMoreBookings = async ({ callBack = () => { } }) => {
         try {
 
             dispatch(appLoadStart())
@@ -55,7 +55,7 @@ export default function useApiReqs() {
         } catch (error) {
             console.error(error)
             toast.error("Error loading more bookings")
-        
+
         } finally {
             dispatch(appLoadStop())
         }
@@ -66,11 +66,11 @@ export default function useApiReqs() {
 
 
     //screenings
-    const loadMoreScreenings = async ({ callBack=() => {} }) => {
+    const loadMoreScreenings = async ({ callBack = () => { } }) => {
         try {
             dispatch(appLoadStart())
 
-            const bookings_userIds = removeDuplicatesFromStringArr({ arr: allBookings.map(b => b?.user_profile?.id) })            
+            const bookings_userIds = removeDuplicatesFromStringArr({ arr: allBookings.map(b => b?.user_profile?.id) })
 
             const limit = 100;
             const from = (allScreenings?.length || 0); // start from current length
@@ -82,8 +82,8 @@ export default function useApiReqs() {
                     *,
                     user_profile:user_profiles (*)      
                 `)
-                .in('user_id', bookings_userIds) 
-                .order("created_at", { ascending: false, nullsFirst: false }) 
+                .in('user_id', bookings_userIds)
+                .order("created_at", { ascending: false, nullsFirst: false })
                 .limit(limit)
                 .range(from, to);
 
@@ -104,7 +104,7 @@ export default function useApiReqs() {
         } catch (error) {
             console.error(error)
             toast.error("Error loading more screenings")
-        
+
         } finally {
             dispatch(appLoadStop())
         }
@@ -115,7 +115,7 @@ export default function useApiReqs() {
 
 
     //specialties
-    const fetchSpecialties = async ({ callBack=() => {} }) => {
+    const fetchSpecialties = async ({ callBack = () => { } }) => {
         try {
 
             dispatch(appLoadStart())
@@ -124,20 +124,153 @@ export default function useApiReqs() {
                 .from('provider_specialties')
                 .select("*")
 
-            if(error){
+            if (error) {
                 console.log(error)
                 throw new Error()
             }
 
-            callBack && callBack({ specialties: data })            
-            
+            callBack && callBack({ specialties: data })
+
         } catch (error) {
             console.error(error)
             toast.error("Error fetching specialties")
-        
+
         } finally {
             dispatch(appLoadStop())
         }
+    }
+
+
+
+
+
+    //availability
+    const deleteConsultationType = async ({ callBack = () => {}, type_id }) => {
+        try {
+
+            if (!type_id) throw new Error();
+
+            dispatch(appLoadStart())
+
+            const { data, error } = await supabase
+                .from("consultation_types")
+                .delete()
+                .eq("id", type_id)
+
+            if (error) {
+                console.log(error)
+                throw new Error()
+            }
+
+            const updatedProfile = {
+                ...(profile || {}),
+                consultation_types: (profile?.consultation_types || [])?.filter(t => t?.id !== type_id)
+            }
+
+            dispatch(setUserDetails({
+                profile: updatedProfile 
+            }))
+
+            dispatch(appLoadStop())
+
+            callBack && callBack({ deleted_type_id: type_id })
+
+            toast.success("Consultation info saved")
+
+        } catch (error) {
+            console.log(error)
+            apiReqError({ errorMsg: 'Something went wrong! Try again' })
+        }
+    }
+
+    const updateConsultationType = async ({ callBack = () => {}, update, type_id }) => {
+        try {
+
+            if (!update || !type_id) throw new Error();
+
+            dispatch(appLoadStart())
+
+            const { data, error } = await supabase
+                .from("consultation_types")
+                .update(update)
+                .eq("id", type_id)
+                .select()
+                .single()
+
+            if (error) {
+                console.log(error)
+                if (error.message?.toLowerCase().includes("duplicate key")) return apiReqError({ errorMsg: 'Session with this duration already exists for this service' });
+                throw new Error()
+            }
+
+            const updatedProfile = {
+                ...(profile || {}),
+                consultation_types: (profile?.consultation_types || [])?.map(t => {
+                    if (t?.id === type_id) {
+                        return data
+                    }
+
+                    return t
+                })
+            }
+
+            dispatch(setUserDetails({ profile: updatedProfile }))
+
+            dispatch(appLoadStop())
+
+            callBack && callBack({ updatedType: data })
+
+            toast.success("Consultation info saved")
+
+        } catch (error) {
+            console.log(error)
+            apiReqError({ errorMsg: 'Something went wrong! Try again' })
+        }
+    }
+
+    const insertConsultationType = async ({ callBack = () => {}, requestInfo }) => {
+        try {
+
+            dispatch(appLoadStart())
+
+            const { data, error } = await supabase
+                .from("consultation_types")
+                .insert(requestInfo)
+                .select()
+                .single()
+
+            if (error) {
+                console.log(error)
+                if (error.message?.toLowerCase().includes("duplicate key")) return apiReqError({ errorMsg: 'Session with this duration already exists for this service' });
+                throw new Error()
+            }
+
+            const updatedProfile = {
+                ...(profile || {}),
+                consultation_types: [data, ...(profile?.consultation_types || [])]
+            }
+            
+            dispatch(setUserDetails({ profile: updatedProfile }))
+
+            dispatch(appLoadStop())
+
+            callBack && callBack({ newType: data })
+
+            toast.success("Session info saved")
+
+        } catch (error) {
+            console.log(error)
+            apiReqError({ errorMsg: 'Something went wrong! Try again' })
+        }
+    }
+
+
+
+
+
+    const apiReqError = ({ errorMsg }) => {
+        toast.error(errorMsg)
+        dispatch(appLoadStop())
     }
 
 
@@ -151,7 +284,7 @@ export default function useApiReqs() {
 
 
 
-        
+
         //screening
         loadMoreScreenings,
 
@@ -160,6 +293,15 @@ export default function useApiReqs() {
 
 
         //specialties
-        fetchSpecialties
+        fetchSpecialties,
+
+
+
+
+
+        //availability
+        insertConsultationType, 
+        deleteConsultationType,
+        updateConsultationType
     }
 }

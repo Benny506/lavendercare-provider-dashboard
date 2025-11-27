@@ -40,7 +40,10 @@ export async function individualProviderLogin({ email, password }) {
 export async function getIndividualProviderDetails({ id }){
   const { data: profileData, error: profileError } = await supabase
     .from("provider_profiles")
-    .select('*')
+    .select(`
+      *,
+      consultation_types ( * )   
+    `)
     .eq('provider_id', id) 
     .single();  
 

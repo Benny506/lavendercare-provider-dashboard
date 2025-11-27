@@ -1,22 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Icon } from '@iconify/react';
-import TopDivider from '@/components/TopDivider';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUserDetailsState, setUserDetails, specializations } from '@/redux/slices/userDetailsSlice';
-import ProfileImg from '@/components/ui/ProfileImg';
-import { ErrorMessage, Formik } from 'formik';
 import ErrorMsg1 from '@/components/ErrorMsg1';
-import * as yup from 'yup'
-import { Eye, EyeOff, Square, SquareCheckBig, X } from 'lucide-react';
-import { toast } from 'react-toastify';
-import supabase from '@/database/dbInit';
-import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
-import OtpForm from '@/components/OtpForm';
-import ValidateEmailModal from './auxiliary/ValidateEmailModal';
-import { cloudinaryUpload, requestApi } from '@/lib/requestApi';
 import FormInput from '@/components/FormInput';
+import TopDivider from '@/components/TopDivider';
+import ProfileImg from '@/components/ui/ProfileImg';
+import supabase from '@/database/dbInit';
 import useApiReqs from '@/hooks/useApiReqs';
+import { cloudinaryUpload, requestApi } from '@/lib/requestApi';
+import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
+import { getUserDetailsState, setUserDetails } from '@/redux/slices/userDetailsSlice';
+import { Icon } from '@iconify/react';
+import { ErrorMessage, Formik } from 'formik';
+import { Eye, EyeOff, Square, SquareCheckBig, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import ValidateEmailModal from './auxiliary/ValidateEmailModal';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
@@ -177,7 +175,7 @@ const IndividualProfilePage = () => {
 
             setApiReqs({ isLoading: true, errorMsg: null })
 
-            console.log(profile?.email)
+            // console.log(profile?.email)
 
             const { result, errorMsg, responseStatus } = await requestApi({
                 url: 'https://tzsbbbxpdlupybfrgdbs.supabase.co/functions/v1/update-user-password',
@@ -185,7 +183,7 @@ const IndividualProfilePage = () => {
                 data: {
                     old_password,
                     new_password,
-                    email: profile?.email
+                    email: user?.email
                 },
             })
 
@@ -202,7 +200,7 @@ const IndividualProfilePage = () => {
 
         } catch (error) {
             console.log(error)
-            return updateProfileFailure({ errorMsg: 'Error updating password! You sure that is the right password?' })
+            return updateProfileFailure({ errorMsg: 'Error updating password! You sure that is the right old password?' })
         }
     }
 

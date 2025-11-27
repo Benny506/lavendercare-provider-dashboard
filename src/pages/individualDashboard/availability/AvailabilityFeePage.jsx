@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Trash } from 'lucide-react';
 import TopDivider from '@/components/TopDivider';
 import { useDispatch, useSelector } from 'react-redux';
 import { appLoadStart, appLoadStop } from '@/redux/slices/appLoadingSlice';
@@ -12,6 +12,10 @@ import ErrorMsg1 from '@/components/ErrorMsg1';
 import { currencies, formatNumberWithCommas, secondsToLabel, timeToAMPM_FromHour } from '@/lib/utils';
 import HourSelect from '@/components/HourSelect';
 import { Button } from '@/components/ui/button';
+import ZeroItems from '@/components/ui/ZeroItems';
+import { Icon } from '@iconify/react';
+import ServiceType from './auxiliiary/ServiceType';
+import useApiReqs from '@/hooks/useApiReqs';
 
 const defaultAvailability = {
   monday: { opening: '', closing: '' },
@@ -24,15 +28,18 @@ const defaultAvailability = {
 }
 
 const durationsOptions = [
-    { title: '15 mins', value: 15 * 60 },     // 900
-    { title: '30 mins', value: 30 * 60 },     // 1800
-    { title: '1 hour', value: 60 * 60 },      // 3600
+  { title: '15 mins', value: 15 * 60 },     // 900
+  { title: '30 mins', value: 30 * 60 },     // 1800
+  { title: '1 hour', value: 60 * 60 },      // 3600
 ];
 
 
 export default function AvailabilityFeePage() {
   const dispatch = useDispatch()
 
+  const { insertConsultationType, deleteConsultationType, updateConsultationType } = useApiReqs()
+
+  const user = useSelector(state => getUserDetailsState(state).user)
   const userProfile = useSelector(state => getUserDetailsState(state).profile)
   const bookingCostData = useSelector(state => getUserDetailsState(state).bookingCostData)
 
@@ -43,6 +50,7 @@ export default function AvailabilityFeePage() {
   const [bookingCostOpts, setBookingCostOpts] = useState({
     '15': null, '30': null, '45': null, '60': null, currency: ''
   })
+  const [serviceTypeModal, setServiceTypeModal] = useState({ visible: false, hide: null, info: null })
 
   useEffect(() => {
     const { isLoading, errorMsg } = apiReqs
@@ -75,7 +83,7 @@ export default function AvailabilityFeePage() {
 
       const { availability } = requestInfo
 
-      if(availability){
+      if (availability) {
         let oneSlotChosen = false
 
         const availableDays = Object.keys(availability)
@@ -131,22 +139,8 @@ export default function AvailabilityFeePage() {
     return
   }
 
-  const validationSchema = yup
-    .object()
-    .shape({
-      currency: yup
-        .string()
-        .required("Currency is required"),
-      base_price: yup
-        .number()
-        .min(1, "Cannot be less than 1")
-        .typeError("Must contain only digits")
-        .required("Base price is required"),
-      base_duration: yup
-        .string()
-        .required("Base duration is required")
-    })
-
+  const openServiceTypeModal = ({ info }) => setServiceTypeModal({ visible: true, hide: hideServiceTypeModal, info })
+  const hideServiceTypeModal = () => setServiceTypeModal({ visible: false, hide: null })
 
   return (
     <div className="w-full h-screen">
@@ -281,8 +275,79 @@ export default function AvailabilityFeePage() {
           </div>
 
 
+          {/* Pricing Section */}
+          <div className="bg-white rounded-lg p-4 shadow mb-6 mt-6">
+            <div className="flex items-center justify-between mb-3 gap-4 flex-wrap">
+              <h3 className="text-xl font-bold text-grey-700">Consultation Types</h3>
+              <Button onClick={() => openServiceTypeModal({ info: null })} variant="ghost" className="text-primary-500">
+                <Icon icon="mdi:edit-outline" width="30" height="30" />Add
+              </Button>
+            </div>
+            {
+              userProfile?.consultation_types?.length > 0
+                ?
+                <div className="flex items-center justify-between flex-wrap">
+                  {
+                    userProfile?.consultation_types?.map((t, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="w-1/2 px-2"
+                        >
+                          <div className="bg-grey-100 rounded-2xl mb-4">
+                            <div className="p-4">
+                              <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                                <h3 className="m-0 p-0 font-bold">Name</h3>
+                                <p className="text-gray-900 m-0 p-0">{t?.type_name}</p>
+                              </div>
 
-          <Formik
+                              <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                                <h3 className="m-0 p-0 font-bold">Duration</h3>
+                                <p className="text-gray-900 m-0 p-0">{secondsToLabel({ seconds: t?.duration })}</p>
+                              </div>
+
+                              <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+                                <h3 className="m-0 p-0 font-bold">Price</h3>
+                                <p className="text-gray-900 m-0 p-0">{t?.currency} {formatNumberWithCommas(t?.price)}</p>
+                              </div>
+
+                            </div>
+
+                            <hr />
+
+                            <div className="flex items-center justify-between mt-4 gap-2">
+                              <Button onClick={() => openServiceTypeModal({ info: t })} variant="ghost" className="text-primary-500">
+                                <Icon icon="mdi:edit-outline" width="30" height="30" />Edit
+                              </Button>
+                              <Button onClick={
+                                () =>
+                                  deleteConsultationType({
+                                    callBack: () => {},
+                                    type_id: t?.id
+                                  })
+                              }
+                                variant="ghost"
+                                className="text-red-500"
+                              >
+                                <Trash size={30} />Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+                :
+                <div className="flex items-center justify-center">
+                  <ZeroItems
+                    zeroText={'No consultation types added'}
+                  />
+                </div>
+            }
+          </div>
+
+          {/* <Formik
             validationSchema={validationSchema}
             initialValues={{
               base_duration: '',
@@ -391,7 +456,7 @@ export default function AvailabilityFeePage() {
                 </div>
               </div>
             )}
-          </Formik>
+          </Formik> */}
 
           {success && (
             <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-brightness-50">
@@ -416,6 +481,30 @@ export default function AvailabilityFeePage() {
           )}
         </div>
       </div>
+
+
+      <ServiceType
+        info={serviceTypeModal?.info}
+        isOpen={serviceTypeModal?.visible}
+        hide={serviceTypeModal?.hide}
+        handleContinueBtnClick={({ requestInfo, info }) => {
+          if (info?.id) {
+            return updateConsultationType({
+              callBack: () => { },
+              update: requestInfo,
+              type_id: info?.id
+            })
+          }
+
+          insertConsultationType({
+            callBack: () => { },
+            requestInfo: {
+              ...requestInfo,
+              provider_id: user?.id
+            }
+          })
+        }}
+      />
     </div>
   );
 }
