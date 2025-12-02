@@ -17,6 +17,28 @@ import { Icon } from '@iconify/react';
 import ServiceType from './auxiliiary/ServiceType';
 import useApiReqs from '@/hooks/useApiReqs';
 
+function reorderDays(obj) {
+  const order = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+
+  const sortedObj = {};
+
+  order.forEach(day => {
+    if (obj.hasOwnProperty(day)) {
+      sortedObj[day] = obj[day];
+    }
+  });
+
+  return sortedObj;
+}
+
 const defaultAvailability = {
   monday: { opening: '', closing: '' },
   tuesday: { opening: '', closing: '' },
@@ -142,6 +164,8 @@ export default function AvailabilityFeePage() {
   const openServiceTypeModal = ({ info }) => setServiceTypeModal({ visible: true, hide: hideServiceTypeModal, info })
   const hideServiceTypeModal = () => setServiceTypeModal({ visible: false, hide: null })
 
+  const reorderedDays = reorderDays(days)
+
   return (
     <div className="w-full h-screen">
       <TopDivider />
@@ -160,17 +184,17 @@ export default function AvailabilityFeePage() {
           </div>
 
           <div className="bg-white lg:w-full w-[90vw] border rounded-lg p-3">
-            <div className='border border-grey-100 rounded-md lg:flex block w-full'>
-              <div className='border-r border-grey-100 py-4 pb-2 px-2  space-y-4 flex flex-row flex-wrap lg:flex-col items-center lg:w-[20%] w-full lg:mb-0 mb-4 font-semibold text-sm'>
-                {Object.keys(days).map((day, index) => {
+            <div className='border border-grey-100 rounded-md flex w-full'>
+              <div className='border-r border-grey-100 py-4 pb-2 px-2  space-y-4 flex flex-col flex-wrap lg:flex-col items-center lg:mb-0 mb-4 font-semibold text-sm'>
+                {Object.keys(reorderedDays).map((day, index) => {
 
                   const active = day === selectedDay ? true : false
 
                   const handleDayClick = () => setSelectedDay(day)
 
                   return (
-                    <div key={day} onClick={handleDayClick} className={`lg:w-full w-1/2 text-center py-3 ${active ? "text-white bg-purple-500" : "cursor-pointer hover:bg-gray-100"} p-2 rounded-lg`}>
-                      <p>{day}</p>
+                    <div key={day} onClick={handleDayClick} className={`w-full py-3 ${active ? "text-white bg-purple-500" : "cursor-pointer hover:bg-gray-100"} py-2 px-4 rounded-lg`}>
+                      <p className='capitalize'>{day}</p>
                     </div>
                   )
                 }
@@ -216,7 +240,7 @@ export default function AvailabilityFeePage() {
                   }}
                 >
                   {({ handleBlur, handleChange, handleSubmit, isValid, dirty, values }) => (
-                    <div className='m-7 flex flex-col items-start justify-center px-2 gap-4'>
+                    <div className='py-7 flex flex-col items-start justify-center px-4 gap-4'>
                       <div className=''>
                         {
                           days[selectedDay]?.opening
@@ -322,7 +346,7 @@ export default function AvailabilityFeePage() {
                               <Button onClick={
                                 () =>
                                   deleteConsultationType({
-                                    callBack: () => {},
+                                    callBack: () => { },
                                     type_id: t?.id
                                   })
                               }
